@@ -90,7 +90,7 @@ form.submit() // only submits if all validation passes
   - [`Config`](#config)
     - [`initialValues?: Object`](#initialvalues-object)
     - [`onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object>`](#onsubmit-values-object-callback-errors-object--void--object--promiseobject)
-    - [`validate?: (values: Object, callback: ?(errors: Object) => void) => Object`](#validate-values-object-callback-errors-object--void--object)
+    - [`validate?: (values: Object, callback: ?(errors: Object) => void) => Object | void`](#validate-values-object-callback-errors-object--void--object--void)
     - [`debug?: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debug-state-formstate-fieldstates--string-fieldstate---void)
   - [`FieldState`](#fieldstate)
     - [`active?: boolean`](#active-boolean)
@@ -221,9 +221,7 @@ Submission errors must be in the same shape as the values of the form. You may
 return a generic error for the whole form (e.g. `'Login Failed'`) using the
 special `FORM_ERROR` symbol key.
 
-#### `validate?: (values: Object, callback: ?(errors: Object) => void) => Object`
-
-| void`
+#### `validate?: (values: Object, callback: ?(errors: Object) => void) => Object | void`
 
 A whole-record validation function that takes all the values of the form and
 returns any validation errors. There are three possible ways to write a
