@@ -162,6 +162,9 @@ form.submit() // only submits if all validation passes
     - [`valid`](#valid)
     - [`validating`](#validating)
     - [`values`](#values)
+  - [`Unsubscribe : () => void`](#unsubscribe----void)
+- [Libraries](#libraries)
+  - [🏁 React Final Form](#-react-final-form)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -571,3 +574,13 @@ value in `FormState`.
 
 When `true` the `FormSubscriber` will be notified of changes to the `values`
 value in `FormState`.
+
+### `Unsubscribe : () => void`
+
+Unsubscribes a listener.
+
+## Libraries
+
+### [🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
+
+A form state management system for React that uses 🏁 Final Form under the hood.
