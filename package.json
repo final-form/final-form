@@ -66,11 +66,11 @@
     },
     {
       "path": "dist/final-form.es.js",
-      "threshold": "8kB"
+      "threshold": "6kB"
     },
     {
       "path": "dist/final-form.cjs.js",
-      "threshold": "8kB"
+      "threshold": "6kB"
     }
   ]
 }
