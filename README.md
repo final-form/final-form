@@ -133,14 +133,16 @@ form.submit() // only submits if all validation passes
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+---
+
 ## API
 
 The following can be imported from `final-form`.
 
-### `createForm: (config: [Config](#config)) => [FormApi](#formapi)`
+### `createForm: (config: Config) => FormApi`
 
-Creates a form instance. It takes a `[Config](#config)` and returns a
-`[FormApi](#formapi)`.
+Creates a form instance. It takes a [`Config`](#config) and returns a
+[`FormApi`](#formapi).
 
 ### `fieldSubscriptionItems: string[]`
 
@@ -156,6 +158,8 @@ Useful for subscribing to everything.
 
 A special `Symbol` key used to return a whole-form error inside error objects
 returned from validation or submission.
+
+---
 
 ## Types
 
@@ -476,7 +480,7 @@ otherwise.
 
 The current values of the form.
 
-### `FormSubscriber: (state: FieldState) => void`
+### `FormSubscriber: (state: FormState) => void`
 
 ### `FormSubscription: { [string]: boolean }`
 
