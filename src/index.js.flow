@@ -1,0 +1,18 @@
+// @flow
+import type { FormApi, Config } from './types'
+
+export type {
+  Config,
+  DebugFunction,
+  FieldSubscription,
+  FieldState,
+  FormSubscription,
+  FormState,
+  RegisterField
+} from './types'
+
+declare export function createForm(config: Config): FormApi
+declare export var fieldSubscriptionItems: string[]
+declare export var formSubscriptionItems: string[]
+declare export var FORM_ERROR: any // Symbol not yet supported in Flow
+declare export var version: string

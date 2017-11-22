@@ -1,0 +1,120 @@
+// @flow
+export type Subscription = { [string]: boolean }
+export type Subscriber<V> = (value: V) => void
+
+export type FormSubscription = {
+  active?: boolean,
+  dirty?: boolean,
+  error?: boolean,
+  initialValues?: boolean,
+  invalid?: boolean,
+  pristine?: boolean,
+  submitting?: boolean,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  valid?: boolean,
+  validating?: boolean,
+  values?: boolean
+} & Subscription
+
+// all values are optional because they must be subscribed to
+export type FormState = {
+  active?: string,
+  dirty?: boolean,
+  error?: any,
+  invalid?: boolean,
+  initialValues?: Object,
+  pristine?: boolean,
+  submitting?: boolean,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  submitError?: any,
+  valid?: boolean,
+  validating?: boolean,
+  values?: Object
+}
+
+export type FormSubscriber = Subscriber<FormState>
+
+export type FieldState = {
+  active?: boolean,
+  blur: () => void,
+  change: (value: any) => void,
+  dirty?: boolean,
+  error?: any,
+  focus: () => void,
+  initial?: any,
+  invalid?: boolean,
+  name: string,
+  pristine?: boolean,
+  submitError?: any,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  touched?: boolean,
+  valid?: boolean,
+  value?: any,
+  visited?: boolean
+}
+
+export type FieldSubscription = {
+  active?: boolean,
+  dirty?: boolean,
+  error?: boolean,
+  initial?: boolean,
+  invalid?: boolean,
+  pristine?: boolean,
+  submitError?: boolean,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  touched?: boolean,
+  valid?: boolean,
+  value?: boolean,
+  visited?: boolean
+} & Subscription
+
+export type FieldSubscriber = Subscriber<FieldState>
+
+export type Unsubscribe = () => void
+
+export type RegisterField = (
+  name: string,
+  subscriber: FieldSubscriber,
+  subscription: FieldSubscription,
+  validate?: (value: ?any, allValues: Object) => ?any
+) => Unsubscribe
+
+export type FormApi = {
+  batch: (fn: () => void) => void,
+  blur: (name: string) => void,
+  change: (name: string, value: ?any) => void,
+  focus: (name: string) => void,
+  initialize: (values: Object) => void,
+  getState: () => FormState,
+  submit: () => ?Promise<?Object>,
+  subscribe: (
+    subscriber: FormSubscriber,
+    subscription: FormSubscription
+  ) => Unsubscribe,
+  registerField: RegisterField,
+  reset: () => void
+}
+
+export type DebugFunction = (
+  state: FormState,
+  fieldStates: { [string]: FieldState }
+) => void
+
+export type Config = {
+  initialValues?: Object,
+  onSubmit: (
+    values: Object,
+    callback: ?(errors: ?Object) => void
+  ) => ?Object | Promise<?Object> | void,
+  validate?: (
+    values: Object,
+    callback: ?(errors: Object) => void
+  ) => Object | void,
+  debug?: DebugFunction
+}
+
+export type InternalState = {}
