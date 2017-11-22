@@ -1,19 +1,19 @@
 {
   "name": "final-form",
   "version": "0.0.2",
-  "description":
-    "🏁 Framework agnostic, high performance, subscription-based form state management",
+  "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
   "module": "dist/final-form.es.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "nps",
     "test": "nps test",
     "precommit": "lint-staged && npm start validate"
   },
-  "author":
-    "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
+  "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/erikras/final-form#readme",
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
+    "babel-eslint": "^8.0.2",
     "babel-jest": "^21.2.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
@@ -37,7 +37,7 @@
     "eslint-plugin-babel": "^4.1.2",
     "eslint-plugin-flowtype": "^2.37.0",
     "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.5.1",
     "flow": "^0.2.3",
     "flow-bin": "^0.59.0",
@@ -57,7 +57,10 @@
     "rollup-plugin-uglify": "^2.0.1"
   },
   "lint-staged": {
-    "*.{js,json,md,css}": ["prettier --write", "git add"]
+    "*.{js,json,md,css}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "bundlesize": [
     {
