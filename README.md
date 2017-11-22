@@ -131,8 +131,8 @@ form.submit() // only submits if all validation passes
     - [`initialize: (values: Object) => void`](#initialize-values-object--void)
     - [`getState: () => FormState`](#getstate---formstate)
     - [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
-    - [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) =>](#subscribe-subscriber-formsubscriber-subscription-formsubscription-)
-    - [`registerField: (name: string, subscriber: FieldSubscriber, subscription:](#registerfield-name-string-subscriber-fieldsubscriber-subscription)
+    - [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
+    - [`registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object)) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--unsubscribe)
     - [`reset: () => void`](#reset---void)
   - [`FormState`](#formstate)
     - [`active?: string`](#active-string)
@@ -426,16 +426,12 @@ Submits the form if there are currently no validation errors. It may return
 `undefined` or a `Promise` depending on the nature of the `onSubmit`
 configuration value given to the form when it was created.
 
-#### `subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) =>
-
-Unsubscribe`
+#### `subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`
 
 Subscribes to changes to the form. **The `subscriber` will _only_ be called when
 values specified in `subscription` change.** A form can have many subscribers.
 
-#### `registerField: (name: string, subscriber: FieldSubscriber, subscription:
-
-FieldSubscription, validate?: (value: ?any, allValues: Object)) => Unsubscribe`
+#### `registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object)) => Unsubscribe`
 
 Registers a new field and subscribes to changes to it. **The `subscriber` will
 _only_ be called when the values specified in `subscription` change.** More than
