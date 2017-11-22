@@ -1,3 +1,5 @@
+# 🏁 Final Form
+
 ![Final Form](banner.png)
 
 ✅ **Zero** dependencies
@@ -9,8 +11,6 @@
 ✅ 💥 **9.9k (3.5k gzipped)** 💥
 
 ---
-
-# 🏁 Final Form
 
 ## Installation
 
