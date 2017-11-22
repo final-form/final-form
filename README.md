@@ -1,12 +1,7 @@
 ![Final Form](banner.png)
 
-✅ **Zero** dependencies
-
-✅ Framework agnostic
-
-✅ Opt-in subscriptions
-
-✅ Tiny! **9.9k (3.5k gzipped)**
+✅ **Zero** dependencies ✅ Framework agnostic ✅ Opt-in subscriptions ✅ Tiny!
+**9.9k (3.5k gzipped)**
 
 ---
 
@@ -31,7 +26,6 @@ want to receive updates about.
 
 ```js
 import { createForm } from 'final-form'
-import type { FormState, FieldState } from 'final-form'
 
 // Create Form
 const form = createForm({
@@ -42,7 +36,7 @@ const form = createForm({
 
 // Subscribe to form state updates
 const unsubscribe = form.subscribe(
-  (state: FormState) => {
+  formState => {
     // Update UI
   },
   { // FormSubscription: the list of values you want to be updated about
@@ -55,7 +49,7 @@ const unsubscribe = form.subscribe(
 // Subscribe to field state updates
 const unregisterField = form.registerField(
   'username',
-  (fieldState: FieldState) => {
+  fieldState => {
     // Update field UI
     const { blur, change, focus, ...rest } = fieldState
     // In addition to the values you subscribe to, field state also
@@ -143,9 +137,10 @@ form.submit() // only submits if all validation passes
 
 The following can be imported from `final-form`.
 
-### `createForm: (config: Config) => FormApi`
+### `createForm: (config: [Config](#config)) => [FormApi](#formapi)`
 
-Creates a form instance. It takes a `Config` and returns a `FormApi`.
+Creates a form instance. It takes a `[Config](#config)` and returns a
+`[FormApi](#formapi)`.
 
 ### `fieldSubscriptionItems: string[]`
 
@@ -294,62 +289,62 @@ for knowing when to display error messages.
 
 `FieldSubscription` is an object containing the following:
 
-####`active?: boolean`
+#### `active?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `active`
 value in `FieldState`.
 
-####`dirty?: boolean`
+#### `dirty?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `dirty`
 value in `FieldState`.
 
-####`error?: boolean`
+#### `error?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `error`
 value in `FieldState`.
 
-####`initialValues?: boolean`
+#### `initialValues?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `initialValues` value in `FieldState`.
 
-####`invalid?: boolean`
+#### `invalid?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `invalid`
 value in `FieldState`.
 
-####`pristine?: boolean`
+#### `pristine?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `pristine`
 value in `FieldState`.
 
-####`submitting?: boolean`
+#### `submitting?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `submitting` value in `FieldState`.
 
-####`submitFailed?: boolean`
+#### `submitFailed?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `submitFailing` value in `FieldState`.
 
-####`submitSucceeded?: boolean`
+#### `submitSucceeded?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `submitSucceeded` value in `FieldState`.
 
-####`valid?: boolean`
+#### `valid?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `valid`
 value in `FieldState`.
 
-####`validating?: boolean`
+#### `validating?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `validating` value in `FieldState`.
 
-####`values?: boolean`
+#### `values?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `values`
 value in `FieldState`.
@@ -458,7 +453,7 @@ otherwise.
 `true` if the form was submitted, but the submission failed with submission
 errors. `false` otherwise.
 
-####`submitSucceeded?: boolean`
+#### `submitSucceeded?: boolean`
 
 `true` if the form was successfully submitted. `false` otherwise.
 
@@ -487,62 +482,62 @@ The current values of the form.
 
 `FormSubscription` is an object containing the following:
 
-####`active`
+#### `active`
 
 When `true` the `FormSubscriber` will be notified of changes to the `active`
 value in `FormState`.
 
-####`dirty`
+#### `dirty`
 
 When `true` the `FormSubscriber` will be notified of changes to the `dirty`
 value in `FormState`.
 
-####`error`
+#### `error`
 
 When `true` the `FormSubscriber` will be notified of changes to the `error`
 value in `FormState`.
 
-####`initialValues`
+#### `initialValues`
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `initialValues` value in `FormState`.
 
-####`invalid`
+#### `invalid`
 
 When `true` the `FormSubscriber` will be notified of changes to the `invalid`
 value in `FormState`.
 
-####`pristine`
+#### `pristine`
 
 When `true` the `FormSubscriber` will be notified of changes to the `pristine`
 value in `FormState`.
 
-####`submitting`
+#### `submitting`
 
 When `true` the `FormSubscriber` will be notified of changes to the `submitting`
 value in `FormState`.
 
-####`submitFailed`
+#### `submitFailed`
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `submitFailed` value in `FormState`.
 
-####`submitSucceeded`
+#### `submitSucceeded`
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `submitSucceeded` value in `FormState`.
 
-####`valid`
+#### `valid`
 
 When `true` the `FormSubscriber` will be notified of changes to the `valid`
 value in `FormState`.
 
-####`validating`
+#### `validating`
 
 When `true` the `FormSubscriber` will be notified of changes to the `validating`
 value in `FormState`.
 
-####`values`
+#### `values`
 
 When `true` the `FormSubscriber` will be notified of changes to the `values`
 value in `FormState`.
