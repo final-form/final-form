@@ -218,7 +218,7 @@ const createForm = (config: Config): FormApi => {
           setError(key, getIn(errors, key))
         })
       }
-      const errorsOrPromise = validate(state.formState.values)
+      const errorsOrPromise = validate({ ...state.formState.values }) // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
         promises.push(errorsOrPromise.then(processErrors))
       } else {
@@ -623,7 +623,11 @@ const createForm = (config: Config): FormApi => {
       let completeCalled = false
       const complete = (errors: ?Object) => {
         formState.submitting = false
-        if (errors && Object.keys(errors).length) {
+        if (
+          errors &&
+          (Object.keys(errors).length ||
+            Object.getOwnPropertySymbols(errors).length)
+        ) {
           formState.submitFailed = true
           formState.submitSucceeded = false
           Object.keys(fields).forEach(key => {
