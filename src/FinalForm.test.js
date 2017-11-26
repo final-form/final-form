@@ -44,7 +44,6 @@ describe('FinalForm', () => {
       const form = createForm({ onSubmit: onSubmitMock, debug })
 
       form.registerField('foo', () => {})
-
       expect(debug).toHaveBeenCalledTimes(1)
 
       form.change('foo', 'bar')
@@ -411,6 +410,7 @@ describe('FinalForm', () => {
         submitting: false
       })
     })
+
     it('should allow subscribing to form submitFailed', () => {
       const onSubmit = values => ({ foo: 'Bad foo' })
       const form = createForm({ onSubmit })
@@ -548,6 +548,46 @@ describe('FinalForm', () => {
       // form has is invalid again
       expect(spy).toHaveBeenCalledTimes(4)
       expect(spy.mock.calls[3][0].valid).toBe(false)
+    })
+
+    it('should allow subscribing to validating', async () => {
+      const delay = 2
+      const { spy, change } = prepareFormSubscriber(
+        'foo',
+        { validating: true },
+        {
+          validate: async values => {
+            await sleep(delay)
+            const errors = {}
+            if (values.foo > 3) {
+              errors.foo = 'Too many'
+            }
+            return errors
+          }
+        }
+      )
+
+      // should be validating initially
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(spy.mock.calls[1][0].validating).toBe(true)
+
+      await sleep(2 * delay)
+
+      // then initial validation finishes
+      expect(spy).toHaveBeenCalledTimes(3)
+      expect(spy.mock.calls[2][0].validating).toBe(false)
+
+      change('Dog')
+
+      // validating starts
+      expect(spy).toHaveBeenCalledTimes(4)
+      expect(spy.mock.calls[1][0].validating).toBe(true)
+
+      await sleep(2 * delay)
+
+      // validating stops
+      expect(spy).toHaveBeenCalledTimes(5)
+      expect(spy.mock.calls[2][0].validating).toBe(false)
     })
 
     it('should allow subscribing to form values', () => {
@@ -1088,6 +1128,128 @@ describe('FinalForm', () => {
   })
 
   describe('Field.validation', () => {
+    it('should validate on change when validateOnBlur is false', () => {
+      const validate = jest.fn(values => {
+        const errors = {}
+        if (!values.foo) {
+          errors.foo = 'Required'
+        }
+        return errors
+      })
+      const form = createForm({
+        onSubmit: onSubmitMock,
+        validate
+      })
+
+      expect(validate).toHaveBeenCalledTimes(1)
+
+      const spy = jest.fn()
+      form.registerField('foo', spy, { error: true })
+
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy.mock.calls[0][0].error).toBe('Required')
+      expect(validate).toHaveBeenCalledTimes(2)
+
+      form.focus('foo')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2) // not called on focus
+      form.change('foo', 't')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(spy.mock.calls[1][0].error).toBeUndefined()
+      expect(validate).toHaveBeenCalledTimes(3)
+      form.change('foo', 'ty')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(4)
+      form.change('foo', 'typ')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(5)
+      form.change('foo', 'typi')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(6)
+      form.change('foo', 'typin')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(7)
+      form.change('foo', 'typing')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(8)
+      form.blur('foo')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(8) // not called on blur
+
+      // now user goes to empty the field
+      form.focus('foo')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(8)
+      form.change('foo', '')
+      expect(spy).toHaveBeenCalledTimes(3)
+      expect(spy.mock.calls[2][0].error).toBe('Required')
+      expect(validate).toHaveBeenCalledTimes(9)
+      form.blur('foo')
+      expect(validate).toHaveBeenCalledTimes(9)
+    })
+
+    it('should validate on blur when validateOnBlur is true', () => {
+      const validate = jest.fn(values => {
+        const errors = {}
+        if (!values.foo) {
+          errors.foo = 'Required'
+        }
+        return errors
+      })
+      const form = createForm({
+        onSubmit: onSubmitMock,
+        validate,
+        validateOnBlur: true
+      })
+
+      expect(validate).toHaveBeenCalledTimes(1)
+
+      const spy = jest.fn()
+      form.registerField('foo', spy, { error: true })
+
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy.mock.calls[0][0].error).toBe('Required')
+      expect(validate).toHaveBeenCalledTimes(2)
+
+      form.focus('foo')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2) // not called on focus
+      form.change('foo', 't')
+      expect(spy).toHaveBeenCalledTimes(1) // error not updated
+      expect(validate).toHaveBeenCalledTimes(2)
+      form.change('foo', 'ty')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2)
+      form.change('foo', 'typ')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2)
+      form.change('foo', 'typi')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2)
+      form.change('foo', 'typin')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2)
+      form.change('foo', 'typing')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(validate).toHaveBeenCalledTimes(2)
+      form.blur('foo')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(spy.mock.calls[1][0].error).toBeUndefined()
+      expect(validate).toHaveBeenCalledTimes(3) // called on blur
+
+      // now user goes to empty the field
+      form.focus('foo')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(3)
+      form.change('foo', '')
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(validate).toHaveBeenCalledTimes(3)
+      form.blur('foo')
+      expect(spy).toHaveBeenCalledTimes(3)
+      expect(spy.mock.calls[2][0].error).toBe('Required')
+      expect(validate).toHaveBeenCalledTimes(4)
+    })
+
     it("should return first subscribed field's error first", () => {
       const form = createForm({ onSubmit: onSubmitMock })
       const spy1 = jest.fn()
@@ -1179,7 +1341,6 @@ describe('FinalForm', () => {
       expect(password).toHaveBeenCalledTimes(1)
 
       // confirm now has error
-      expect(password).toHaveBeenCalledTimes(1)
       expect(confirm).toHaveBeenCalledTimes(2)
       expect(confirm.mock.calls[1][0].error).toBe('Does not match')
 
@@ -1289,64 +1450,8 @@ describe('FinalForm', () => {
       expect(spy.mock.calls[3][0].error).toBe('Required')
     })
 
-    it('should allow record-level async validation via callback', async () => {
-      const delay = 10
-      const form = createForm({
-        onSubmit: onSubmitMock,
-        validate: (values, callback) => {
-          const errors = {}
-          if (values.username === 'erikras') {
-            errors.username = 'Username taken'
-          }
-          setTimeout(() => callback(errors), delay)
-        }
-      })
-      const spy = jest.fn()
-      form.registerField('username', spy, { error: true })
-      expect(spy).toHaveBeenCalledTimes(1)
-      expect(spy.mock.calls[0][0].error).toBeUndefined()
-
-      const { change } = spy.mock.calls[0][0]
-
-      await sleep(delay * 2)
-
-      // error hasn't changed
-      expect(spy).toHaveBeenCalledTimes(1)
-
-      change('bob')
-
-      await sleep(delay * 2)
-
-      // error hasn't changed
-      expect(spy).toHaveBeenCalledTimes(1)
-
-      change('erikras')
-
-      // still hasn't updated because validation has not yet returned
-      expect(spy).toHaveBeenCalledTimes(1)
-
-      // wait for validation to return
-      await sleep(delay * 2)
-
-      // we have an error now!
-      expect(spy).toHaveBeenCalledTimes(2)
-      expect(spy.mock.calls[1][0].error).toBe('Username taken')
-
-      change('another')
-
-      // still hasn't updated because validation has not yet returned
-      expect(spy).toHaveBeenCalledTimes(2)
-
-      // wait for validation to return
-      await sleep(delay * 2)
-
-      // error went away
-      expect(spy).toHaveBeenCalledTimes(3)
-      expect(spy.mock.calls[2][0].error).toBeUndefined()
-    })
-
     it('should allow record-level async validation via promises', async () => {
-      const delay = 10
+      const delay = 2
       const form = createForm({
         onSubmit: onSubmitMock,
         validate: async values => {
@@ -1391,70 +1496,15 @@ describe('FinalForm', () => {
 
       change('another')
 
-      // still hasn't updated because validation has not yet returned
-      expect(spy).toHaveBeenCalledTimes(2)
-
-      // wait for validation to return
-      await sleep(delay * 2)
-
-      // error went away
+      // spy called because sync validation passed
       expect(spy).toHaveBeenCalledTimes(3)
       expect(spy.mock.calls[2][0].error).toBeUndefined()
-    })
-
-    it('should allow field-level async validation via callback', async () => {
-      const delay = 10
-      const form = createForm({ onSubmit: onSubmitMock })
-      const spy = jest.fn()
-      form.registerField(
-        'username',
-        spy,
-        { error: true },
-        (value, allErrors, callback) => {
-          const error = value === 'erikras' ? 'Username taken' : undefined
-          setTimeout(() => callback(error), delay)
-        }
-      )
-      expect(spy).toHaveBeenCalledTimes(1)
-      expect(spy.mock.calls[0][0].error).toBeUndefined()
-
-      const { change } = spy.mock.calls[0][0]
-
-      await sleep(delay * 2)
-
-      // error hasn't changed
-      expect(spy).toHaveBeenCalledTimes(1)
-
-      change('bob')
-
-      await sleep(delay * 2)
-
-      // error hasn't changed
-      expect(spy).toHaveBeenCalledTimes(1)
-
-      change('erikras')
-
-      // still hasn't updated because validation has not yet returned
-      expect(spy).toHaveBeenCalledTimes(1)
 
       // wait for validation to return
       await sleep(delay * 2)
 
-      // we have an error now!
-      expect(spy).toHaveBeenCalledTimes(2)
-      expect(spy.mock.calls[1][0].error).toBe('Username taken')
-
-      change('another')
-
-      // still hasn't updated because validation has not yet returned
-      expect(spy).toHaveBeenCalledTimes(2)
-
-      // wait for validation to return
-      await sleep(delay * 2)
-
-      // error went away
+      // spy not called because sync validation already cleared error
       expect(spy).toHaveBeenCalledTimes(3)
-      expect(spy.mock.calls[2][0].error).toBeUndefined()
     })
 
     it('should allow field-level async validation via promise', async () => {
@@ -1502,15 +1552,15 @@ describe('FinalForm', () => {
 
       change('another')
 
-      // still hasn't updated because validation has not yet returned
-      expect(spy).toHaveBeenCalledTimes(2)
+      // sync validation ran and cleared the error
+      expect(spy).toHaveBeenCalledTimes(3)
+      expect(spy.mock.calls[2][0].error).toBeUndefined()
 
       // wait for validation to return
       await sleep(delay * 2)
 
-      // error went away
+      // not called after async validation finished because it was already und
       expect(spy).toHaveBeenCalledTimes(3)
-      expect(spy.mock.calls[2][0].error).toBeUndefined()
     })
   })
 
@@ -1527,16 +1577,22 @@ describe('FinalForm', () => {
           return errors
         }
       })
-      const spy = jest.fn()
-      form.registerField('username', spy, { error: true })
-      expect(spy).toHaveBeenCalledTimes(1)
-      expect(spy.mock.calls[0][0].error).toBe('Required')
+      const username = jest.fn()
+      const password = jest.fn()
+      form.registerField('username', username, { error: true })
+      form.registerField('password', password, { touched: true })
+      expect(username).toHaveBeenCalledTimes(1)
+      expect(username.mock.calls[0][0].error).toBe('Required')
+      expect(password).toHaveBeenCalledTimes(1)
+      expect(password.mock.calls[0][0].touched).toBe(false)
 
-      const { change } = spy.mock.calls[0][0]
+      const { change } = username.mock.calls[0][0]
 
       expect(onSubmit).not.toHaveBeenCalled()
       form.submit()
       expect(onSubmit).not.toHaveBeenCalled()
+      expect(password).toHaveBeenCalledTimes(2)
+      expect(password.mock.calls[1][0].touched).toBe(true)
 
       change('erikras')
 

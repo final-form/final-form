@@ -43,11 +43,7 @@ export type InternalFieldState = {
   submitError?: any,
   touched: boolean,
   validators: {
-    [number]: (
-      value: ?any,
-      allValues: Object,
-      callback: ?(error: ?any) => void
-    ) => ?any | Promise<?any> | void
+    [number]: (value: ?any, allValues: Object) => ?any | Promise<?any>
   },
   value?: any,
   visited: boolean
@@ -185,7 +181,7 @@ const createForm = (config: Config): FormApi => {
   if (!config) {
     throw new Error('No config specified')
   }
-  const { initialValues, onSubmit, validate, debug } = config
+  const { debug, initialValues, onSubmit, validate, validateOnBlur } = config
   if (!onSubmit) {
     throw new Error('No onSubmit function specified')
   }
@@ -211,100 +207,121 @@ const createForm = (config: Config): FormApi => {
   }
   let inBatch = false
 
+  const runRecordLevelValidation = (
+    setError: (name: string, error: ?any) => void
+  ): Promise<*>[] => {
+    const promises = []
+    if (validate) {
+      const processErrors = (errors: Object) => {
+        state.error = errors[FORM_ERROR]
+        Object.keys(state.fields).forEach(key => {
+          setError(key, getIn(errors, key))
+        })
+      }
+      const errorsOrPromise = validate(state.formState.values)
+      if (isPromise(errorsOrPromise)) {
+        promises.push(errorsOrPromise.then(processErrors))
+      } else {
+        processErrors(errorsOrPromise)
+      }
+    }
+    return promises
+  }
+
   const runFieldLevelValidation = (
-    name: string,
-    allValues: Object,
-    callback: (error: ?any) => void
-  ) => {
-    const field = state.fields[name]
+    field: InternalFieldState,
+    setError: (error: ?any) => void
+  ): Promise<*>[] => {
     const { validators } = field
+    const promises = []
     const validatorKeys = Object.keys(validators)
-    let returned = false
     if (validatorKeys.length) {
-      let remaining = validatorKeys.length
-      validatorKeys.forEach((index: string) => {
-        const processError = (error: ?any) => {
-          remaining--
-          if (remaining === 0 || (!returned && error)) {
-            callback(error)
-            returned = true
-          }
-        }
-        if (!returned) {
-          const validator = validators[Number(index)]
-          const error = validator(field.value, allValues, processError)
-          if (error && isPromise(error)) {
-            error.then(processError, processError)
-          } else if (validator.length < 3) {
-            // not using callback, so undefined means that's the result of the validation
-            processError(error)
-          }
+      let error
+      Object.keys(validators).forEach((index: string) => {
+        const validator = validators[Number(index)]
+        const errorOrPromise = validator(field.value, state.formState.values)
+        if (errorOrPromise && isPromise(errorOrPromise)) {
+          promises.push(errorOrPromise.then(setError))
+        } else if (!error) {
+          // first registered validator wins
+          error = errorOrPromise
         }
       })
-    } else {
-      callback()
+      setError(error)
     }
+    return promises
   }
 
   const runValidation = (callback: ?() => void) => {
-    const { fields, formState: { values } } = state
-    state.validating++
+    const { fields } = state
     const fieldKeys = Object.keys(fields)
-    if (validate) {
-      const processValidationErrors = errors => {
-        // assign errors to each field
-        state.error = errors[FORM_ERROR]
-        let remaining = fieldKeys.length
-        const finish = () => {
-          if (remaining === 0) {
-            state.validating--
-            if (callback) {
-              callback()
-            }
-          }
-        }
-        if (fieldKeys.length) {
-          fieldKeys.forEach(key => {
-            runFieldLevelValidation(key, values, localError => {
-              const recordError = getIn(errors, key)
-              fields[key].error = localError || recordError // local overrides record
-              remaining--
-              finish()
-            })
-          })
-        } else {
-          finish()
-        }
+    if (
+      !validate &&
+      !fieldKeys.some(
+        key =>
+          fields[key].validators && Object.keys(fields[key].validators).length
+      )
+    ) {
+      if (callback) {
+        callback()
       }
-      const errors = validate(values, processValidationErrors)
-      if (errors) {
-        if (isPromise(errors)) {
-          errors.then(processValidationErrors, processValidationErrors)
-        } else {
-          processValidationErrors(errors)
+      return // no validation rules
+    }
+
+    // sync version of setError
+    const recordLevelErrors = {}
+    const fieldLevelErrors = {}
+    let setRecordLevelError = (name: string, error: ?any) => {
+      recordLevelErrors[name] = error
+    }
+    let setFieldLevelError = (name: string, error: ?any) => {
+      fieldLevelErrors[name] = error
+    }
+
+    const promises = [
+      ...runRecordLevelValidation((name, error) =>
+        setRecordLevelError(name, error)
+      ),
+      ...fieldKeys.reduce(
+        (result, name) => [
+          ...result,
+          ...runFieldLevelValidation(fields[name], (error: ?any) =>
+            setFieldLevelError(name, error)
+          )
+        ],
+        []
+      )
+    ]
+
+    // process sync errors
+    fieldKeys.forEach(name => {
+      // field-level errors take precedent over record-level errors
+      fields[name].error = fieldLevelErrors[name] || recordLevelErrors[name]
+    })
+
+    if (promises.length) {
+      // sync errors have been set. notify listeners while we wait for others
+      state.validating++
+      if (callback) {
+        callback()
+      }
+
+      // reassign setError functions for async responses
+      setRecordLevelError = setFieldLevelError = (
+        name: string,
+        error: ?any
+      ) => {
+        fields[name].error = error
+      }
+
+      Promise.all(promises).then(() => {
+        state.validating--
+        if (callback) {
+          callback()
         }
-      }
-    } else {
-      let remaining = fieldKeys.length
-      const finish = () => {
-        if (remaining === 0) {
-          state.validating--
-          if (callback) {
-            callback()
-          }
-        }
-      }
-      if (remaining) {
-        fieldKeys.forEach(key => {
-          runFieldLevelValidation(key, values, error => {
-            fields[key].error = error
-            remaining--
-            finish()
-          })
-        })
-      } else {
-        finish()
-      }
+      })
+    } else if (callback) {
+      callback()
     }
   }
 
@@ -352,13 +369,12 @@ const createForm = (config: Config): FormApi => {
     const valid = isValid()
 
     const validating = state.validating > 0
-
     if (
       pristine === formState.pristine &&
       valid === formState.valid &&
-      validating === formState.validating &&
       state.error === formState.error &&
       state.lastFormState &&
+      state.lastFormState.validating === validating &&
       state.lastFormState.values === formState.values &&
       state.lastFormState.active === formState.active
     ) {
@@ -415,7 +431,12 @@ const createForm = (config: Config): FormApi => {
     }
   }
 
-  runValidation() // generate initial error (even with no fields yet) if we need to
+  // generate initial error (even with no fields yet) if we need to
+  runValidation()
+  // runValidation(() => {
+  //   notifyFieldListeners()
+  //   notifyFormListeners()
+  // })
 
   const api: FormApi = {
     batch: (fn: () => void) => {
@@ -437,8 +458,15 @@ const createForm = (config: Config): FormApi => {
           active: false,
           touched: true
         }
-        notifyFieldListeners()
-        notifyFormListeners()
+        if (validateOnBlur) {
+          runValidation(() => {
+            notifyFieldListeners()
+            notifyFormListeners()
+          })
+        } else {
+          notifyFieldListeners()
+          notifyFormListeners()
+        }
       }
     },
 
@@ -450,10 +478,15 @@ const createForm = (config: Config): FormApi => {
           setIn(state.formState.values, name, value) || {}
         notifyFieldListeners()
         notifyFormListeners()
-        runValidation(() => {
+        if (validateOnBlur) {
           notifyFieldListeners()
           notifyFormListeners()
-        })
+        } else {
+          runValidation(() => {
+            notifyFieldListeners()
+            notifyFormListeners()
+          })
+        }
       }
     },
 
@@ -550,19 +583,13 @@ const createForm = (config: Config): FormApi => {
         sentFirstNotification = true
       }
 
-      let validationReturned = false
       runValidation(() => {
         notifyFormListeners()
         if (!sentFirstNotification) {
           firstNotification()
         }
         notifyFieldListeners()
-        validationReturned = true
       })
-      if (!validationReturned) {
-        // validation must be async
-        firstNotification()
-      }
 
       return () => {
         delete state.fields[name].validators[index]
@@ -585,6 +612,11 @@ const createForm = (config: Config): FormApi => {
     submit: () => {
       const { formState, fields } = state
       if (hasSyncErrors()) {
+        // mark all fields as touched
+        Object.keys(fields).forEach(key => {
+          fields[key].touched = true
+        })
+        notifyFieldListeners()
         return // no submit for you!!
       }
       let resolvePromise

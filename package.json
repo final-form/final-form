@@ -1,19 +1,19 @@
 {
   "name": "final-form",
-  "version": "0.0.2",
-  "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
+  "version": "0.0.3",
+  "description":
+    "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
   "module": "dist/final-form.es.js",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "start": "nps",
     "test": "nps test",
     "precommit": "lint-staged && npm start validate"
   },
-  "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
+  "author":
+    "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -57,10 +57,7 @@
     "rollup-plugin-uglify": "^2.0.1"
   },
   "lint-staged": {
-    "*.{js,json,md,css}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{js,json,md,css}": ["prettier --write", "git add"]
   },
   "bundlesize": [
     {

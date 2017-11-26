@@ -105,16 +105,16 @@ export type DebugFunction = (
 ) => void
 
 export type Config = {
+  debug?: DebugFunction,
   initialValues?: Object,
   onSubmit: (
     values: Object,
     callback: ?(errors: ?Object) => void
   ) => ?Object | Promise<?Object> | void,
   validate?: (
-    values: Object,
-    callback: ?(errors: Object) => void
-  ) => Object | void,
-  debug?: DebugFunction
+    values: Object
+  ) => Object | Promise<Object>,
+  validateOnBlur?: boolean
 }
 
 export type InternalState = {}

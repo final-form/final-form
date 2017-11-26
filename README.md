@@ -8,7 +8,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 **3.42k gzipped** 💥
+✅ 💥 **3.50k gzipped** 💥
 
 ---
 
@@ -92,8 +92,9 @@ form.submit() // only submits if all validation passes
   * [`Config`](#config)
     * [`initialValues?: Object`](#initialvalues-object)
     * [`onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object>`](#onsubmit-values-object-callback-errors-object--void--object--promiseobject)
-    * [`validate?: (values: Object, callback: ?(errors: Object) => void) => Object | void`](#validate-values-object-callback-errors-object--void--object--void)
+    * [`validate?: (values: Object) => void) => Object | Promise<Object>`](#validate-values-object--void--object--promiseobject)
     * [`debug?: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debug-state-formstate-fieldstates--string-fieldstate---void)
+    * [`validateOnBlur?: boolean`](#validateonblur-boolean)
   * [`FieldState`](#fieldstate)
     * [`active?: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void)
@@ -134,7 +135,7 @@ form.submit() // only submits if all validation passes
     * [`getState: () => FormState`](#getstate---formstate)
     * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
-    * [`registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object)) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--unsubscribe)
+    * [`registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => any | Promise<any>) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--promiseany--unsubscribe)
     * [`reset: () => void`](#reset---void)
   * [`FormState`](#formstate)
     * [`active?: string`](#active-string)
@@ -223,7 +224,7 @@ Submission errors must be in the same shape as the values of the form. You may
 return a generic error for the whole form (e.g. `'Login Failed'`) using the
 special `FORM_ERROR` symbol key.
 
-#### `validate?: (values: Object, callback: ?(errors: Object) => void) => Object | void`
+#### `validate?: (values: Object) => void) => Object | Promise<Object>`
 
 A whole-record validation function that takes all the values of the form and
 returns any validation errors. There are three possible ways to write a
@@ -231,8 +232,6 @@ returns any validation errors. There are three possible ways to write a
 
 * Synchronously: returns `{}` or `undefined` when the values are valid, or an
   `Object` of validation errors when the values are invalid.
-* Asynchronously with a callback: returns `undefined`, calls `callback()` with
-  no arguments on success, or with an `Object` of validation errors on failure.
 * Asynchronously with a `Promise`: returns a `Promise<?Object>` that resolves
   with no value on success or _resolves_ with an `Object` of validation errors
   on failure. The reason it _resolves_ with errors is to leave _rejection_ for
@@ -247,6 +246,11 @@ key.
 An optional callback for debugging that returns the form state and the states of
 all the fields. It's called _on every state change_. A typical thing to pass in
 might be `console.log`.
+
+#### `validateOnBlur?: boolean`
+
+If `true`, validation will happen on blur. If `false`, validation will happen on
+change. Defaults to `false`.
 
 ### `FieldState`
 
@@ -434,11 +438,16 @@ configuration value given to the form when it was created.
 Subscribes to changes to the form. **The `subscriber` will _only_ be called when
 values specified in `subscription` change.** A form can have many subscribers.
 
-#### `registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object)) => Unsubscribe`
+#### `registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => any | Promise<any>) => Unsubscribe`
 
 Registers a new field and subscribes to changes to it. **The `subscriber` will
 _only_ be called when the values specified in `subscription` change.** More than
 one subscriber can subscribe to the same field.
+
+This is also where you may provide an optional field-level validation function
+that should return `undefined` if the value is valid, or an error. It can
+optionally return a `Promise` that _resolves_ (not rejects) to `undefined` or an
+error.
 
 #### `reset: () => void`
 
