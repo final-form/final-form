@@ -212,7 +212,7 @@ const createForm = (config: Config): FormApi => {
   ): Promise<*>[] => {
     const promises = []
     if (validate) {
-      const processErrors = (errors: Object) => {
+      const processErrors = (errors: Object = {}) => {
         state.error = errors[FORM_ERROR]
         Object.keys(state.fields).forEach(key => {
           setError(key, getIn(errors, key))

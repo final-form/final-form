@@ -275,6 +275,22 @@ describe('FinalForm', () => {
       expect(spy.mock.calls[2][0].error).toBe('Why no foo?')
     })
 
+    it('should allow validation function to return null', () => {
+      const { spy } = prepareFormSubscriber(
+        'foo',
+        {
+          error: true
+        },
+        {
+          validate: values => {}
+        }
+      )
+
+      // one call with initial value
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy.mock.calls[0][0].error).toBeUndefined()
+    })
+
     it('should never return undefined values', () => {
       const { spy, change } = prepareFormSubscriber('foo', {
         values: true
