@@ -209,8 +209,8 @@ returned from validation or submission.
 
 #### `initialValues?: Object`
 
-The initial values of your form. These will be used to compare against the
-current values to calculate `pristine` and `dirty`.
+The initial values of your form. These will also be used to compare against
+the current values to calculate `pristine` and `dirty`.
 
 #### `onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object>`
 
