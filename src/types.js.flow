@@ -2,37 +2,38 @@
 export type Subscription = { [string]: boolean }
 export type Subscriber<V> = (value: V) => void
 
-export type FormSubscription = {
-  active?: boolean,
-  dirty?: boolean,
-  error?: boolean,
-  initialValues?: boolean,
-  invalid?: boolean,
-  pristine?: boolean,
-  submitting?: boolean,
-  submitFailed?: boolean,
-  submitSucceeded?: boolean,
-  valid?: boolean,
-  validating?: boolean,
-  values?: boolean
-} & Subscription
+export type FormSubscription = $Shape<{
+  active: boolean,
+  dirty: boolean,
+  error: boolean,
+  initialValues: boolean,
+  invalid: boolean,
+  pristine: boolean,
+  submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
+  valid: boolean,
+  validating: boolean,
+  values: boolean
+}> &
+  Subscription
 
-// all values are optional because they must be subscribed to
-export type FormState = {
-  active?: string,
-  dirty?: boolean,
-  error?: any,
-  invalid?: boolean,
-  initialValues?: Object,
-  pristine?: boolean,
-  submitting?: boolean,
-  submitFailed?: boolean,
-  submitSucceeded?: boolean,
-  submitError?: any,
-  valid?: boolean,
-  validating?: boolean,
-  values?: Object
-}
+export type FormState = $Shape<{
+  // all values are optional because they must be subscribed to
+  active: string,
+  dirty: boolean,
+  error: any,
+  invalid: boolean,
+  initialValues: Object,
+  pristine: boolean,
+  submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
+  submitError: any,
+  valid: boolean,
+  validating: boolean,
+  values: Object
+}>
 
 export type FormSubscriber = Subscriber<FormState>
 
@@ -56,21 +57,22 @@ export type FieldState = {
   visited?: boolean
 }
 
-export type FieldSubscription = {
-  active?: boolean,
-  dirty?: boolean,
-  error?: boolean,
-  initial?: boolean,
-  invalid?: boolean,
-  pristine?: boolean,
-  submitError?: boolean,
-  submitFailed?: boolean,
-  submitSucceeded?: boolean,
-  touched?: boolean,
-  valid?: boolean,
-  value?: boolean,
-  visited?: boolean
-} & Subscription
+export type FieldSubscription = $Shape<{
+  active: boolean,
+  dirty: boolean,
+  error: boolean,
+  initial: boolean,
+  invalid: boolean,
+  pristine: boolean,
+  submitError: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
+  touched: boolean,
+  valid: boolean,
+  value: boolean,
+  visited: boolean
+}> &
+  Subscription
 
 export type FieldSubscriber = Subscriber<FieldState>
 
@@ -111,9 +113,7 @@ export type Config = {
     values: Object,
     callback: ?(errors: ?Object) => void
   ) => ?Object | Promise<?Object> | void,
-  validate?: (
-    values: Object
-  ) => Object | Promise<Object>,
+  validate?: (values: Object) => Object | Promise<Object>,
   validateOnBlur?: boolean
 }
 
