@@ -1,6 +1,6 @@
 // @flow
-export type Subscription = { [string]: boolean };
-export type Subscriber<V> = (value: V) => void;
+export type Subscription = { [string]: boolean }
+export type Subscriber<V> = (value: V) => void
 
 export type FormSubscription = $Shape<{
   active: boolean,
@@ -14,8 +14,9 @@ export type FormSubscription = $Shape<{
   submitSucceeded: boolean,
   valid: boolean,
   validating: boolean,
-  values: boolean,
-}> & Subscription;
+  values: boolean
+}> &
+  Subscription
 
 export type FormState = $Shape<{
   // all values are optional because they must be subscribed to
@@ -31,10 +32,10 @@ export type FormState = $Shape<{
   submitError: any,
   valid: boolean,
   validating: boolean,
-  values: Object,
-}>;
+  values: Object
+}>
 
-export type FormSubscriber = Subscriber<FormState>;
+export type FormSubscriber = Subscriber<FormState>
 
 export type FieldState = {
   active?: boolean,
@@ -53,8 +54,8 @@ export type FieldState = {
   touched?: boolean,
   valid?: boolean,
   value?: any,
-  visited?: boolean,
-};
+  visited?: boolean
+}
 
 export type FieldSubscription = $Shape<{
   active: boolean,
@@ -69,19 +70,20 @@ export type FieldSubscription = $Shape<{
   touched: boolean,
   valid: boolean,
   value: boolean,
-  visited: boolean,
-}> & Subscription;
+  visited: boolean
+}> &
+  Subscription
 
-export type FieldSubscriber = Subscriber<FieldState>;
+export type FieldSubscriber = Subscriber<FieldState>
 
-export type Unsubscribe = () => void;
+export type Unsubscribe = () => void
 
 export type RegisterField = (
   name: string,
   subscriber: FieldSubscriber,
   subscription: FieldSubscription,
-  validate?: (value: ?any, allValues: Object) => ?any,
-) => Unsubscribe;
+  validate?: (value: ?any, allValues: Object) => ?any
+) => Unsubscribe
 
 export type FormApi = {
   batch: (fn: () => void) => void,
@@ -96,13 +98,13 @@ export type FormApi = {
     subscription: FormSubscription
   ) => Unsubscribe,
   registerField: RegisterField,
-  reset: () => void,
-};
+  reset: () => void
+}
 
 export type DebugFunction = (
   state: FormState,
   fieldStates: { [string]: FieldState }
-) => void;
+) => void
 
 export type Config = {
   debug?: DebugFunction,
@@ -111,10 +113,8 @@ export type Config = {
     values: Object,
     callback: ?(errors: ?Object) => void
   ) => ?Object | Promise<?Object> | void,
-  validate?: (
-    values: Object
-  ) => Object | Promise<Object>,
-  validateOnBlur?: boolean,
-};
+  validate?: (values: Object) => Object | Promise<Object>,
+  validateOnBlur?: boolean
+}
 
-export type InternalState = {};
+export type InternalState = {}
