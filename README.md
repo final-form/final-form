@@ -89,6 +89,8 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+* [Examples](#examples)
+  * [Simple React Example](#simple-react-example)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
@@ -177,6 +179,15 @@ form.submit() // only submits if all validation passes
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Examples
+
+### [Simple React Example](https://codesandbox.io/s/vmk7yyr4ol)
+
+Demonstrates how 🏁 Final Form can be used inside a React component to manage
+form state. It also shows just how much
+[🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
+does for you out of the box.
+
 ## API
 
 The following can be imported from `final-form`.
@@ -209,8 +220,8 @@ returned from validation or submission.
 
 #### `initialValues?: Object`
 
-The initial values of your form. These will also be used to compare against
-the current values to calculate `pristine` and `dirty`.
+The initial values of your form. These will also be used to compare against the
+current values to calculate `pristine` and `dirty`.
 
 #### `onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object>`
 
