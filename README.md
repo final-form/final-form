@@ -87,6 +87,8 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
@@ -151,6 +153,7 @@ form.submit() // only submits if all validation passes
     * [`active?: string`](#active-string)
     * [`dirty?: boolean`](#dirty-boolean-2)
     * [`error?: any`](#error-any-1)
+    * [`errors: Object`](#errors-object)
     * [`invalid?: boolean`](#invalid-boolean-2)
     * [`initialValues?: Object`](#initialvalues-object-1)
     * [`pristine?: boolean`](#pristine-boolean-2)
@@ -158,6 +161,7 @@ form.submit() // only submits if all validation passes
     * [`submitFailed?: boolean`](#submitfailed-boolean-2)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-2)
     * [`submitError?: any`](#submiterror-any-1)
+    * [`errors: Object`](#errors-object-1)
     * [`valid?: boolean`](#valid-boolean-2)
     * [`validating?: boolean`](#validating-boolean-1)
     * [`values?: Object`](#values-object)
@@ -166,10 +170,13 @@ form.submit() // only submits if all validation passes
     * [`active?: boolean`](#active-boolean-2)
     * [`dirty?: boolean`](#dirty-boolean-3)
     * [`error?: boolean`](#error-boolean-1)
+    * [`errors?: boolean`](#errors-boolean)
     * [`initialValues?: boolean`](#initialvalues-boolean-1)
     * [`invalid?: boolean`](#invalid-boolean-3)
     * [`pristine?: boolean`](#pristine-boolean-3)
     * [`submitting?: boolean`](#submitting-boolean-2)
+    * [`submitError?: boolean`](#submiterror-boolean)
+    * [`submitErrors?: boolean`](#submiterrors-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-3)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-3)
     * [`valid?: boolean`](#valid-boolean-3)
