@@ -91,6 +91,8 @@ form.submit() // only submits if all validation passes
 
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
+* [Libraries](#libraries)
+  * [🏁 React Final Form](#-react-final-form)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
@@ -174,14 +176,12 @@ form.submit() // only submits if all validation passes
     * [`validating`](#validating)
     * [`values`](#values)
   * [`Unsubscribe : () => void`](#unsubscribe----void)
-* [Libraries](#libraries)
-  * [🏁 React Final Form](#-react-final-form)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Examples
 
-### [Simple React Example](https://codesandbox.io/s/vmk7yyr4ol)
+### [Simple React Example](https://codesandbox.io/s/q78r2oqq96)
 
 Demonstrates how 🏁 Final Form can be used inside a React component to manage
 form state. It also shows just how much
@@ -190,6 +190,12 @@ does for you out of the box.
 
 For more examples using React, see
 [🏁 React Final Form Examples](https://github.com/erikras/react-final-form#examples).
+
+## Libraries
+
+### [🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
+
+A form state management system for React that uses 🏁 Final Form under the hood.
 
 ## API
 
@@ -607,9 +613,3 @@ value in `FormState`.
 ### `Unsubscribe : () => void`
 
 Unsubscribes a listener.
-
-## Libraries
-
-### [🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
-
-A form state management system for React that uses 🏁 Final Form under the hood.
