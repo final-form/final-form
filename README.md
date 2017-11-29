@@ -87,8 +87,6 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
@@ -98,13 +96,15 @@ form.submit() // only submits if all validation passes
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
   * [`formSubscriptionItems: string[]`](#formsubscriptionitems-string)
   * [`FORM_ERROR: Symbol`](#form_error-symbol)
+  * [`version: string`](#version-string)
 * [Types](#types)
   * [`Config`](#config)
+    * [`debug?: DebugFunction`](#debug-debugfunction)
     * [`initialValues?: Object`](#initialvalues-object)
-    * [`onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object>`](#onsubmit-values-object-callback-errors-object--void--object--promiseobject)
-    * [`validate?: (values: Object) => void) => Object | Promise<Object>`](#validate-values-object--void--object--promiseobject)
-    * [`debug?: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debug-state-formstate-fieldstates--string-fieldstate---void)
+    * [`onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`](#onsubmit-values-object-callback-errors-object--void--object--promiseobject--void)
+    * [`validate?: (values: Object) => Object | Promise<Object>`](#validate-values-object--object--promiseobject)
     * [`validateOnBlur?: boolean`](#validateonblur-boolean)
+  * [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
   * [`FieldState`](#fieldstate)
     * [`active?: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void)
@@ -145,7 +145,7 @@ form.submit() // only submits if all validation passes
     * [`getState: () => FormState`](#getstate---formstate)
     * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
-    * [`registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => any | Promise<any>) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--promiseany--unsubscribe)
+    * [`registerField: RegisterField`](#registerfield-registerfield)
     * [`reset: () => void`](#reset---void)
   * [`FormState`](#formstate)
     * [`active?: string`](#active-string)
@@ -163,18 +163,19 @@ form.submit() // only submits if all validation passes
     * [`values?: Object`](#values-object)
   * [`FormSubscriber: (state: FormState) => void`](#formsubscriber-state-formstate--void)
   * [`FormSubscription: { [string]: boolean }`](#formsubscription--string-boolean-)
-    * [`active`](#active)
-    * [`dirty`](#dirty)
-    * [`error`](#error)
-    * [`initialValues`](#initialvalues)
-    * [`invalid`](#invalid)
-    * [`pristine`](#pristine)
-    * [`submitting`](#submitting)
-    * [`submitFailed`](#submitfailed)
-    * [`submitSucceeded`](#submitsucceeded)
-    * [`valid`](#valid)
-    * [`validating`](#validating)
-    * [`values`](#values)
+    * [`active?: boolean`](#active-boolean-2)
+    * [`dirty?: boolean`](#dirty-boolean-3)
+    * [`error?: boolean`](#error-boolean-1)
+    * [`initialValues?: boolean`](#initialvalues-boolean-1)
+    * [`invalid?: boolean`](#invalid-boolean-3)
+    * [`pristine?: boolean`](#pristine-boolean-3)
+    * [`submitting?: boolean`](#submitting-boolean-2)
+    * [`submitFailed?: boolean`](#submitfailed-boolean-3)
+    * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-3)
+    * [`valid?: boolean`](#valid-boolean-3)
+    * [`validating?: boolean`](#validating-boolean-2)
+    * [`values?: boolean`](#values-boolean-1)
+  * [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--unsubscribe)
   * [`Unsubscribe : () => void`](#unsubscribe----void)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -221,18 +222,24 @@ Useful for subscribing to everything.
 A special `Symbol` key used to return a whole-form error inside error objects
 returned from validation or submission.
 
+### `version: string`
+
+The current used version of 🏁 Final Form.
+
 ---
 
 ## Types
 
 ### `Config`
 
+#### `debug?: DebugFunction`
+
 #### `initialValues?: Object`
 
 The initial values of your form. These will also be used to compare against the
 current values to calculate `pristine` and `dirty`.
 
-#### `onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object>`
+#### `onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`
 
 Function to call when the form is submitted. There are three possible ways to
 write an `onSubmit` function:
@@ -250,7 +257,7 @@ Submission errors must be in the same shape as the values of the form. You may
 return a generic error for the whole form (e.g. `'Login Failed'`) using the
 special `FORM_ERROR` symbol key.
 
-#### `validate?: (values: Object) => void) => Object | Promise<Object>`
+#### `validate?: (values: Object) => Object | Promise<Object>`
 
 A whole-record validation function that takes all the values of the form and
 returns any validation errors. There are three possible ways to write a
@@ -267,8 +274,6 @@ Validation errors must be in the same shape as the values of the form. You may
 return a generic error for the whole form using the special `FORM_ERROR` symbol
 key.
 
-#### `debug?: (state: FormState, fieldStates: { [string]: FieldState }) => void`
-
 An optional callback for debugging that returns the form state and the states of
 all the fields. It's called _on every state change_. A typical thing to pass in
 might be `console.log`.
@@ -277,6 +282,8 @@ might be `console.log`.
 
 If `true`, validation will happen on blur. If `false`, validation will happen on
 change. Defaults to `false`.
+
+### `DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`
 
 ### `FieldState`
 
@@ -464,7 +471,7 @@ configuration value given to the form when it was created.
 Subscribes to changes to the form. **The `subscriber` will _only_ be called when
 values specified in `subscription` change.** A form can have many subscribers.
 
-#### `registerField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => any | Promise<any>) => Unsubscribe`
+#### `registerField: RegisterField`
 
 Registers a new field and subscribes to changes to it. **The `subscriber` will
 _only_ be called when the values specified in `subscription` change.** More than
@@ -550,65 +557,67 @@ The current values of the form.
 
 `FormSubscription` is an object containing the following:
 
-#### `active`
+#### `active?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `active`
 value in `FormState`.
 
-#### `dirty`
+#### `dirty?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `dirty`
 value in `FormState`.
 
-#### `error`
+#### `error?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `error`
 value in `FormState`.
 
-#### `initialValues`
+#### `initialValues?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `initialValues` value in `FormState`.
 
-#### `invalid`
+#### `invalid?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `invalid`
 value in `FormState`.
 
-#### `pristine`
+#### `pristine?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `pristine`
 value in `FormState`.
 
-#### `submitting`
+#### `submitting?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `submitting`
 value in `FormState`.
 
-#### `submitFailed`
+#### `submitFailed?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `submitFailed` value in `FormState`.
 
-#### `submitSucceeded`
+#### `submitSucceeded?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `submitSucceeded` value in `FormState`.
 
-#### `valid`
+#### `valid?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `valid`
 value in `FormState`.
 
-#### `validating`
+#### `validating?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `validating`
 value in `FormState`.
 
-#### `values`
+#### `values?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `values`
 value in `FormState`.
+
+### `RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`
 
 ### `Unsubscribe : () => void`
 
