@@ -42,6 +42,31 @@ describe('FinalForm.submission', () => {
     expect(onSubmit.mock.calls[0][0].username).toBe('erikras')
   })
 
+  it('should not submit if form has validation errors, even on non-registered fields', () => {
+    const onSubmit = jest.fn()
+    const form = createForm({
+      onSubmit,
+      validate: values => {
+        const errors = {}
+        if (!values.username) {
+          errors.username = 'Required'
+        }
+        if (!values.password) {
+          errors.password = 'Required'
+        }
+        return errors
+      }
+    })
+    const username = jest.fn()
+    form.registerField('username', username, { error: true })
+    expect(username).toHaveBeenCalledTimes(1)
+    expect(username.mock.calls[0][0].error).toBe('Required')
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    form.submit()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
   it('should call onSubmit when form.submit() is called', () => {
     const onSubmit = jest.fn()
     const form = createForm({ onSubmit })
