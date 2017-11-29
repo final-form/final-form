@@ -188,6 +188,9 @@ form state. It also shows just how much
 [🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
 does for you out of the box.
 
+For more examples using React, see
+[🏁 React Final Form Examples](https://github.com/erikras/react-final-form#examples).
+
 ## API
 
 The following can be imported from `final-form`.
