@@ -51,30 +51,28 @@ export type InternalFieldState = {
 
 export type InternalFormState = {
   active?: string,
-  dirty: boolean,
   error?: any,
-  submitError?: any,
-  invalid: boolean,
+  errors: Object,
   initialValues?: Object,
   pristine: boolean,
   submitting: boolean,
+  submitError?: any,
+  submitErrors?: Object,
   submitFailed: boolean,
   submitSucceeded: boolean,
   valid: boolean,
-  validating: boolean,
+  validating: number,
   values: Object
 }
 
 type InternalState = {
   subscribers: Subscribers<FormState>,
-  error?: any,
   lastFormState?: FormState,
   fields: {
     [string]: InternalFieldState
   },
   fieldSubscribers: { [string]: Subscribers<FieldState> },
-  formState: InternalFormState,
-  validating: number
+  formState: InternalFormState
 }
 
 export type StateFilter<T> = (
@@ -84,34 +82,36 @@ export type StateFilter<T> = (
   force: boolean
 ) => ?T
 
-const safeFormStateCast = ({
+const convertToExternalFormState = ({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
   active,
-  dirty,
   error,
-  invalid,
+  errors,
   initialValues,
   pristine,
   submitting,
   submitFailed,
   submitSucceeded,
   submitError,
+  submitErrors,
   valid,
   validating,
   values
 }: InternalFormState): FormState => ({
   active,
-  dirty,
+  dirty: !pristine,
   error,
-  invalid,
+  errors,
+  invalid: !valid,
   initialValues,
   pristine,
   submitting,
   submitFailed,
   submitSucceeded,
   submitError,
+  submitErrors,
   valid,
-  validating,
+  validating: validating > 0,
   values
 })
 
@@ -187,6 +187,7 @@ const createForm = (config: Config): FormApi => {
   }
   const formState = {
     dirty: false,
+    errors: {},
     initialValues: initialValues && { ...initialValues },
     invalid: false,
     pristine: true,
@@ -194,7 +195,7 @@ const createForm = (config: Config): FormApi => {
     submitFailed: false,
     submitSucceeded: false,
     valid: true,
-    validating: false,
+    validating: 0,
     values: initialValues ? { ...initialValues } : {}
   }
   const state: InternalState = {
@@ -202,27 +203,20 @@ const createForm = (config: Config): FormApi => {
     fieldSubscribers: {},
     fields: {},
     formState,
-    lastFormState: undefined,
-    validating: 0
+    lastFormState: undefined
   }
   let inBatch = false
 
   const runRecordLevelValidation = (
-    setError: (name: string, error: ?any) => void
+    setErrors: (errors: Object) => void
   ): Promise<*>[] => {
     const promises = []
     if (validate) {
-      const processErrors = (errors: Object = {}) => {
-        state.error = errors[FORM_ERROR]
-        Object.keys(state.fields).forEach(key => {
-          setError(key, getIn(errors, key))
-        })
-      }
       const errorsOrPromise = validate({ ...state.formState.values }) // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
-        promises.push(errorsOrPromise.then(processErrors))
+        promises.push(errorsOrPromise.then(setErrors))
       } else {
-        processErrors(errorsOrPromise)
+        setErrors(errorsOrPromise)
       }
     }
     return promises
@@ -253,7 +247,7 @@ const createForm = (config: Config): FormApi => {
   }
 
   const runValidation = (callback: ?() => void) => {
-    const { fields } = state
+    const { fields, formState } = state
     const fieldKeys = Object.keys(fields)
     if (
       !validate &&
@@ -268,54 +262,50 @@ const createForm = (config: Config): FormApi => {
       return // no validation rules
     }
 
-    // sync version of setError
-    const recordLevelErrors = {}
+    let recordLevelErrors: Object = {}
     const fieldLevelErrors = {}
-    let setRecordLevelError = (name: string, error: ?any) => {
-      recordLevelErrors[name] = error
-    }
-    let setFieldLevelError = (name: string, error: ?any) => {
-      fieldLevelErrors[name] = error
-    }
-
     const promises = [
-      ...runRecordLevelValidation((name, error) =>
-        setRecordLevelError(name, error)
-      ),
+      ...runRecordLevelValidation(errors => {
+        recordLevelErrors = errors || {}
+      }),
       ...fieldKeys.reduce(
-        (result, name) => [
-          ...result,
-          ...runFieldLevelValidation(fields[name], (error: ?any) =>
-            setFieldLevelError(name, error)
-          )
-        ],
+        (result, name) =>
+          result.concat(
+            runFieldLevelValidation(fields[name], (error: ?any) => {
+              fieldLevelErrors[name] = error
+            })
+          ),
         []
       )
     ]
 
+    const processErrors = () => {
+      let merged = { ...recordLevelErrors }
+      fieldKeys.forEach(name => {
+        // field-level errors take precedent over record-level errors
+        const error = fieldLevelErrors[name] || getIn(recordLevelErrors, name)
+        merged = setIn(merged, name, error) || {}
+        fields[name].error = error
+      })
+      if (!shallowEqual(formState.errors, merged)) {
+        formState.errors = merged
+      }
+      formState.error = recordLevelErrors[FORM_ERROR]
+    }
+
     // process sync errors
-    fieldKeys.forEach(name => {
-      // field-level errors take precedent over record-level errors
-      fields[name].error = fieldLevelErrors[name] || recordLevelErrors[name]
-    })
+    processErrors()
 
     if (promises.length) {
       // sync errors have been set. notify listeners while we wait for others
-      state.validating++
+      state.formState.validating++
       if (callback) {
         callback()
       }
 
-      // reassign setError functions for async responses
-      setRecordLevelError = setFieldLevelError = (
-        name: string,
-        error: ?any
-      ) => {
-        fields[name].error = error
-      }
-
       Promise.all(promises).then(() => {
-        state.validating--
+        state.formState.validating--
+        processErrors()
         if (callback) {
           callback()
         }
@@ -346,72 +336,34 @@ const createForm = (config: Config): FormApi => {
     })
   }
 
-  const isValid = () =>
-    !state.error &&
-    Object.keys(state.fields).every(
-      key => !state.fields[key].error && !state.fields[key].submitError
-    )
-
   const hasSyncErrors = () =>
-    state.error ||
+    formState.error ||
     Object.keys(state.fields).some(key => state.fields[key].error)
 
   const calculateNextFormState = (): FormState => {
-    const { fields, formState } = state
+    const { fields, formState, lastFormState } = state
     const fieldKeys = Object.keys(fields)
 
     // calculate dirty/pristine
-    const pristine = fieldKeys.every(
+    formState.pristine = fieldKeys.every(
       key => fields[key].value === fields[key].initial
     )
-
-    // calculate valid/invalid
-    const valid = isValid()
-
-    const validating = state.validating > 0
-    if (
-      pristine === formState.pristine &&
-      valid === formState.valid &&
-      state.error === formState.error &&
-      state.lastFormState &&
-      state.lastFormState.validating === validating &&
-      state.lastFormState.values === formState.values &&
-      state.lastFormState.active === formState.active
-    ) {
-      return state.lastFormState
-    }
-
-    const {
-      active,
-      initialValues,
-      submitting,
-      submitError,
-      submitFailed,
-      submitSucceeded,
-      values
-    } = formState
-    return {
-      active,
-      dirty: !pristine,
-      error: state.error,
-      initialValues,
-      invalid: !valid,
-      pristine,
-      submitting,
-      submitError,
-      submitFailed,
-      submitSucceeded,
-      valid,
-      validating,
-      values
-    }
+    formState.valid =
+      !formState.error &&
+      !formState.submitError &&
+      !Object.keys(formState.errors).length &&
+      !(formState.submitErrors && Object.keys(formState.submitErrors).length)
+    const nextFormState = convertToExternalFormState(formState)
+    return lastFormState && shallowEqual(lastFormState, nextFormState)
+      ? lastFormState
+      : nextFormState
   }
 
   const callDebug = () =>
     debug &&
     process.env.NODE_ENV !== 'production' &&
     debug(
-      safeFormStateCast(state.formState),
+      convertToExternalFormState(state.formState),
       Object.keys(state.fields).reduce((result, key: string) => {
         result[key] = safeFieldStateCast(state.fields[key])
         return result
@@ -431,12 +383,8 @@ const createForm = (config: Config): FormApi => {
     }
   }
 
-  // generate initial error (even with no fields yet) if we need to
+  // generate initial errors
   runValidation()
-  // runValidation(() => {
-  //   notifyFieldListeners()
-  //   notifyFormListeners()
-  // })
 
   const api: FormApi = {
     batch: (fn: () => void) => {
@@ -476,8 +424,6 @@ const createForm = (config: Config): FormApi => {
         fields[name].value = value
         state.formState.values =
           setIn(state.formState.values, name, value) || {}
-        notifyFieldListeners()
-        notifyFormListeners()
         if (validateOnBlur) {
           notifyFieldListeners()
           notifyFormListeners()
@@ -501,7 +447,7 @@ const createForm = (config: Config): FormApi => {
       }
     },
 
-    getState: () => safeFormStateCast(state.formState),
+    getState: () => convertToExternalFormState(state.formState),
 
     initialize: (values: Object) => {
       const { fields, formState } = state
@@ -630,6 +576,7 @@ const createForm = (config: Config): FormApi => {
         ) {
           formState.submitFailed = true
           formState.submitSucceeded = false
+          formState.submitErrors = errors
           Object.keys(fields).forEach(key => {
             fields[key].submitError = errors && getIn(errors, key)
           })
@@ -638,6 +585,7 @@ const createForm = (config: Config): FormApi => {
           Object.keys(fields).forEach(key => {
             delete fields[key].submitError
           })
+          delete formState.submitErrors
           delete formState.submitError
           formState.submitFailed = false
           formState.submitSucceeded = true
@@ -689,24 +637,21 @@ const createForm = (config: Config): FormApi => {
         )
       }
       const memoized = memoize(subscriber)
-      const { formState, subscribers } = state
+      const { subscribers, lastFormState } = state
       const index = subscribers.index++
       subscribers.entries[index] = {
         subscriber: memoized,
         subscription
       }
-      const valid = !state.error
-      const stateWithError = {
-        ...formState,
-        error: state.error,
-        invalid: !valid,
-        valid
+      const nextFormState = calculateNextFormState()
+      if (nextFormState !== lastFormState) {
+        state.lastFormState = nextFormState
       }
       notifySubscriber(
         memoized,
         subscription,
-        stateWithError,
-        stateWithError,
+        nextFormState,
+        nextFormState,
         filterFormState,
         true
       )
