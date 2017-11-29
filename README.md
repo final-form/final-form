@@ -87,8 +87,6 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
@@ -153,15 +151,15 @@ form.submit() // only submits if all validation passes
     * [`active?: string`](#active-string)
     * [`dirty?: boolean`](#dirty-boolean-2)
     * [`error?: any`](#error-any-1)
-    * [`errors: Object`](#errors-object)
-    * [`invalid?: boolean`](#invalid-boolean-2)
+    * [`errors?: Object`](#errors-object)
     * [`initialValues?: Object`](#initialvalues-object-1)
+    * [`invalid?: boolean`](#invalid-boolean-2)
     * [`pristine?: boolean`](#pristine-boolean-2)
-    * [`submitting?: boolean`](#submitting-boolean-1)
+    * [`submitError?: any`](#submiterror-any-1)
+    * [`submitErrors?: Object`](#submiterrors-object)
     * [`submitFailed?: boolean`](#submitfailed-boolean-2)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-2)
-    * [`submitError?: any`](#submiterror-any-1)
-    * [`errors: Object`](#errors-object-1)
+    * [`submitting?: boolean`](#submitting-boolean-1)
     * [`valid?: boolean`](#valid-boolean-2)
     * [`validating?: boolean`](#validating-boolean-1)
     * [`values?: Object`](#values-object)
@@ -174,11 +172,11 @@ form.submit() // only submits if all validation passes
     * [`initialValues?: boolean`](#initialvalues-boolean-1)
     * [`invalid?: boolean`](#invalid-boolean-3)
     * [`pristine?: boolean`](#pristine-boolean-3)
-    * [`submitting?: boolean`](#submitting-boolean-2)
     * [`submitError?: boolean`](#submiterror-boolean)
     * [`submitErrors?: boolean`](#submiterrors-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-3)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-3)
+    * [`submitting?: boolean`](#submitting-boolean-2)
     * [`valid?: boolean`](#valid-boolean-3)
     * [`validating?: boolean`](#validating-boolean-2)
     * [`values?: boolean`](#values-boolean-1)
@@ -510,10 +508,15 @@ The name of the currently active field. `undefined` if none are active.
 The whole-form error returned by a validation function under the `FORM_ERROR`
 key.
 
-#### `errors: Object`
+#### `errors?: Object`
 
 An object containing all the current validation errors. The shape will match the
 shape of the form's values.
+
+#### `initialValues?: Object`
+
+The values the form was initialized with. `undefined` if the form was never
+initialized.
 
 #### `invalid?: boolean`
 
@@ -521,20 +524,20 @@ shape of the form's values.
 `false` otherwise. Note that a form can be invalid even if the errors do not
 belong to any currently registered fields.
 
-#### `initialValues?: Object`
-
-The values the form was initialized with. `undefined` if the form was never
-initialized.
-
 #### `pristine?: boolean`
 
 `true` if the form values are the same as the initial values. `false` otherwise.
 Comparison is done with shallow-equals.
 
-#### `submitting?: boolean`
+#### `submitError?: any`
 
-`true` if the form is currently being submitted asynchronously. `false`
-otherwise.
+The whole-form submission error returned by `onSubmit` under the `FORM_ERROR`
+key.
+
+#### `submitErrors?: Object`
+
+An object containing all the current submission errors. The shape will match the
+shape of the form's values.
 
 #### `submitFailed?: boolean`
 
@@ -545,15 +548,10 @@ errors. `false` otherwise.
 
 `true` if the form was successfully submitted. `false` otherwise.
 
-#### `submitError?: any`
+#### `submitting?: boolean`
 
-The whole-form submission error returned by `onSubmit` under the `FORM_ERROR`
-key.
-
-#### `errors: Object`
-
-An object containing all the current submission errors. The shape will match the
-shape of the form's values.
+`true` if the form is currently being submitted asynchronously. `false`
+otherwise.
 
 #### `valid?: boolean`
 
@@ -611,11 +609,6 @@ value in `FormState`.
 When `true` the `FormSubscriber` will be notified of changes to the `pristine`
 value in `FormState`.
 
-#### `submitting?: boolean`
-
-When `true` the `FormSubscriber` will be notified of changes to the `submitting`
-value in `FormState`.
-
 #### `submitError?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the
@@ -635,6 +628,11 @@ When `true` the `FormSubscriber` will be notified of changes to the
 
 When `true` the `FormSubscriber` will be notified of changes to the
 `submitSucceeded` value in `FormState`.
+
+#### `submitting?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the `submitting`
+value in `FormState`.
 
 #### `valid?: boolean`
 
