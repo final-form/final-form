@@ -496,10 +496,16 @@ The name of the currently active field. `undefined` if none are active.
 The whole-form error returned by a validation function under the `FORM_ERROR`
 key.
 
+#### `errors: Object`
+
+An object containing all the current validation errors. The shape will match the
+shape of the form's values.
+
 #### `invalid?: boolean`
 
 `true` if any of the fields or the form has a validation or submission error.
-`false` otherwise.
+`false` otherwise. Note that a form can be invalid even if the errors do not
+belong to any currently registered fields.
 
 #### `initialValues?: Object`
 
@@ -530,10 +536,16 @@ errors. `false` otherwise.
 The whole-form submission error returned by `onSubmit` under the `FORM_ERROR`
 key.
 
+#### `errors: Object`
+
+An object containing all the current submission errors. The shape will match the
+shape of the form's values.
+
 #### `valid?: boolean`
 
 `true` if neither the form nor any of its fields has a validation or submission
-error. `false` otherwise.
+error. `false` otherwise. Note that a form can be invalid even if the errors do
+not belong to any currently registered fields.
 
 #### `validating?: boolean`
 
@@ -565,6 +577,11 @@ value in `FormState`.
 When `true` the `FormSubscriber` will be notified of changes to the `error`
 value in `FormState`.
 
+#### `errors`
+
+When `true` the `FormSubscriber` will be notified of changes to the `errors`
+value in `FormState`.
+
 #### `initialValues`
 
 When `true` the `FormSubscriber` will be notified of changes to the
@@ -584,6 +601,16 @@ value in `FormState`.
 
 When `true` the `FormSubscriber` will be notified of changes to the `submitting`
 value in `FormState`.
+
+#### `submitError`
+
+When `true` the `FormSubscriber` will be notified of changes to the
+`submitError` value in `FormState`.
+
+#### `submitErrors`
+
+When `true` the `FormSubscriber` will be notified of changes to the
+`submitErrors` value in `FormState`.
 
 #### `submitFailed`
 
