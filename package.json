@@ -1,6 +1,6 @@
 {
   "name": "final-form",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description":
     "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
