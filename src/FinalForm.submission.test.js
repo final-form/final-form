@@ -62,6 +62,11 @@ describe('FinalForm.submission', () => {
     expect(username).toHaveBeenCalledTimes(1)
     expect(username.mock.calls[0][0].error).toBe('Required')
 
+    form.change('username', 'erikras')
+
+    expect(username).toHaveBeenCalledTimes(2)
+    expect(username.mock.calls[1][0].error).toBeUndefined()
+
     expect(onSubmit).not.toHaveBeenCalled()
     form.submit()
     expect(onSubmit).not.toHaveBeenCalled()
