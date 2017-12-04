@@ -389,7 +389,7 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow field to be marked touched even if it was not active', () => {
-    const { foo: { blur, focus, spy } } = prepareFieldSubscribers(
+    const { foo: { blur, spy } } = prepareFieldSubscribers(
       {},
       {
         foo: { touched: true }
