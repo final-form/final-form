@@ -101,7 +101,6 @@ export type InternalFieldState = {
   data: Object,
   error?: any,
   focus: () => void,
-  initial?: any,
   lastFieldState: ?FieldState,
   length?: any,
   name: string,
@@ -111,7 +110,6 @@ export type InternalFieldState = {
   validators: {
     [number]: (value: ?any, allValues: Object) => ?any | Promise<?any>
   },
-  value?: any,
   valid: boolean,
   visited: boolean
 }

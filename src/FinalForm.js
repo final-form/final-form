@@ -85,44 +85,6 @@ const convertToExternalFormState = ({
   values
 })
 
-const safeFieldStateCast = ({
-  // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
-  active,
-  blur,
-  change,
-  data,
-  error,
-  focus,
-  initial,
-  lastFieldState,
-  name,
-  submitError,
-  touched,
-  value,
-  visited
-}: InternalFieldState): FieldState => {
-  const pristine = value === initial
-  const invalid = error || submitError
-  return {
-    active,
-    blur,
-    change,
-    data,
-    dirty: !pristine,
-    error,
-    focus,
-    initial,
-    invalid,
-    name,
-    pristine,
-    submitError,
-    touched,
-    valid: !invalid,
-    value,
-    visited
-  }
-}
-
 function notifySubscriber<T: Object>(
   subscriber: Subscriber<T>,
   subscription: Subscription,
@@ -381,7 +343,7 @@ const createForm = (config: Config): FormApi => {
     debug(
       convertToExternalFormState(state.formState),
       Object.keys(state.fields).reduce((result, key: string) => {
-        result[key] = safeFieldStateCast(state.fields[key])
+        result[key] = state.fields[key]
         return result
       }, {})
     )
