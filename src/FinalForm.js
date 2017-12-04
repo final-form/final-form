@@ -126,24 +126,24 @@ const createForm = (config: Config): FormApi => {
   if (!onSubmit) {
     throw new Error('No onSubmit function specified')
   }
-  const formState = {
-    dirty: false,
-    errors: {},
-    initialValues: initialValues && { ...initialValues },
-    invalid: false,
-    pristine: true,
-    submitting: false,
-    submitFailed: false,
-    submitSucceeded: false,
-    valid: true,
-    validating: 0,
-    values: initialValues ? { ...initialValues } : {}
-  }
+
   const state: InternalState = {
     subscribers: { index: 0, entries: {} },
     fieldSubscribers: {},
     fields: {},
-    formState,
+    formState: {
+      dirty: false,
+      errors: {},
+      initialValues: initialValues && { ...initialValues },
+      invalid: false,
+      pristine: true,
+      submitting: false,
+      submitFailed: false,
+      submitSucceeded: false,
+      valid: true,
+      validating: 0,
+      values: initialValues ? { ...initialValues } : {}
+    },
     lastFormState: undefined
   }
   let inBatch = false
@@ -314,8 +314,7 @@ const createForm = (config: Config): FormApi => {
   }
 
   const hasSyncErrors = () =>
-    formState.error ||
-    Object.keys(state.fields).some(key => state.fields[key].error)
+    !!(state.formState.error || Object.keys(state.formState.errors).length)
 
   const calculateNextFormState = (): FormState => {
     const { fields, formState, lastFormState } = state
