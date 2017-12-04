@@ -388,6 +388,25 @@ describe('Field.subscribing', () => {
     expect(spy).toHaveBeenCalledTimes(2)
   })
 
+  it('should allow field to be marked touched even if it was not active', () => {
+    const { foo: { blur, spy } } = prepareFieldSubscribers(
+      {},
+      {
+        foo: { touched: true }
+      }
+    )
+
+    // should initialize to not touched
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].touched).toBe(false)
+
+    blur()
+
+    // field is now touched
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].touched).toBe(true)
+  })
+
   it('should allow subscribing to valid with whole-record validation', () => {
     const { foo: { change, spy } } = prepareFieldSubscribers(
       {},
