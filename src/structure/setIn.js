@@ -1,5 +1,6 @@
 // @flow
 import toPath from './toPath'
+import type { SetIn } from '../types'
 
 type State = Object | Array<*> | void
 
@@ -82,7 +83,7 @@ const setInRecursor = (
   return array
 }
 
-const setIn = (state: Object, key: string, value: any): Object => {
+const setIn: SetIn = (state: Object, key: string, value: any): Object => {
   if (state === undefined || state === null) {
     throw new Error(`Cannot call setIn() with ${String(state)} state`)
   }

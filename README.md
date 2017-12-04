@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 **3.5k gzipped** 💥
+✅ 💥 **3.6k gzipped** 💥
 
 ---
 
@@ -87,6 +87,8 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
@@ -101,6 +103,7 @@ form.submit() // only submits if all validation passes
   * [`Config`](#config)
     * [`debug?: DebugFunction`](#debug-debugfunction)
     * [`initialValues?: Object`](#initialvalues-object)
+    * [`mutators?: { [string]: Mutator }`](#mutators--string-mutator-)
     * [`onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`](#onsubmit-values-object-callback-errors-object--void--object--promiseobject--void)
     * [`validate?: (values: Object) => Object | Promise<Object>`](#validate-values-object--object--promiseobject)
     * [`validateOnBlur?: boolean`](#validateonblur-boolean)
@@ -109,11 +112,13 @@ form.submit() // only submits if all validation passes
     * [`active?: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void)
     * [`change: (value: any) => void`](#change-value-any--void)
+    * [`data?: Object`](#data-object)
     * [`dirty?: boolean`](#dirty-boolean)
     * [`error?: any`](#error-any)
     * [`focus: () => void`](#focus---void)
     * [`initial?: any`](#initial-any)
     * [`invalid?: boolean`](#invalid-boolean)
+    * [`length?: number`](#length-number)
     * [`name: string`](#name-string)
     * [`pristine?: boolean`](#pristine-boolean)
     * [`submitError?: any`](#submiterror-any)
@@ -121,14 +126,17 @@ form.submit() // only submits if all validation passes
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean)
     * [`touched?: boolean`](#touched-boolean)
     * [`valid?: boolean`](#valid-boolean)
+    * [`value?: any`](#value-any)
     * [`visited?: boolean`](#visited-boolean)
   * [`FieldSubscriber: (state: FieldState) => void`](#fieldsubscriber-state-fieldstate--void)
   * [`FieldSubscription: { [string]: boolean }`](#fieldsubscription--string-boolean-)
     * [`active?: boolean`](#active-boolean-1)
+    * [`data?: boolean`](#data-boolean)
     * [`dirty?: boolean`](#dirty-boolean-1)
     * [`error?: boolean`](#error-boolean)
     * [`initialValues?: boolean`](#initialvalues-boolean)
     * [`invalid?: boolean`](#invalid-boolean-1)
+    * [`length?: boolean`](#length-boolean)
     * [`pristine?: boolean`](#pristine-boolean-1)
     * [`submitting?: boolean`](#submitting-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-1)
@@ -141,8 +149,9 @@ form.submit() // only submits if all validation passes
     * [`blur: (name: string) => void`](#blur-name-string--void)
     * [`change: (name: string, value: ?any) => void`](#change-name-string-value-any--void)
     * [`focus: (name: string) => void`](#focus-name-string--void)
-    * [`initialize: (values: Object) => void`](#initialize-values-object--void)
     * [`getState: () => FormState`](#getstate---formstate)
+    * [`initialize: (values: Object) => void`](#initialize-values-object--void)
+    * [`mutators: ?{ [string]: Function }](#mutators--string-function-)
     * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
     * [`registerField: RegisterField`](#registerfield-registerfield)
@@ -180,7 +189,43 @@ form.submit() // only submits if all validation passes
     * [`valid?: boolean`](#valid-boolean-3)
     * [`validating?: boolean`](#validating-boolean-2)
     * [`values?: boolean`](#values-boolean-1)
+  * [`InternalFieldState`](#internalfieldstate)
+    * [`active: boolean`](#active-boolean)
+    * [`blur: () => void`](#blur---void-1)
+    * [`change: (value: any) => void`](#change-value-any--void-1)
+    * [`data: Object`](#data-object)
+    * [`error?: any`](#error-any-2)
+    * [`focus: () => void`](#focus---void-1)
+    * [`initial?: any`](#initial-any-1)
+    * [`name: string`](#name-string-1)
+    * [`pristine: boolean`](#pristine-boolean)
+    * [`submitError?: any`](#submiterror-any-2)
+    * [`touched: boolean`](#touched-boolean)
+    * [`valid: boolean`](#valid-boolean)
+    * [`value?: any`](#value-any-1)
+    * [`visited: boolean`](#visited-boolean)
+  * [`InternalFormState`](#internalformstate)
+    * [`active?: string`](#active-string-1)
+    * [`error?: any`](#error-any-3)
+    * [`errors: Object`](#errors-object)
+    * [`initialValues?: Object`](#initialvalues-object-2)
+    * [`pristine: boolean`](#pristine-boolean-1)
+    * [`submitError: any`](#submiterror-any)
+    * [`submitErrors?: Object`](#submiterrors-object-1)
+    * [`submitFailed: boolean`](#submitfailed-boolean)
+    * [`submitSucceeded: boolean`](#submitsucceeded-boolean)
+    * [`submitting: boolean`](#submitting-boolean)
+    * [`valid: boolean`](#valid-boolean-1)
+    * [`validating: number`](#validating-number)
+    * [`values: Object`](#values-object)
+  * [`MutableState: { formState: InternalFormState, fields: { [string]: InternalFieldState } }`](#mutablestate--formstate-internalformstate-fields--string-internalfieldstate--)
+  * [`Mutator: (args: any[], state: MutableState, tools: Tools) => any](#mutator-args-any-state-mutablestate-tools-tools--any)
   * [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--unsubscribe)
+  * [`Tools`](#tools)
+    * [`Tools.changeValue: (state: MutableState, name: string, mutate: (value: any) => any) => void`](#toolschangevalue-state-mutablestate-name-string-mutate-value-any--any--void)
+    * [`Tools.getIn: (state: Object, complexKey: string) => any`](#toolsgetin-state-object-complexkey-string--any)
+    * [`Tools.setIn: (state: Object, key: string, value: any) => Object`](#toolssetin-state-object-key-string-value-any--object)
+    * [`Tools.shallowEqual: (a: any, b: any) => boolean`](#toolsshallowequal-a-any-b-any--boolean)
   * [`Unsubscribe : () => void`](#unsubscribe----void)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -244,6 +289,10 @@ The current used version of 🏁 Final Form.
 The initial values of your form. These will also be used to compare against the
 current values to calculate `pristine` and `dirty`.
 
+#### `mutators?: { [string]: Mutator }`
+
+Optional named mutation functions.
+
 #### `onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`
 
 Function to call when the form is submitted. There are three possible ways to
@@ -306,6 +355,10 @@ A function to blur the field (mark it as inactive).
 
 A function to change the value of the field.
 
+#### `data?: Object`
+
+A place for arbitrary values to be placed by mutators.
+
 #### `dirty?: boolean`
 
 `true` when the value of the field is `!==` the initial value, `false` if the
@@ -327,6 +380,10 @@ The initial value of the field. `undefined` if it was never initialized.
 
 `true` if the field has a validation error or a submission error. `false`
 otherwise.
+
+#### `length?: number`
+
+The length of the array if the value is an array. `undefined` otherwise.
 
 #### `name: string`
 
@@ -358,6 +415,10 @@ for knowing when to display error messages.
 
 `true` if this field has no validation or submission errors. `false` otherwise.
 
+#### `value?: any`
+
+The value of the field.
+
 #### `visited?: boolean`
 
 `true` if this field has ever gained focus.
@@ -371,6 +432,11 @@ for knowing when to display error messages.
 #### `active?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `active`
+value in `FieldState`.
+
+#### `data?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the `data`
 value in `FieldState`.
 
 #### `dirty?: boolean`
@@ -391,6 +457,11 @@ When `true` the `FieldSubscriber` will be notified of changes to the
 #### `invalid?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `invalid`
+value in `FieldState`.
+
+#### `length?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the `length`
 value in `FieldState`.
 
 #### `pristine?: boolean`
@@ -454,6 +525,10 @@ Changes the value of the given field.
 
 Focuses (marks active) the given field.
 
+#### `getState: () => FormState`
+
+A way to request the current state of the form without subscribing.
+
 #### `initialize: (values: Object) => void`
 
 Initializes the form to the values provided. All the values will be set to these
@@ -461,9 +536,9 @@ values, and `dirty` and `pristine` will be calculated by performing a
 shallow-equals between the current values and the values last initialized with.
 The form will be `pristine` after this call.
 
-#### `getState: () => FormState`
+#### `mutators: ?{ [string]: Function }
 
-A way to request the current state of the form without subscribing.
+The state-bound versions of the mutators provided to [`Config`](#config).
 
 #### `submit: () => ?Promise<?Object>`
 
@@ -649,7 +724,172 @@ value in `FormState`.
 When `true` the `FormSubscriber` will be notified of changes to the `values`
 value in `FormState`.
 
+### `InternalFieldState`
+
+Very similar to the published [`FieldState`](#fieldstate).
+
+#### `active: boolean`
+
+Whether or not the field currently has focus.
+
+#### `blur: () => void`
+
+A function to blur the field (mark it as inactive).
+
+#### `change: (value: any) => void`
+
+A function to change the value of the field.
+
+#### `data: Object`
+
+A place for arbitrary values to be placed by mutators.
+
+#### `error?: any`
+
+The current validation error for this field.
+
+#### `focus: () => void`
+
+A function to focus the field (mark it as active).
+
+#### `initial?: any`
+
+The initial value of the field. `undefined` if it was never initialized.
+
+#### `name: string`
+
+The name of the field.
+
+#### `pristine: boolean`
+
+`true` if the current value is `===` to the initial value, `false` if the values
+are `!===`.
+
+#### `submitError?: any`
+
+The submission error for this field.
+
+#### `touched: boolean`
+
+`true` if this field has ever gained and lost focus. `false` otherwise. Useful
+for knowing when to display error messages.
+
+#### `valid: boolean`
+
+`true` if this field has no validation or submission errors. `false` otherwise.
+
+#### `value?: any`
+
+The value of the field.
+
+#### `visited: boolean`
+
+`true` if this field has ever gained focus.
+
+### `InternalFormState`
+
+Very similar to the published [`FormState`](#formstate), with a few minor
+differences.
+
+#### `active?: string`
+
+The name of the currently active field. `undefined` if none are active.
+
+#### `error?: any`
+
+The whole-form error returned by a validation function under the `FORM_ERROR`
+key.
+
+#### `errors: Object`
+
+An object containing all the current validation errors. The shape will match the
+shape of the form's values.
+
+#### `initialValues?: Object`
+
+The values the form was initialized with. `undefined` if the form was never
+initialized.
+
+#### `pristine: boolean`
+
+`true` if the form values are the same as the initial values. `false` otherwise.
+Comparison is done with shallow-equals.
+
+#### `submitError: any`
+
+The whole-form submission error returned by `onSubmit` under the `FORM_ERROR`
+key.
+
+#### `submitErrors?: Object`
+
+An object containing all the current submission errors. The shape will match the
+shape of the form's values.
+
+#### `submitFailed: boolean`
+
+`true` if the form was submitted, but the submission failed with submission
+errors. `false` otherwise.
+
+#### `submitSucceeded: boolean`
+
+`true` if the form was successfully submitted. `false` otherwise.
+
+#### `submitting: boolean`
+
+`true` if the form is currently being submitted asynchronously. `false`
+otherwise.
+
+#### `valid: boolean`
+
+`true` if neither the form nor any of its fields has a validation or submission
+error. `false` otherwise. Note that a form can be invalid even if the errors do
+not belong to any currently registered fields.
+
+#### `validating: number`
+
+The number of asynchronous validators currently running.
+
+#### `values: Object`
+
+The current values of the form.
+
+### `MutableState: { formState: InternalFormState, fields: { [string]: InternalFieldState } }`
+
+A container for the [`InternalFormState`](#internalformstate) and an object of
+[`InternalFieldState`](#internalfieldstate)s.
+
+### `Mutator: (args: any[], state: MutableState, tools: Tools) => any
+
+A mutator function that takes some arguments, the internal form
+[`MutableState`](#mutablestate), and some [`Tools`](#tools) and optionally
+modifies the form state.
+
 ### `RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`
+
+### `Tools`
+
+An object containing:
+
+#### `Tools.changeValue: (state: MutableState, name: string, mutate: (value: any) => any) => void`
+
+A utility function to modify a single field value in form state. `mutate()`
+takes the old value and returns the new value.
+
+#### `Tools.getIn: (state: Object, complexKey: string) => any`
+
+A utility function to get any arbitrarily deep value from an object using
+dot-and-bracket syntax (e.g. `some.deep.values[3].whatever`).
+
+#### `Tools.setIn: (state: Object, key: string, value: any) => Object`
+
+A utility function to set any arbitrarily deep value inside an object using
+dot-and-bracket syntax (e.g. `some.deep.values[3].whatever`). Note: it does
+**not** mutate the object, but returns a new object.
+
+#### `Tools.shallowEqual: (a: any, b: any) => boolean`
+
+A utility function to compare the keys of two objects. Returns `true` if the
+objects have the same keys and the values are `===`, `false` otherwise.
 
 ### `Unsubscribe : () => void`
 

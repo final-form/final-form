@@ -8,6 +8,7 @@ import memoize from './memoize'
 import isPromise from './isPromise'
 import shallowEqual from './shallowEqual'
 import type {
+  ChangeValue,
   Config,
   FieldState,
   FieldSubscriber,
@@ -16,6 +17,9 @@ import type {
   FormState,
   FormSubscriber,
   FormSubscription,
+  InternalFieldState,
+  InternalFormState,
+  MutableState,
   Subscriber,
   Subscription,
   Unsubscribe
@@ -31,40 +35,6 @@ type Subscribers<T: Object> = {
   }
 }
 
-export type InternalFieldState = {
-  active: boolean,
-  blur: () => void,
-  change: (value: any) => void,
-  error?: any,
-  focus: () => void,
-  initial?: any,
-  lastFieldState: ?FieldState,
-  name: string,
-  submitError?: any,
-  touched: boolean,
-  validators: {
-    [number]: (value: ?any, allValues: Object) => ?any | Promise<?any>
-  },
-  value?: any,
-  visited: boolean
-}
-
-export type InternalFormState = {
-  active?: string,
-  error?: any,
-  errors: Object,
-  initialValues?: Object,
-  pristine: boolean,
-  submitting: boolean,
-  submitError?: any,
-  submitErrors?: Object,
-  submitFailed: boolean,
-  submitSucceeded: boolean,
-  valid: boolean,
-  validating: number,
-  values: Object
-}
-
 type InternalState = {
   subscribers: Subscribers<FormState>,
   lastFormState?: FormState,
@@ -73,7 +43,7 @@ type InternalState = {
   },
   fieldSubscribers: { [string]: Subscribers<FieldState> },
   formState: InternalFormState
-}
+} & MutableState
 
 export type StateFilter<T> = (
   state: T,
@@ -120,6 +90,7 @@ const safeFieldStateCast = ({
   active,
   blur,
   change,
+  data,
   error,
   focus,
   initial,
@@ -136,6 +107,7 @@ const safeFieldStateCast = ({
     active,
     blur,
     change,
+    data,
     dirty: !pristine,
     error,
     focus,
@@ -181,7 +153,14 @@ const createForm = (config: Config): FormApi => {
   if (!config) {
     throw new Error('No config specified')
   }
-  const { debug, initialValues, onSubmit, validate, validateOnBlur } = config
+  const {
+    debug,
+    initialValues,
+    mutators,
+    onSubmit,
+    validate,
+    validateOnBlur
+  } = config
   if (!onSubmit) {
     throw new Error('No onSubmit function specified')
   }
@@ -206,6 +185,39 @@ const createForm = (config: Config): FormApi => {
     lastFormState: undefined
   }
   let inBatch = false
+  const changeValue: ChangeValue = (state, name, mutate) => {
+    if (state.fields[name]) {
+      const before = getIn(state.formState.values, name)
+      const after = mutate(before)
+      state.formState.values = setIn(state.formState.values, name, after) || {}
+    }
+  }
+
+  // bind state to mutators
+  const mutatorsApi =
+    mutators &&
+    Object.keys(mutators).reduce((result, key) => {
+      result[key] = (...args) => {
+        const mutatableState = {
+          formState: state.formState,
+          fields: state.fields
+        }
+        const returnValue = mutators[key](args, mutatableState, {
+          changeValue,
+          getIn,
+          setIn,
+          shallowEqual
+        })
+        state.formState = mutatableState.formState
+        state.fields = mutatableState.fields
+        runValidation(() => {
+          notifyFieldListeners()
+          notifyFormListeners()
+        })
+        return returnValue
+      }
+      return result
+    }, {})
 
   const runRecordLevelValidation = (
     setErrors: (errors: Object) => void
@@ -233,7 +245,10 @@ const createForm = (config: Config): FormApi => {
       let error
       Object.keys(validators).forEach((index: string) => {
         const validator = validators[Number(index)]
-        const errorOrPromise = validator(field.value, state.formState.values)
+        const errorOrPromise = validator(
+          getIn(state.formState.values, field.name),
+          state.formState.values
+        )
         if (errorOrPromise && isPromise(errorOrPromise)) {
           promises.push(errorOrPromise.then(setError))
         } else if (!error) {
@@ -346,7 +361,8 @@ const createForm = (config: Config): FormApi => {
 
     // calculate dirty/pristine
     formState.pristine = fieldKeys.every(
-      key => fields[key].value === fields[key].initial
+      key =>
+        getIn(formState.values, key) === getIn(formState.initialValues, key)
     )
     formState.valid =
       !formState.error &&
@@ -419,11 +435,9 @@ const createForm = (config: Config): FormApi => {
     },
 
     change: (name: string, value: ?any) => {
-      const { fields } = state
-      if (fields[name] && fields[name].value !== value) {
-        fields[name].value = value
-        state.formState.values =
-          setIn(state.formState.values, name, value) || {}
+      const { fields, formState } = state
+      if (fields[name] && getIn(formState.values, name) !== value) {
+        changeValue(state, name, () => value)
         if (validateOnBlur) {
           notifyFieldListeners()
           notifyFormListeners()
@@ -447,6 +461,8 @@ const createForm = (config: Config): FormApi => {
       }
     },
 
+    mutators: mutatorsApi,
+
     getState: () => convertToExternalFormState(state.formState),
 
     initialize: (values: Object) => {
@@ -455,9 +471,6 @@ const createForm = (config: Config): FormApi => {
       formState.values = values
       Object.keys(fields).forEach(key => {
         const field = fields[key]
-        const value = getIn(values, key)
-        field.value = value
-        field.initial = value
         field.touched = false
         field.visited = false
       })
@@ -497,11 +510,14 @@ const createForm = (config: Config): FormApi => {
           active: false,
           blur: () => api.blur(name),
           change: value => api.change(name, value),
+          data: {},
           focus: () => api.focus(name),
           initial,
           lastFieldState: undefined,
           name,
+          pristine: true,
           touched: false,
+          valid: true,
           value: initial,
           validators: {},
           visited: false

@@ -46,11 +46,13 @@ export type FieldState = {
   active?: boolean,
   blur: () => void,
   change: (value: any) => void,
+  data?: Object,
   dirty?: boolean,
   error?: any,
   focus: () => void,
   initial?: any,
   invalid?: boolean,
+  length?: number,
   name: string,
   pristine?: boolean,
   submitError?: any,
@@ -64,10 +66,12 @@ export type FieldState = {
 
 export type FieldSubscription = $Shape<{
   active: boolean,
+  data: boolean,
   dirty: boolean,
   error: boolean,
   initial: boolean,
   invalid: boolean,
+  length: boolean,
   pristine: boolean,
   submitError: boolean,
   submitFailed: boolean,
@@ -90,6 +94,44 @@ export type RegisterField = (
   validate?: (value: ?any, allValues: Object) => ?any
 ) => Unsubscribe
 
+export type InternalFieldState = {
+  active: boolean,
+  blur: () => void,
+  change: (value: any) => void,
+  data: Object,
+  error?: any,
+  focus: () => void,
+  initial?: any,
+  lastFieldState: ?FieldState,
+  length?: any,
+  name: string,
+  submitError?: any,
+  pristine: boolean,
+  touched: boolean,
+  validators: {
+    [number]: (value: ?any, allValues: Object) => ?any | Promise<?any>
+  },
+  value?: any,
+  valid: boolean,
+  visited: boolean
+}
+
+export type InternalFormState = {
+  active?: string,
+  error?: any,
+  errors: Object,
+  initialValues?: Object,
+  pristine: boolean,
+  submitError?: any,
+  submitErrors?: Object,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
+  submitting: boolean,
+  valid: boolean,
+  validating: number,
+  values: Object
+}
+
 export type FormApi = {
   batch: (fn: () => void) => void,
   blur: (name: string) => void,
@@ -97,6 +139,7 @@ export type FormApi = {
   focus: (name: string) => void,
   initialize: (values: Object) => void,
   getState: () => FormState,
+  mutators: ?{ [string]: Function },
   submit: () => ?Promise<?Object>,
   subscribe: (
     subscriber: FormSubscriber,
@@ -111,9 +154,34 @@ export type DebugFunction = (
   fieldStates: { [string]: FieldState }
 ) => void
 
+export type MutableState = {
+  formState: InternalFormState,
+  fields: {
+    [string]: InternalFieldState
+  }
+}
+
+export type GetIn = (state: Object, complexKey: string) => any
+export type SetIn = (state: Object, key: string, value: any) => Object
+export type ShallowEqual = (a: any, b: any) => boolean
+export type ChangeValue = (
+  state: MutableState,
+  name: string,
+  mutate: (value: any) => any
+) => void
+export type Tools = {
+  changeValue: ChangeValue,
+  getIn: GetIn,
+  setIn: SetIn,
+  shallowEqual: ShallowEqual
+}
+
+export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
+
 export type Config = {
   debug?: DebugFunction,
   initialValues?: Object,
+  mutators?: { [string]: Mutator },
   onSubmit: (
     values: Object,
     callback: ?(errors: ?Object) => void
@@ -121,5 +189,3 @@ export type Config = {
   validate?: (values: Object) => Object | Promise<Object>,
   validateOnBlur?: boolean
 }
-
-export type InternalState = {}

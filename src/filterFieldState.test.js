@@ -4,6 +4,7 @@ describe('filterFieldState', () => {
   const name = 'foo'
   const state = {
     active: true,
+    data: { someValue: 42 },
     dirty: false,
     error: 'dog',
     initial: 'initialValue',
@@ -43,6 +44,10 @@ describe('filterFieldState', () => {
 
   describe('filterFieldState.active', () => {
     testValue('active', state, !state.active)
+  })
+
+  describe('filterFieldState.data', () => {
+    testValue('data', state, { someValue: 43 })
   })
 
   describe('filterFieldState.dirty', () => {

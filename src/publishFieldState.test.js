@@ -6,13 +6,19 @@ const check = (error, initial, value) => {
   const blur = {}
   const change = {}
   const focus = {}
-  const name = {}
+  const name = 'foo'
   const submitFailed = {}
   const submitSucceeded = {}
   const result = publishFieldState(
     {
+      initialValues: {
+        foo: initial
+      },
       submitFailed,
-      submitSucceeded
+      submitSucceeded,
+      values: {
+        foo: value
+      }
     },
     {
       active,
