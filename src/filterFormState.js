@@ -4,6 +4,8 @@ import subscriptionFilter from './subscriptionFilter'
 import type { StateFilter } from './FinalForm'
 import type { FormState, FormSubscription } from './types'
 
+const shallowEqualKeys = []
+
 /**
  * Filters items in a FormState based on a FormSubscription
  */
@@ -20,7 +22,8 @@ const filterFormState: StateFilter<FormState> = (
       state,
       previousState,
       subscription,
-      formSubscriptionItems
+      formSubscriptionItems,
+      shallowEqualKeys
     ) || !previousState
   return different || force ? result : undefined
 }

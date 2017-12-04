@@ -8,7 +8,10 @@ export type {
   FieldState,
   FormSubscription,
   FormState,
-  RegisterField
+  MutableState,
+  Mutator,
+  RegisterField,
+  Tools
 } from './types'
 
 declare export function createForm(config: Config): FormApi

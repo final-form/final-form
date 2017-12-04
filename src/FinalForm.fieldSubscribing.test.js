@@ -303,6 +303,30 @@ describe('Field.subscribing', () => {
     expect(spy.mock.calls[2][0].invalid).toBe(true)
   })
 
+  it('should allow subscribing to length', () => {
+    const { foo: { change, spy } } = prepareFieldSubscribers(
+      {},
+      {
+        foo: { length: true }
+      }
+    )
+
+    // should initialize to be pristine
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].length).toBeUndefined()
+
+    change(['bar', 'baz'])
+
+    // field is now dirty
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].length).toBe(2)
+
+    change(['baz'])
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].length).toBe(1)
+  })
+
   it('should allow subscribing to pristine', () => {
     const { foo: { change, spy } } = prepareFieldSubscribers(
       {},

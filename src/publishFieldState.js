@@ -1,28 +1,29 @@
 // @flow
-import type { InternalFieldState, InternalFormState } from './FinalForm'
+import type { InternalFieldState, InternalFormState } from './types'
 import type { FieldState } from './types'
+import getIn from './structure/getIn'
 
 /**
  * Converts internal field state to published field state
  */
 const publishFieldState = (
-  form: InternalFormState,
+  formState: InternalFormState,
   field: InternalFieldState
 ): FieldState => {
-  const { submitFailed, submitSucceeded } = form
+  const { initialValues, submitFailed, submitSucceeded, values } = formState
   const {
     active,
     blur,
     change,
     error,
     focus,
-    initial,
     name,
     submitError,
     touched,
-    value,
     visited
   } = field
+  const value = getIn(values, name)
+  const initial = initialValues && getIn(initialValues, name)
   const pristine = initial === value
   const valid = !error && !submitError
   return {
@@ -34,6 +35,7 @@ const publishFieldState = (
     focus,
     initial,
     invalid: !valid,
+    length: Array.isArray(value) ? value.length : undefined,
     name,
     pristine,
     submitError,
