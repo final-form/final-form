@@ -236,15 +236,15 @@ form.submit() // only submits if all validation passes
 
 Demonstrates how 🏁 Final Form can be used inside a React component to manage
 form state. It also shows just how much
-[🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
+[🏁 React Final Form](https://github.com/final-form/react-final-form#-react-final-form)
 does for you out of the box.
 
 For more examples using React, see
-[🏁 React Final Form Examples](https://github.com/erikras/react-final-form#examples).
+[🏁 React Final Form Examples](https://github.com/final-form/react-final-form#examples).
 
 ## Libraries
 
-### [🏁 React Final Form](https://github.com/erikras/react-final-form#-react-final-form)
+### [🏁 React Final Form](https://github.com/final-form/react-final-form#-react-final-form)
 
 A form state management system for React that uses 🏁 Final Form under the hood.
 
