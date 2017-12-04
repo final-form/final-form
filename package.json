@@ -17,12 +17,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/erikras/final-form.git"
+    "url": "https://github.com/final-form/final-form.git"
   },
   "bugs": {
-    "url": "https://github.com/erikras/final-form/issues"
+    "url": "https://github.com/final-form/final-form/issues"
   },
-  "homepage": "https://github.com/erikras/final-form#readme",
+  "homepage": "https://github.com/final-form/final-form#readme",
   "devDependencies": {
     "babel-eslint": "^8.0.2",
     "babel-jest": "^21.2.0",
