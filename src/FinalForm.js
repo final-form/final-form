@@ -376,8 +376,8 @@ const createForm = (config: Config): FormApi => {
     blur: (name: string) => {
       const { fields, formState } = state
       const previous = fields[name]
-      if (previous && previous.active) {
-        // can only blur registered active fields
+      if (previous) {
+        // can only blur registered fields
         delete formState.active
         fields[name] = {
           ...previous,

@@ -639,6 +639,53 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].active).toBeUndefined()
   })
 
+  it('should not allow focusing of unsubscribed field', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { active: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    form.registerField('foo', () => {}, {})
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].active).toBeUndefined()
+
+    form.focus('notFoo')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not allow blurring of unsubscribed field', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { active: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    form.registerField('foo', () => {}, {})
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].active).toBeUndefined()
+
+    form.blur('notFoo')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+  it('should not allow blurring of unsubscribed field', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { active: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    form.registerField('foo', () => {}, {})
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].active).toBeUndefined()
+
+    form.blur('notFoo')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
   it('should be invalid even if field with error is not registered', () => {
     const { spy } = prepareFormSubscriber(
       'foo',
