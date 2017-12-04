@@ -151,7 +151,7 @@ form.submit() // only submits if all validation passes
     * [`focus: (name: string) => void`](#focus-name-string--void)
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
-    * [`mutators: ?{ [string]: Function }](#mutators--string-function-)
+    * [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
     * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
     * [`registerField: RegisterField`](#registerfield-registerfield)
@@ -219,7 +219,7 @@ form.submit() // only submits if all validation passes
     * [`validating: number`](#validating-number)
     * [`values: Object`](#values-object)
   * [`MutableState: { formState: InternalFormState, fields: { [string]: InternalFieldState } }`](#mutablestate--formstate-internalformstate-fields--string-internalfieldstate--)
-  * [`Mutator: (args: any[], state: MutableState, tools: Tools) => any](#mutator-args-any-state-mutablestate-tools-tools--any)
+  * [`Mutator: (args: any[], state: MutableState, tools: Tools) => any`](#mutator-args-any-state-mutablestate-tools-tools--any)
   * [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--unsubscribe)
   * [`Tools`](#tools)
     * [`Tools.changeValue: (state: MutableState, name: string, mutate: (value: any) => any) => void`](#toolschangevalue-state-mutablestate-name-string-mutate-value-any--any--void)
@@ -536,7 +536,7 @@ values, and `dirty` and `pristine` will be calculated by performing a
 shallow-equals between the current values and the values last initialized with.
 The form will be `pristine` after this call.
 
-#### `mutators: ?{ [string]: Function }
+#### `mutators: ?{ [string]: Function }`
 
 The state-bound versions of the mutators provided to [`Config`](#config).
 
@@ -858,7 +858,7 @@ The current values of the form.
 A container for the [`InternalFormState`](#internalformstate) and an object of
 [`InternalFieldState`](#internalfieldstate)s.
 
-### `Mutator: (args: any[], state: MutableState, tools: Tools) => any
+### `Mutator: (args: any[], state: MutableState, tools: Tools) => any`
 
 A mutator function that takes some arguments, the internal form
 [`MutableState`](#mutablestate), and some [`Tools`](#tools) and optionally
