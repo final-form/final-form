@@ -32,16 +32,28 @@ handle `undefined` as a potential value.
 ```jsx
 // WRONG ❌ - values.myField might be undefined!
 if (!values.myField.match(/myexpression/)) {
-  errors.myField = 'bad user'
+  errors.myField = 'Bad user'
 }
 
 // RIGHT ✅
 if (!values.myField || !values.myField.match(/myexpression/)) {
-  errors.myField = 'bad user'
+  errors.myField = 'Bad user'
 }
 
 // RIGHT ✅
 if (!/myexpression/.test(values.myField)) {
-  errors.myField = 'bad user'
+  errors.myField = 'Bad user'
+}
+```
+
+In practice, if you need a field value to conform to some specific rule, you
+also need it to be required, so normally your validation functions will look
+like:
+
+```jsx
+if (!values.myField) {
+  errors.myField = 'Required'
+} else if (!someOtherCheck(values.myField)) {
+  errors.myField = 'Not acceptable'
 }
 ```
