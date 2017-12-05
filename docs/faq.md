@@ -23,10 +23,11 @@ HTML DOM gives for that input is `''`. If 🏁 Final Form did _not_ treat `''` a
 `dirty`, no matter what the user did.
 
 **Your validation functions should _also_ treat `undefined` and `''` as the
-same.** This is not too difficult since both `undefined` and `''` are "falsy" in
-javascript. So a "required" validation rule would just be `error = value ?
-undefined : 'Required'`. If you are doing a regular expression check, your
-function should handle `undefined` as a potential value.
+same.** This is not too difficult since both `undefined` and `''` are
+[falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) in javascript.
+So a "required" validation rule would just be `error = value ? undefined :
+'Required'`. If you are doing a regular expression check, your function should
+handle `undefined` as a potential value.
 
 ```jsx
 // WRONG ❌ - values.myField might be undefined!
