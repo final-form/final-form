@@ -340,6 +340,12 @@ change. Defaults to `false`.
 
 ### `DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`
 
+### `Decorator: (form: FormApi) => Unsubscribe`
+
+A function that takes our form instance, modifies its behavior somehow, and
+returns an [`Unsubscribe`](#unsubscribe----void) function to detach itself from
+the form.
+
 ### `FieldState`
 
 `FieldState` is an object containing:
