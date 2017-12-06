@@ -134,16 +134,17 @@ form.submit() // only submits if all validation passes
     * [`data?: boolean`](#data-boolean)
     * [`dirty?: boolean`](#dirty-boolean-1)
     * [`error?: boolean`](#error-boolean)
-    * [`initialValues?: boolean`](#initialvalues-boolean)
+    * [`initial?: boolean`](#initial-boolean)
     * [`invalid?: boolean`](#invalid-boolean-1)
     * [`length?: boolean`](#length-boolean)
     * [`pristine?: boolean`](#pristine-boolean-1)
-    * [`submitting?: boolean`](#submitting-boolean)
+    * [`submitError?: boolean`](#submiterror-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-1)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-1)
+    * [`touched?: boolean`](#touched-boolean-1)
     * [`valid?: boolean`](#valid-boolean-1)
-    * [`validating?: boolean`](#validating-boolean)
-    * [`values?: boolean`](#values-boolean)
+    * [`value?: boolean`](#value-boolean)
+    * [`visited?: boolean`](#visited-boolean-1)
   * [`FormApi`](#formapi)
     * [`batch: (fn: () => void) => void)`](#batch-fn---void--void)
     * [`blur: (name: string) => void`](#blur-name-string--void)
@@ -168,9 +169,9 @@ form.submit() // only submits if all validation passes
     * [`submitErrors?: Object`](#submiterrors-object)
     * [`submitFailed?: boolean`](#submitfailed-boolean-2)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-2)
-    * [`submitting?: boolean`](#submitting-boolean-1)
+    * [`submitting?: boolean`](#submitting-boolean)
     * [`valid?: boolean`](#valid-boolean-2)
-    * [`validating?: boolean`](#validating-boolean-1)
+    * [`validating?: boolean`](#validating-boolean)
     * [`values?: Object`](#values-object)
   * [`FormSubscriber: (state: FormState) => void`](#formsubscriber-state-formstate--void)
   * [`FormSubscription: { [string]: boolean }`](#formsubscription--string-boolean-)
@@ -178,17 +179,17 @@ form.submit() // only submits if all validation passes
     * [`dirty?: boolean`](#dirty-boolean-3)
     * [`error?: boolean`](#error-boolean-1)
     * [`errors?: boolean`](#errors-boolean)
-    * [`initialValues?: boolean`](#initialvalues-boolean-1)
+    * [`initialValues?: boolean`](#initialvalues-boolean)
     * [`invalid?: boolean`](#invalid-boolean-3)
     * [`pristine?: boolean`](#pristine-boolean-3)
-    * [`submitError?: boolean`](#submiterror-boolean)
+    * [`submitError?: boolean`](#submiterror-boolean-1)
     * [`submitErrors?: boolean`](#submiterrors-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-3)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-3)
-    * [`submitting?: boolean`](#submitting-boolean-2)
+    * [`submitting?: boolean`](#submitting-boolean-1)
     * [`valid?: boolean`](#valid-boolean-3)
-    * [`validating?: boolean`](#validating-boolean-2)
-    * [`values?: boolean`](#values-boolean-1)
+    * [`validating?: boolean`](#validating-boolean-1)
+    * [`values?: boolean`](#values-boolean)
   * [`InternalFieldState`](#internalfieldstate)
     * [`active: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void-1)
@@ -449,10 +450,10 @@ value in `FieldState`.
 When `true` the `FieldSubscriber` will be notified of changes to the `error`
 value in `FieldState`.
 
-#### `initialValues?: boolean`
+#### `initial?: boolean`
 
-When `true` the `FieldSubscriber` will be notified of changes to the
-`initialValues` value in `FieldState`.
+When `true` the `FieldSubscriber` will be notified of changes to the `initial`
+value in `FieldState`.
 
 #### `invalid?: boolean`
 
@@ -469,34 +470,39 @@ value in `FieldState`.
 When `true` the `FieldSubscriber` will be notified of changes to the `pristine`
 value in `FieldState`.
 
-#### `submitting?: boolean`
+#### `submitError?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
-`submitting` value in `FieldState`.
+`submitError` value in `FieldState`.
 
 #### `submitFailed?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
-`submitFailing` value in `FieldState`.
+`submitFailed` value in `FieldState`.
 
 #### `submitSucceeded?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `submitSucceeded` value in `FieldState`.
 
+#### `touched?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the `touched`
+value in `FieldState`.
+
 #### `valid?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `valid`
 value in `FieldState`.
 
-#### `validating?: boolean`
+#### `value?: boolean`
 
-When `true` the `FieldSubscriber` will be notified of changes to the
-`validating` value in `FieldState`.
+When `true` the `FieldSubscriber` will be notified of changes to the `value`
+value in `FieldState`.
 
-#### `values?: boolean`
+#### `visited?: boolean`
 
-When `true` the `FieldSubscriber` will be notified of changes to the `values`
+When `true` the `FieldSubscriber` will be notified of changes to the `visited`
 value in `FieldState`.
 
 ### `FormApi`
