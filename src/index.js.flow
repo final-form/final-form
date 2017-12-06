@@ -4,6 +4,7 @@ import type { FormApi, Config } from './types'
 export type {
   Config,
   DebugFunction,
+  Decorator,
   FieldSubscription,
   FieldState,
   FormSubscription,
