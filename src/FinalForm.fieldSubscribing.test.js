@@ -36,6 +36,14 @@ describe('Field.subscribing', () => {
     }
   }
 
+  it('should provide a list of registered fields', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    form.registerField('foo', () => {}, {})
+    form.registerField('bar', () => {}, {})
+    form.registerField('baz', () => {}, {})
+    expect(form.getRegisteredFields()).toEqual(['foo', 'bar', 'baz'])
+  })
+
   it('should allow subscribing to active', () => {
     const { foo: { blur, focus, spy } } = prepareFieldSubscribers(
       {},
