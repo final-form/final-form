@@ -35,6 +35,12 @@ describe('structure.getIn', () => {
     expect(getIn({ myArray: ['a', 'b', 'c'] }, 'myArray[2]')).toBe('c')
   })
 
+  it('should get simple array indexes of numbers', () => {
+    expect(getIn({ myArray: [1] }, 'myArray[0]')).toBe(1)
+    expect(getIn({ myArray: [1, 2, 3] }, 'myArray[1]')).toBe(2)
+    expect(getIn({ myArray: [1, 2, 3] }, 'myArray[2]')).toBe(3)
+  })
+
   it('should return undefined for non-numeric key to an array', () => {
     expect(getIn({ myArray: ['a', 'b', 'c'] }, 'myArray.foo')).toBeUndefined()
   })

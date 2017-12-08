@@ -136,6 +136,7 @@ export type FormApi = {
   change: (name: string, value: ?any) => void,
   focus: (name: string) => void,
   initialize: (values: Object) => void,
+  getRegisteredFields: () => string[],
   getState: () => FormState,
   mutators: ?{ [string]: Function },
   submit: () => ?Promise<?Object>,

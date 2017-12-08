@@ -108,6 +108,7 @@ form.submit() // only submits if all validation passes
     * [`validate?: (values: Object) => Object | Promise<Object>`](#validate-values-object--object--promiseobject)
     * [`validateOnBlur?: boolean`](#validateonblur-boolean)
   * [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
+  * [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
   * [`FieldState`](#fieldstate)
     * [`active?: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void)
@@ -150,6 +151,7 @@ form.submit() // only submits if all validation passes
     * [`blur: (name: string) => void`](#blur-name-string--void)
     * [`change: (name: string, value: ?any) => void`](#change-name-string-value-any--void)
     * [`focus: (name: string) => void`](#focus-name-string--void)
+    * [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
     * [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
@@ -342,9 +344,11 @@ change. Defaults to `false`.
 
 ### `Decorator: (form: FormApi) => Unsubscribe`
 
-A function that takes our form instance, modifies its behavior somehow, and
+A function that [decorates](https://en.wikipedia.org/wiki/Decorator_pattern) a
+form by subscribing to it and making changes as the form state changes, and
 returns an [`Unsubscribe`](#unsubscribe----void) function to detach itself from
-the form.
+the form. e.g.
+[🏁 Final Form Calculate](https://github.com/final-form/final-form-calculate).
 
 ### `FieldState`
 
@@ -536,6 +540,10 @@ Changes the value of the given field.
 #### `focus: (name: string) => void`
 
 Focuses (marks active) the given field.
+
+#### `getRegisteredFields: () => string[]`
+
+Returns a list of all the currently registered fields.
 
 #### `getState: () => FormState`
 

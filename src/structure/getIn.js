@@ -7,11 +7,13 @@ const getIn: GetIn = (state: Object, complexKey: string): any => {
   const path = toPath(complexKey)
   let current: any = state
   for (let key of path) {
-    if (current === undefined || current === null || !isNaN(current)) {
+    if (
+      current === undefined ||
+      current === null ||
+      typeof current !== 'object' ||
+      (Array.isArray(current) && isNaN(key))
+    ) {
       return undefined
-    }
-    if (Array.isArray(current) && isNaN(key)) {
-      return undefined // Bad user. 404 Not Found. Can't read a non-numeric key from an array.
     }
     current = current[key]
   }

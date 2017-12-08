@@ -424,6 +424,8 @@ const createForm = (config: Config): FormApi => {
 
     mutators: mutatorsApi,
 
+    getRegisteredFields: () => Object.keys(state.fields),
+
     getState: () => convertToExternalFormState(state.formState),
 
     initialize: (values: Object) => {
