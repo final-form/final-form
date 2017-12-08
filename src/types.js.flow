@@ -136,6 +136,7 @@ export type FormApi = {
   change: (name: string, value: ?any) => void,
   focus: (name: string) => void,
   initialize: (values: Object) => void,
+  getRegisteredFields: () => string[],
   getState: () => FormState,
   mutators: ?{ [string]: Function },
   submit: () => ?Promise<?Object>,
@@ -187,3 +188,5 @@ export type Config = {
   validate?: (values: Object) => Object | Promise<Object>,
   validateOnBlur?: boolean
 }
+
+export type Decorator = (form: FormApi) => Unsubscribe

@@ -108,6 +108,7 @@ form.submit() // only submits if all validation passes
     * [`validate?: (values: Object) => Object | Promise<Object>`](#validate-values-object--object--promiseobject)
     * [`validateOnBlur?: boolean`](#validateonblur-boolean)
   * [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
+  * [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
   * [`FieldState`](#fieldstate)
     * [`active?: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void)
@@ -339,6 +340,12 @@ If `true`, validation will happen on blur. If `false`, validation will happen on
 change. Defaults to `false`.
 
 ### `DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`
+
+### `Decorator: (form: FormApi) => Unsubscribe`
+
+A function that [decorates](https://en.wikipedia.org/wiki/Decorator_pattern) a
+form by subscribing to it and making changes as the form state changes. e.g.
+[🏁 Final Form Calculate](https://github.com/final-form/final-form-calculate).
 
 ### `FieldState`
 
