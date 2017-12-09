@@ -32,7 +32,7 @@ yarn add final-form
 
 ## Getting Started
 
-🏁 Final Form works on subscriptions to updates based on the
+🏁 Final Form works on subscriptions to perform updates based on the
 [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern). Both form
 and field subscribers must specify exactly which parts of the form state they
 want to receive updates about.
