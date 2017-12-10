@@ -259,10 +259,13 @@ const createForm = (config: Config): FormApi => {
     const processErrors = () => {
       let merged = { ...recordLevelErrors }
       fieldKeys.forEach(name => {
-        // field-level errors take precedent over record-level errors
-        const error = fieldLevelErrors[name] || getIn(recordLevelErrors, name)
-        merged = setIn(merged, name, error) || {}
-        fields[name].error = error
+        if (fields[name]) {
+          // make sure field is still registered
+          // field-level errors take precedent over record-level errors
+          const error = fieldLevelErrors[name] || getIn(recordLevelErrors, name)
+          merged = setIn(merged, name, error) || {}
+          fields[name].error = error
+        }
       })
       if (!shallowEqual(formState.errors, merged)) {
         formState.errors = merged

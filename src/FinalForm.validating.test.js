@@ -438,4 +438,39 @@ describe('Field.validation', () => {
     // not called after async validation finished because it was already und
     expect(spy).toHaveBeenCalledTimes(3)
   })
+
+  it('should not fall over if a field has been unregistered during async validation', async () => {
+    const delay = 10
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    const unregister = form.registerField(
+      'username',
+      spy,
+      { error: true },
+      async (value, allErrors) => {
+        const error = value === 'erikras' ? 'Username taken' : undefined
+        await sleep(delay)
+        return error
+      }
+    )
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].error).toBeUndefined()
+
+    const { change } = spy.mock.calls[0][0]
+
+    await sleep(delay * 2)
+
+    // error hasn't changed
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    change('erikras')
+
+    // unregister field
+    unregister()
+
+    await sleep(delay * 2)
+
+    // spy not called again
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
 })
