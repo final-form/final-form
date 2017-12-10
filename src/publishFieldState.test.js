@@ -5,6 +5,7 @@ const check = (error, initial, value) => {
   const active = {}
   const blur = {}
   const change = {}
+  const data = {}
   const focus = {}
   const name = 'foo'
   const submitFailed = {}
@@ -24,6 +25,7 @@ const check = (error, initial, value) => {
       active,
       blur,
       change,
+      data,
       error,
       focus,
       initial,
@@ -34,6 +36,7 @@ const check = (error, initial, value) => {
   expect(result.active).toBe(active)
   expect(result.blur).toBe(blur)
   expect(result.change).toBe(change)
+  expect(result.data).toBe(data)
   expect(result.focus).toBe(focus)
   expect(result.name).toBe(name)
   expect(result.error).toBe(error)
