@@ -24,18 +24,18 @@ export type FormState = Partial<{
   active: string,
   dirty: boolean,
   error: any,
-  errors: Object,
-  initialValues: Object,
+  errors: object,
+  initialValues: object,
   invalid: boolean,
   pristine: boolean,
   submitError: any,
-  submitErrors: Object,
+  submitErrors: object,
   submitFailed: boolean,
   submitSucceeded: boolean,
   submitting: boolean,
   valid: boolean,
   validating: boolean,
-  values: Object
+  values: object
 }>
 
 export type FormSubscriber = Subscriber<FormState>
@@ -44,7 +44,7 @@ export type FieldState = {
   active?: boolean,
   blur: () => void,
   change: (value: any) => void,
-  data?: Object,
+  data?: object,
   dirty?: boolean,
   error?: any,
   focus: () => void,
@@ -88,14 +88,14 @@ export type RegisterField = (
   name: string,
   subscriber: FieldSubscriber,
   subscription: FieldSubscription,
-  validate?: (value: any, allValues: Object) => any
+  validate?: (value: any, allValues: object) => any
 ) => Unsubscribe
 
 export type InternalFieldState = {
   active: boolean,
   blur: () => void,
   change: (value: any) => void,
-  data: Object,
+  data: object,
   error?: any,
   focus: () => void,
   lastFieldState?: FieldState,
@@ -105,7 +105,7 @@ export type InternalFieldState = {
   pristine: boolean,
   touched: boolean,
   validators: {
-    [index: number]: (value: any, allValues: Object) => any | Promise<any>
+    [index: number]: (value: any, allValues: object) => any | Promise<any>
   },
   valid: boolean,
   visited: boolean
@@ -114,17 +114,17 @@ export type InternalFieldState = {
 export type InternalFormState = {
   active?: string,
   error?: any,
-  errors: Object,
-  initialValues?: Object,
+  errors: object,
+  initialValues?: object,
   pristine: boolean,
   submitError?: any,
-  submitErrors?: Object,
+  submitErrors?: object,
   submitFailed: boolean,
   submitSucceeded: boolean,
   submitting: boolean,
   valid: boolean,
   validating: number,
-  values: Object
+  values: object
 }
 
 export type FormApi = {
@@ -132,11 +132,11 @@ export type FormApi = {
   blur: (name: string) => void,
   change: (name: string, value?: any) => void,
   focus: (name: string) => void,
-  initialize: (values: Object) => void,
+  initialize: (values: object) => void,
   getRegisteredFields: () => string[],
   getState: () => FormState,
   mutators?: { [key: string]: Function },
-  submit: () => Promise<Object | undefined> | undefined,
+  submit: () => Promise<object | undefined> | undefined,
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
@@ -157,8 +157,8 @@ export type MutableState = {
   }
 }
 
-export type GetIn = (state: Object, complexKey: string) => any
-export type SetIn = (state: Object, key: string, value: any) => Object
+export type GetIn = (state: object, complexKey: string) => any
+export type SetIn = (state: object, key: string, value: any) => object
 export type ShallowEqual = (a: any, b: any) => boolean
 export type ChangeValue = (
   state: MutableState,
@@ -176,13 +176,13 @@ export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
 
 export type Config = {
   debug?: DebugFunction,
-  initialValues?: Object,
+  initialValues?: object,
   mutators?: { [key: string]: Mutator },
   onSubmit: (
-    values: Object,
-    callback?: (errors?: Object) => void
-  ) => Object | Promise<Object | undefined> | undefined | void,
-  validate?: (values: Object) => Object | Promise<Object>,
+    values: object,
+    callback?: (errors?: object) => void
+  ) => object | Promise<object | undefined> | undefined | void,
+  validate?: (values: object) => object | Promise<object>,
   validateOnBlur?: boolean
 }
 
@@ -192,6 +192,6 @@ export function createForm(config: Config): FormApi
 export var fieldSubscriptionItems: string[]
 export var formSubscriptionItems: string[]
 export var FORM_ERROR: any
-export function getIn(state: Object, complexKey: string): any
-export function setIn(state: Object, key: string, value: any): Object
+export function getIn(state: object, complexKey: string): any
+export function setIn(state: object, key: string, value: any): object
 export var version: string
