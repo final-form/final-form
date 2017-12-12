@@ -55,7 +55,7 @@ module.exports = {
       description: 'Generates table of contents in README',
       script: 'doctoc README.md'
     },
-    copyTypes: npsUtils.copy('src/*.js.flow dist'),
+    copyTypes: npsUtils.copy('src/*.js.flow src/*.d.ts dist'),
     lint: {
       description: 'lint the entire project',
       script: 'eslint .'
