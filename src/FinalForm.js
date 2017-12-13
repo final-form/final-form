@@ -263,7 +263,9 @@ const createForm = (config: Config): FormApi => {
           // make sure field is still registered
           // field-level errors take precedent over record-level errors
           const error = fieldLevelErrors[name] || getIn(recordLevelErrors, name)
-          merged = setIn(merged, name, error) || {}
+          if (error) {
+            merged = setIn(merged, name, error)
+          }
           fields[name].error = error
         }
       })
