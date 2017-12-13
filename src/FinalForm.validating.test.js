@@ -473,4 +473,83 @@ describe('Field.validation', () => {
     // spy not called again
     expect(spy).toHaveBeenCalledTimes(1)
   })
+
+  it('should allow field-level for array fields', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const array = jest.fn()
+    const validate = jest.fn(
+      value =>
+        value &&
+        value.map(customer => {
+          const errors = {}
+          if (!customer.firstName) {
+            errors.firstName = 'Required'
+          }
+          return errors
+        })
+    )
+    const spy = jest.fn()
+    form.subscribe(spy, { errors: true })
+    form.registerField('customers', array, { error: true }, validate)
+    expect(validate).toHaveBeenCalledTimes(1)
+    expect(validate.mock.calls[0][0]).toBeUndefined()
+    expect(array).toHaveBeenCalledTimes(1)
+    expect(array.mock.calls[0][0].error).toBeUndefined()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].errors).toEqual({})
+
+    // add an empty customer
+    form.change('customers', [{}])
+
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate.mock.calls[1][0]).toEqual([{}])
+    expect(array).toHaveBeenCalledTimes(2)
+    expect(array.mock.calls[1][0].error).toEqual([{ firstName: 'Required' }])
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].errors).toEqual({
+      customers: [{ firstName: 'Required' }]
+    })
+
+    // adding the customer registers a new field
+    form.registerField('customers[0].firstName', () => {}, { error: true })
+
+    expect(validate).toHaveBeenCalledTimes(3)
+    expect(validate.mock.calls[2][0]).toEqual([{}])
+    expect(array).toHaveBeenCalledTimes(3)
+    expect(array.mock.calls[2][0].error).toEqual([{ firstName: 'Required' }])
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].errors).toEqual({
+      customers: [{ firstName: 'Required' }]
+    })
+
+    // add another empty customer
+    form.change('customers', [{}, {}])
+
+    expect(validate).toHaveBeenCalledTimes(4)
+    expect(validate.mock.calls[3][0]).toEqual([{}, {}])
+    expect(array).toHaveBeenCalledTimes(4)
+    expect(array.mock.calls[3][0].error).toEqual([
+      { firstName: 'Required' },
+      { firstName: 'Required' }
+    ])
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].errors).toEqual({
+      customers: [{ firstName: 'Required' }, { firstName: 'Required' }]
+    })
+
+    // adding the customer registers a new field
+    form.registerField('customers[1].firstName', () => {}, { error: true })
+
+    expect(validate).toHaveBeenCalledTimes(5)
+    expect(validate.mock.calls[4][0]).toEqual([{}, {}])
+    expect(array).toHaveBeenCalledTimes(5)
+    expect(array.mock.calls[4][0].error).toEqual([
+      { firstName: 'Required' },
+      { firstName: 'Required' }
+    ])
+    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy.mock.calls[4][0].errors).toEqual({
+      customers: [{ firstName: 'Required' }, { firstName: 'Required' }]
+    })
+  })
 })
