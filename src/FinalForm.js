@@ -26,7 +26,7 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
-export const version = '1.3.4'
+export const version = '1.3.5'
 
 type Subscribers<T: Object> = {
   index: number,
