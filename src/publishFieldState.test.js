@@ -1,6 +1,6 @@
 import publishFieldState from './publishFieldState'
 
-const check = (error, initial, value) => {
+const check = (error, initial, value, submitError) => {
   // mock placeholder values to check ===
   const active = {}
   const blur = {}
@@ -15,6 +15,12 @@ const check = (error, initial, value) => {
       initialValues: {
         foo: initial
       },
+      errors: {
+        foo: error
+      },
+      submitErrors: {
+        foo: submitError
+      },
       submitFailed,
       submitSucceeded,
       values: {
@@ -26,7 +32,6 @@ const check = (error, initial, value) => {
       blur,
       change,
       data,
-      error,
       focus,
       initial,
       name,
@@ -44,10 +49,11 @@ const check = (error, initial, value) => {
   expect(result.value).toBe(value)
   expect(result.dirty).toBe(initial !== value)
   expect(result.pristine).toBe(initial === value)
+  expect(result.submitError).toBe(submitError)
   expect(result.submitFailed).toBe(submitFailed)
   expect(result.submitSucceeded).toBe(submitSucceeded)
-  expect(result.valid).toBe(!error)
-  expect(result.invalid).toBe(!!error)
+  expect(result.valid).toBe(!error && !submitError)
+  expect(result.invalid).toBe(!!(error || submitError))
 }
 
 describe('publishFieldState', () => {
@@ -55,8 +61,12 @@ describe('publishFieldState', () => {
     check(undefined, undefined, undefined)
   })
 
-  it('should show invalid when no error', () => {
+  it('should show invalid when error', () => {
     check('some error', undefined, undefined)
+  })
+
+  it('should show invalid when submit error', () => {
+    check(undefined, undefined, undefined, 'submit error')
   })
 
   it('should show pristine when value same as initial', () => {

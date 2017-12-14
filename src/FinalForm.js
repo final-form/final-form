@@ -266,7 +266,6 @@ const createForm = (config: Config): FormApi => {
           if (error) {
             merged = setIn(merged, name, error)
           }
-          fields[name].error = error
         }
       })
       if (!shallowEqual(formState.errors, merged)) {
@@ -486,7 +485,6 @@ const createForm = (config: Config): FormApi => {
           pristine: true,
           touched: false,
           valid: true,
-          value: initial,
           validators: {},
           visited: false
         }
@@ -561,14 +559,8 @@ const createForm = (config: Config): FormApi => {
           formState.submitFailed = true
           formState.submitSucceeded = false
           formState.submitErrors = errors
-          Object.keys(fields).forEach(key => {
-            fields[key].submitError = errors && getIn(errors, key)
-          })
           formState.submitError = errors[FORM_ERROR]
         } else {
-          Object.keys(fields).forEach(key => {
-            delete fields[key].submitError
-          })
           delete formState.submitErrors
           delete formState.submitError
           formState.submitFailed = false
