@@ -132,12 +132,23 @@ describe('structure.setIn', () => {
   it('should delete structure when setting undefined', () => {
     const a = {}
     const b = {}
-    const input = { a, b, dog: { cat: [{ rat: 'foo' }] } }
-    const output = setIn(input, 'dog.cat[0].rat', undefined)
+    const input = { a, b, dog: { cat: { rat: 'foo' } } }
+    const output = setIn(input, 'dog.cat.rat', undefined)
     expect(input).not.toBe(output)
     expect(output.a).toBe(a)
     expect(output.b).toBe(b)
-    expect(output.dog).toBeFalsy()
+    expect(output.dog).toBeUndefined()
+  })
+
+  it('should delete structure when setting undefined on non-existing key', () => {
+    const a = {}
+    const b = {}
+    const input = { a, b, dog: {} }
+    const output = setIn(input, 'dog.cat', undefined)
+    expect(input).not.toBe(output)
+    expect(output.a).toBe(a)
+    expect(output.b).toBe(b)
+    expect(output.dog).toBeUndefined()
   })
 
   it('should not delete structure when setting undefined and other keys exist', () => {
@@ -147,7 +158,7 @@ describe('structure.setIn', () => {
     const output = setIn(input, 'b', undefined)
     expect(input).not.toBe(output)
     expect(output.a).toBe(a)
-    expect(output.b).toBeFalsy()
+    expect(output.b).toBeUndefined()
   })
 
   it('should not delete structure when setting undefined to a nonexistent key and other keys exist', () => {
@@ -158,7 +169,7 @@ describe('structure.setIn', () => {
     expect(output.a).toBe(a)
   })
 
-  it('should delete array structure when setting undefined', () => {
+  it('should not delete array structure when setting undefined', () => {
     const a = {}
     const b = {}
     const input = { a, b, dog: [{ rat: 'foo' }] }
@@ -166,7 +177,10 @@ describe('structure.setIn', () => {
     expect(input).not.toBe(output)
     expect(output.a).toBe(a)
     expect(output.b).toBe(b)
-    expect(output.dog).toBeUndefined()
+    expect(output.dog).not.toBeUndefined()
+    expect(Array.isArray(output.dog)).toBe(true)
+    expect(output.dog.length).toBe(1)
+    expect(output.dog[0]).toEqual({})
   })
 
   it('should not delete array structure when setting undefined and other items exist', () => {
