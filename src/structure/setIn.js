@@ -32,14 +32,26 @@ const setInRecursor = (
     // current exists, so make a copy of all its values, and add/update the new one
     const result = setInRecursor(current[key], index + 1, path, value)
     const numKeys = Object.keys(current).length
-    return result === undefined &&
-      ((current[key] === undefined && numKeys === 0) || // object was already empty
-        (current[key] !== undefined && numKeys <= 1)) // only key we had was the one we are deleting
-      ? undefined
-      : {
-          ...current,
-          [key]: result
+    if (result === undefined) {
+      if (current[key] === undefined && numKeys === 0) {
+        // object was already empty
+        return undefined
+      }
+      if (current[key] !== undefined && numKeys <= 1) {
+        // only key we had was the one we are deleting
+        if (!isNaN(path[index - 1])) {
+          // we are in an array, so return an empty object
+          return {}
+        } else {
+          return undefined
         }
+      }
+    }
+    // set result in key
+    return {
+      ...current,
+      [key]: result
+    }
   }
   // array set
   const numericKey = Number(key)
@@ -63,15 +75,6 @@ const setInRecursor = (
   // recurse
   const existingValue = current[numericKey]
   const result = setInRecursor(existingValue, index + 1, path, value)
-
-  // if nothing returned and nothing in current, delete it
-  if (
-    result === undefined &&
-    ((existingValue === undefined && current.length === 0) ||
-      (existingValue !== undefined && current.length === 1))
-  ) {
-    return undefined
-  }
 
   // current exists, so make a copy of all its values, and add/update the new one
   const array = [...current]
