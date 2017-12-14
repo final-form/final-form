@@ -99,12 +99,10 @@ export type InternalFieldState = {
   blur: () => void,
   change: (value: any) => void,
   data: Object,
-  error?: any,
   focus: () => void,
   lastFieldState: ?FieldState,
   length?: any,
   name: string,
-  submitError?: any,
   pristine: boolean,
   touched: boolean,
   validators: {

@@ -10,20 +10,18 @@ const publishFieldState = (
   formState: InternalFormState,
   field: InternalFieldState
 ): FieldState => {
-  const { initialValues, submitFailed, submitSucceeded, values } = formState
   const {
-    active,
-    blur,
-    change,
-    data,
-    error,
-    focus,
-    name,
-    submitError,
-    touched,
-    visited
-  } = field
+    errors,
+    initialValues,
+    submitErrors,
+    submitFailed,
+    submitSucceeded,
+    values
+  } = formState
+  const { active, blur, change, data, focus, name, touched, visited } = field
   const value = getIn(values, name)
+  const error = getIn(errors, name)
+  const submitError = submitErrors && getIn((submitErrors: Object), name)
   const initial = initialValues && getIn(initialValues, name)
   const pristine = initial === value
   const valid = !error && !submitError

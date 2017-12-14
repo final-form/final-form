@@ -511,7 +511,8 @@ describe('Field.validation', () => {
     })
 
     // adding the customer registers a new field
-    form.registerField('customers[0].firstName', () => {}, { error: true })
+    const firstName0 = jest.fn()
+    form.registerField('customers[0].firstName', firstName0, { error: true })
 
     expect(validate).toHaveBeenCalledTimes(3)
     expect(validate.mock.calls[2][0]).toEqual([{}])
@@ -521,6 +522,9 @@ describe('Field.validation', () => {
     expect(spy.mock.calls[2][0].errors).toEqual({
       customers: [{ firstName: 'Required' }]
     })
+    expect(firstName0).toHaveBeenCalled()
+    expect(firstName0).toHaveBeenCalledTimes(1)
+    expect(firstName0.mock.calls[0][0].error).toBe('Required')
 
     // add another empty customer
     form.change('customers', [{}, {}])
@@ -536,9 +540,11 @@ describe('Field.validation', () => {
     expect(spy.mock.calls[3][0].errors).toEqual({
       customers: [{ firstName: 'Required' }, { firstName: 'Required' }]
     })
+    expect(firstName0).toHaveBeenCalledTimes(1) // no need to call this again
 
     // adding the customer registers a new field
-    form.registerField('customers[1].firstName', () => {}, { error: true })
+    const firstName1 = jest.fn()
+    form.registerField('customers[1].firstName', firstName1, { error: true })
 
     expect(validate).toHaveBeenCalledTimes(5)
     expect(validate.mock.calls[4][0]).toEqual([{}, {}])
@@ -551,5 +557,8 @@ describe('Field.validation', () => {
     expect(spy.mock.calls[4][0].errors).toEqual({
       customers: [{ firstName: 'Required' }, { firstName: 'Required' }]
     })
+    expect(firstName1).toHaveBeenCalled()
+    expect(firstName1).toHaveBeenCalledTimes(1)
+    expect(firstName1.mock.calls[0][0].error).toBe('Required')
   })
 })

@@ -197,19 +197,17 @@ form.submit() // only submits if all validation passes
     * [`blur: () => void`](#blur---void-1)
     * [`change: (value: any) => void`](#change-value-any--void-1)
     * [`data: Object`](#data-object)
-    * [`error?: any`](#error-any-2)
     * [`focus: () => void`](#focus---void-1)
     * [`initial?: any`](#initial-any-1)
     * [`name: string`](#name-string-1)
     * [`pristine: boolean`](#pristine-boolean)
-    * [`submitError?: any`](#submiterror-any-2)
     * [`touched: boolean`](#touched-boolean)
     * [`valid: boolean`](#valid-boolean)
     * [`value?: any`](#value-any-1)
     * [`visited: boolean`](#visited-boolean)
   * [`InternalFormState`](#internalformstate)
     * [`active?: string`](#active-string-1)
-    * [`error?: any`](#error-any-3)
+    * [`error?: any`](#error-any-2)
     * [`errors: Object`](#errors-object)
     * [`initialValues?: Object`](#initialvalues-object-2)
     * [`pristine: boolean`](#pristine-boolean-1)
@@ -764,10 +762,6 @@ A function to change the value of the field.
 
 A place for arbitrary values to be placed by mutators.
 
-#### `error?: any`
-
-The current validation error for this field.
-
 #### `focus: () => void`
 
 A function to focus the field (mark it as active).
@@ -784,10 +778,6 @@ The name of the field.
 
 `true` if the current value is `===` to the initial value, `false` if the values
 are `!===`.
-
-#### `submitError?: any`
-
-The submission error for this field.
 
 #### `touched: boolean`
 
