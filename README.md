@@ -87,8 +87,6 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
@@ -98,6 +96,8 @@ form.submit() // only submits if all validation passes
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
   * [`formSubscriptionItems: string[]`](#formsubscriptionitems-string)
   * [`FORM_ERROR: Symbol`](#form_error-symbol)
+  * [`getIn(state: Object, complexKey: string): any`](#getinstate-object-complexkey-string-any)
+  * [`setIn(state: Object, key: string, value: any): Object`](#setinstate-object-key-string-value-any-object)
   * [`version: string`](#version-string)
 * [Types](#types)
   * [`Config`](#config)
@@ -219,7 +219,9 @@ form.submit() // only submits if all validation passes
     * [`valid: boolean`](#valid-boolean-1)
     * [`validating: number`](#validating-number)
     * [`values: Object`](#values-object)
-  * [`MutableState: { formState: InternalFormState, fields: { [string]: InternalFieldState } }`](#mutablestate--formstate-internalformstate-fields--string-internalfieldstate--)
+  * [`MutableState`](#mutablestate)
+    * [`formState: InternalFormState`](#formstate-internalformstate)
+    * [`fields: { [string]: InternalFieldState }`](#fields--string-internalfieldstate-)
   * [`Mutator: (args: any[], state: MutableState, tools: Tools) => any`](#mutator-args-any-state-mutablestate-tools-tools--any)
   * [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--unsubscribe)
   * [`Tools`](#tools)
@@ -272,6 +274,10 @@ Useful for subscribing to everything.
 
 A special `Symbol` key used to return a whole-form error inside error objects
 returned from validation or submission.
+
+### `getIn(state: Object, complexKey: string): any`
+
+### `setIn(state: Object, key: string, value: any): Object`
 
 ### `version: string`
 
@@ -863,10 +869,17 @@ The number of asynchronous validators currently running.
 
 The current values of the form.
 
-### `MutableState: { formState: InternalFormState, fields: { [string]: InternalFieldState } }`
+### `MutableState`
 
-A container for the [`InternalFormState`](#internalformstate) and an object of
-[`InternalFieldState`](#internalfieldstate)s.
+`MutableState` is an object containing the following:
+
+#### `formState: InternalFormState`
+
+The [`InternalFormState`](#internalformstate).
+
+#### `fields: { [string]: InternalFieldState }`
+
+An object of [`InternalFieldState`](#internalfieldstate)s.
 
 ### `Mutator: (args: any[], state: MutableState, tools: Tools) => any`
 
