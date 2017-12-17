@@ -81,4 +81,25 @@ describe('FinalForm.batching', () => {
     expect(firstField).toHaveBeenCalledTimes(2)
     expect(secondField).toHaveBeenCalledTimes(1) // not called
   })
+
+  it('should not call listeners with endBatch() if not in batch', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const formListener = jest.fn()
+    const firstField = jest.fn()
+    const secondField = jest.fn()
+    form.subscribe(formListener, { values: true })
+    form.registerField('firstField', firstField, { value: true })
+    form.registerField('secondField', secondField, { value: true })
+
+    expect(formListener).toHaveBeenCalledTimes(1)
+    expect(firstField).toHaveBeenCalledTimes(1)
+    expect(secondField).toHaveBeenCalledTimes(1)
+
+    form.endBatch()
+
+    // No listeners called
+    expect(formListener).toHaveBeenCalledTimes(1)
+    expect(firstField).toHaveBeenCalledTimes(1)
+    expect(secondField).toHaveBeenCalledTimes(1)
+  })
 })
