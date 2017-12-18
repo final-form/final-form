@@ -1,5 +1,6 @@
 export type Subscription = { [key: string]: boolean }
 export type Subscriber<V> = (value: V) => void
+export type IsEqual = (a: any, b: any) => boolean
 
 export type FormSubscription = Partial<{
   active: boolean
@@ -86,11 +87,17 @@ export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
+export type FieldConfig = Partial<{
+  isEqual: IsEqual
+  validate: (value: any, allValues: object) => any
+  validateFields: string[]
+}>
+
 export type RegisterField = (
   name: string,
   subscriber: FieldSubscriber,
   subscription: FieldSubscription,
-  validate?: (value: any, allValues: object) => any
+  config: FieldConfig
 ) => Unsubscribe
 
 export type InternalFieldState = {
@@ -100,12 +107,14 @@ export type InternalFieldState = {
   data: object
   error?: any
   focus: () => void
+  isEqual: IsEqual
   lastFieldState?: FieldState
   length?: any
   name: string
   submitError?: any
   pristine: boolean
   touched: boolean
+  validateFields?: string[]
   validators: {
     [index: number]: (value: any, allValues: object) => any | Promise<any>
   }
@@ -161,7 +170,6 @@ export type MutableState = {
 
 export type GetIn = (state: object, complexKey: string) => any
 export type SetIn = (state: object, key: string, value: any) => object
-export type ShallowEqual = (a: any, b: any) => boolean
 export type ChangeValue = (
   state: MutableState,
   name: string,
@@ -171,7 +179,7 @@ export type Tools = {
   changeValue: ChangeValue
   getIn: GetIn
   setIn: SetIn
-  shallowEqual: ShallowEqual
+  shallowEqual: IsEqual
 }
 
 export type Mutator = (args: any[], state: MutableState, tools: Tools) => any

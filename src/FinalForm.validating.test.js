@@ -133,7 +133,7 @@ describe('Field.validation', () => {
       'foo',
       spy1,
       { error: true },
-      value => (value ? undefined : 'Required')
+      { validate: value => (value ? undefined : 'Required') }
     )
 
     const spy2 = jest.fn()
@@ -141,7 +141,9 @@ describe('Field.validation', () => {
       'foo',
       spy2,
       { error: true },
-      value => (value !== 'correct' ? 'Incorrect value' : undefined)
+      {
+        validate: value => (value !== 'correct' ? 'Incorrect value' : undefined)
+      }
     )
 
     // both called with first error
@@ -244,8 +246,10 @@ describe('Field.validation', () => {
       'confirm',
       confirm,
       { error: true },
-      (value, allValues) =>
-        value === allValues.password ? undefined : 'Does not match'
+      {
+        validate: (value, allValues) =>
+          value === allValues.password ? undefined : 'Does not match'
+      }
     )
 
     expect(password).toHaveBeenCalledTimes(1)
@@ -299,7 +303,7 @@ describe('Field.validation', () => {
       'foo',
       spy,
       { error: true },
-      value => (value ? undefined : 'Required')
+      { validate: value => (value ? undefined : 'Required') }
     )
 
     expect(spy).toHaveBeenCalledTimes(1)
@@ -391,10 +395,12 @@ describe('Field.validation', () => {
       'username',
       spy,
       { error: true },
-      async (value, allErrors) => {
-        const error = value === 'erikras' ? 'Username taken' : undefined
-        await sleep(delay)
-        return error
+      {
+        validate: async (value, allErrors) => {
+          const error = value === 'erikras' ? 'Username taken' : undefined
+          await sleep(delay)
+          return error
+        }
       }
     )
     expect(spy).toHaveBeenCalledTimes(1)
@@ -447,10 +453,12 @@ describe('Field.validation', () => {
       'username',
       spy,
       { error: true },
-      async (value, allErrors) => {
-        const error = value === 'erikras' ? 'Username taken' : undefined
-        await sleep(delay)
-        return error
+      {
+        validate: async (value, allErrors) => {
+          const error = value === 'erikras' ? 'Username taken' : undefined
+          await sleep(delay)
+          return error
+        }
       }
     )
     expect(spy).toHaveBeenCalledTimes(1)
@@ -490,7 +498,7 @@ describe('Field.validation', () => {
     )
     const spy = jest.fn()
     form.subscribe(spy, { errors: true })
-    form.registerField('customers', array, { error: true }, validate)
+    form.registerField('customers', array, { error: true }, { validate })
     expect(validate).toHaveBeenCalledTimes(1)
     expect(validate.mock.calls[0][0]).toBeUndefined()
     expect(array).toHaveBeenCalledTimes(1)
@@ -560,5 +568,108 @@ describe('Field.validation', () => {
     expect(firstName1).toHaveBeenCalled()
     expect(firstName1).toHaveBeenCalledTimes(1)
     expect(firstName1.mock.calls[0][0].error).toBe('Required')
+  })
+
+  it('should only validate changed field when validateFields is empty', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn()
+    const bar = jest.fn()
+    const baz = jest.fn()
+    const required = value => (value ? undefined : false)
+    const validateFoo = jest.fn(required)
+    const validateBar = jest.fn(required)
+    const validateBaz = jest.fn(required)
+    const spy = jest.fn()
+    form.subscribe(spy, { errors: true })
+    form.registerField(
+      'foo',
+      foo,
+      { error: true },
+      { validate: validateFoo, validateFields: [] }
+    )
+    form.registerField('bar', bar, { error: true }, { validate: validateBar })
+    form.registerField('baz', baz, { error: true }, { validate: validateBaz })
+
+    expect(validateFoo).toHaveBeenCalledTimes(3)
+    expect(validateFoo.mock.calls[0][0]).toBeUndefined()
+    expect(validateFoo.mock.calls[1][0]).toBeUndefined()
+    expect(validateFoo.mock.calls[2][0]).toBeUndefined()
+
+    expect(validateBar).toHaveBeenCalledTimes(2)
+    expect(validateBar.mock.calls[0][0]).toBeUndefined()
+    expect(validateBar.mock.calls[1][0]).toBeUndefined()
+
+    expect(validateBaz).toHaveBeenCalledTimes(1)
+    expect(validateBaz.mock.calls[0][0]).toBeUndefined()
+
+    // changing bar calls validate on every field
+    form.change('bar', 'hello')
+
+    expect(validateFoo).toHaveBeenCalledTimes(4)
+    expect(validateFoo.mock.calls[3][0]).toBeUndefined()
+    expect(validateBar).toHaveBeenCalledTimes(3)
+    expect(validateBar.mock.calls[2][0]).toBe('hello')
+    expect(validateBaz).toHaveBeenCalledTimes(2)
+    expect(validateBaz.mock.calls[1][0]).toBeUndefined()
+
+    // changing foo ONLY calls validate on foo
+    form.change('foo', 'world')
+
+    expect(validateFoo).toHaveBeenCalledTimes(5)
+    expect(validateFoo.mock.calls[4][0]).toBe('world')
+    expect(validateBar).toHaveBeenCalledTimes(3)
+    expect(validateBaz).toHaveBeenCalledTimes(2)
+  })
+
+  it('should only validate specified validateFields', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn()
+    const bar = jest.fn()
+    const baz = jest.fn()
+    const required = value => (value ? undefined : false)
+    const validateFoo = jest.fn(required)
+    const validateBar = jest.fn(required)
+    const validateBaz = jest.fn(required)
+    const spy = jest.fn()
+    form.subscribe(spy, { errors: true })
+    form.registerField(
+      'foo',
+      foo,
+      { error: true },
+      { validate: validateFoo, validateFields: ['baz'] }
+    )
+    form.registerField('bar', bar, { error: true }, { validate: validateBar })
+    form.registerField('baz', baz, { error: true }, { validate: validateBaz })
+
+    expect(validateFoo).toHaveBeenCalledTimes(3)
+    expect(validateFoo.mock.calls[0][0]).toBeUndefined()
+    expect(validateFoo.mock.calls[1][0]).toBeUndefined()
+    expect(validateFoo.mock.calls[2][0]).toBeUndefined()
+
+    expect(validateBar).toHaveBeenCalledTimes(2)
+    expect(validateBar.mock.calls[0][0]).toBeUndefined()
+    expect(validateBar.mock.calls[1][0]).toBeUndefined()
+
+    expect(validateBaz).toHaveBeenCalledTimes(1)
+    expect(validateBaz.mock.calls[0][0]).toBeUndefined()
+
+    // changing bar calls validate on every field
+    form.change('bar', 'hello')
+
+    expect(validateFoo).toHaveBeenCalledTimes(4)
+    expect(validateFoo.mock.calls[3][0]).toBeUndefined()
+    expect(validateBar).toHaveBeenCalledTimes(3)
+    expect(validateBar.mock.calls[2][0]).toBe('hello')
+    expect(validateBaz).toHaveBeenCalledTimes(2)
+    expect(validateBaz.mock.calls[1][0]).toBeUndefined()
+
+    // changing foo ONLY calls validate on foo and baz
+    form.change('foo', 'world')
+
+    expect(validateFoo).toHaveBeenCalledTimes(5)
+    expect(validateFoo.mock.calls[4][0]).toBe('world')
+    expect(validateBar).toHaveBeenCalledTimes(3) // NOT called
+    expect(validateBaz).toHaveBeenCalledTimes(3)
+    expect(validateBaz.mock.calls[2][0]).toBeUndefined()
   })
 })

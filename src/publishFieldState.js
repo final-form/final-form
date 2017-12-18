@@ -23,7 +23,7 @@ const publishFieldState = (
   const error = getIn(errors, name)
   const submitError = submitErrors && getIn((submitErrors: Object), name)
   const initial = initialValues && getIn(initialValues, name)
-  const pristine = initial === value
+  const pristine = field.isEqual(initial, value)
   const valid = !error && !submitError
   return {
     active,

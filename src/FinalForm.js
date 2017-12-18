@@ -10,6 +10,7 @@ import shallowEqual from './shallowEqual'
 import type {
   ChangeValue,
   Config,
+  FieldConfig,
   FieldState,
   FieldSubscriber,
   FieldSubscription,
@@ -19,6 +20,7 @@ import type {
   FormSubscription,
   InternalFieldState,
   InternalFormState,
+  IsEqual,
   MutableState,
   Subscriber,
   Subscription,
@@ -27,6 +29,8 @@ import type {
 
 export const FORM_ERROR = Symbol('form-error')
 export const version = '1.3.5'
+
+const tripleEquals: IsEqual = (a, b) => a === b
 
 type Subscribers<T: Object> = {
   index: number,
@@ -172,7 +176,7 @@ const createForm = (config: Config): FormApi => {
         })
         state.formState = mutatableState.formState
         state.fields = mutatableState.fields
-        runValidation(() => {
+        runValidation(undefined, () => {
           notifyFieldListeners()
           notifyFormListeners()
         })
@@ -223,9 +227,9 @@ const createForm = (config: Config): FormApi => {
     return promises
   }
 
-  const runValidation = (callback: ?() => void) => {
+  const runValidation = (fieldChanged: ?string, callback: ?() => void) => {
     const { fields, formState } = state
-    const fieldKeys = Object.keys(fields)
+    let fieldKeys = Object.keys(fields)
     if (
       !validate &&
       !fieldKeys.some(
@@ -237,6 +241,16 @@ const createForm = (config: Config): FormApi => {
         callback()
       }
       return // no validation rules
+    }
+
+    // pare down field keys to actually validate
+    if (fieldChanged) {
+      const { validateFields } = fields[fieldChanged]
+      if (validateFields) {
+        fieldKeys = validateFields.length
+          ? validateFields.concat(fieldChanged)
+          : [fieldChanged]
+      }
     }
 
     let recordLevelErrors: Object = {}
@@ -325,9 +339,11 @@ const createForm = (config: Config): FormApi => {
     const fieldKeys = Object.keys(fields)
 
     // calculate dirty/pristine
-    formState.pristine = fieldKeys.every(
-      key =>
-        getIn(formState.values, key) === getIn(formState.initialValues, key)
+    formState.pristine = fieldKeys.every(key =>
+      fields[key].isEqual(
+        getIn(formState.values, key),
+        getIn(formState.initialValues, key)
+      )
     )
     formState.valid =
       !formState.error &&
@@ -388,7 +404,7 @@ const createForm = (config: Config): FormApi => {
           touched: true
         }
         if (validateOnBlur) {
-          runValidation(() => {
+          runValidation(name, () => {
             notifyFieldListeners()
             notifyFormListeners()
           })
@@ -407,7 +423,7 @@ const createForm = (config: Config): FormApi => {
           notifyFieldListeners()
           notifyFormListeners()
         } else {
-          runValidation(() => {
+          runValidation(name, () => {
             notifyFieldListeners()
             notifyFormListeners()
           })
@@ -441,7 +457,7 @@ const createForm = (config: Config): FormApi => {
         field.touched = false
         field.visited = false
       })
-      runValidation(() => {
+      runValidation(undefined, () => {
         notifyFieldListeners()
         notifyFormListeners()
       })
@@ -451,11 +467,7 @@ const createForm = (config: Config): FormApi => {
       name: string,
       subscriber: FieldSubscriber,
       subscription: FieldSubscription = {},
-      validate?: (
-        value: ?any,
-        allValues: Object,
-        callback: ?(error: ?any) => void
-      ) => ?any
+      fieldConfig?: FieldConfig
     ): Unsubscribe => {
       if (!state.fieldSubscribers[name]) {
         state.fieldSubscribers[name] = { index: 0, entries: {} }
@@ -480,17 +492,19 @@ const createForm = (config: Config): FormApi => {
           data: {},
           focus: () => api.focus(name),
           initial,
+          isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
           name,
           pristine: true,
           touched: false,
           valid: true,
+          validateFields: fieldConfig && fieldConfig.validateFields,
           validators: {},
           visited: false
         }
       }
-      if (validate) {
-        state.fields[name].validators[index] = validate
+      if (fieldConfig && fieldConfig.validate) {
+        state.fields[name].validators[index] = fieldConfig.validate
       }
 
       let sentFirstNotification = false
@@ -511,7 +525,7 @@ const createForm = (config: Config): FormApi => {
         sentFirstNotification = true
       }
 
-      runValidation(() => {
+      runValidation(undefined, () => {
         notifyFormListeners()
         if (!sentFirstNotification) {
           firstNotification()
@@ -526,7 +540,7 @@ const createForm = (config: Config): FormApi => {
           delete state.fieldSubscribers[name]
           delete state.fields[name]
         }
-        runValidation(() => {
+        runValidation(undefined, () => {
           notifyFieldListeners()
           notifyFormListeners()
         })

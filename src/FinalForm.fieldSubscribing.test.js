@@ -6,7 +6,7 @@ describe('Field.subscribing', () => {
   const prepareFieldSubscribers = (
     formSubscription,
     fieldSubscriptions,
-    fieldValidation = {},
+    fieldConfig = {},
     config = {}
   ) => {
     const form = createForm({ onSubmit: onSubmitMock, ...config })
@@ -23,7 +23,7 @@ describe('Field.subscribing', () => {
           name,
           spy,
           fieldSubscriptions[name],
-          fieldValidation[name]
+          fieldConfig[name]
         )
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledTimes(1)
@@ -156,7 +156,7 @@ describe('Field.subscribing', () => {
         foo: { error: true }
       },
       {
-        foo: value => (value ? undefined : 'Required')
+        foo: { validate: value => (value ? undefined : 'Required') }
       }
     )
 
@@ -285,7 +285,7 @@ describe('Field.subscribing', () => {
         foo: { invalid: true }
       },
       {
-        foo: value => (value ? undefined : 'Required')
+        foo: { validate: value => (value ? undefined : 'Required') }
       }
     )
 
@@ -462,7 +462,7 @@ describe('Field.subscribing', () => {
         foo: { valid: true }
       },
       {
-        foo: value => (value ? undefined : 'Required')
+        foo: { validate: value => (value ? undefined : 'Required') }
       }
     )
 
@@ -543,5 +543,53 @@ describe('Field.subscribing', () => {
     focus()
     blur()
     expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  it('should calculate dirty/pristine based on passed isEqual predicate', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      initialValues: { foo: 'bar' }
+    })
+    const spy = jest.fn()
+    form.subscribe(spy, { dirty: true, pristine: true })
+    const field = jest.fn()
+    form.registerField(
+      'foo',
+      field,
+      { dirty: true, pristine: true },
+      {
+        isEqual: (a, b) => (a && a.toUpperCase()) === (b && b.toUpperCase())
+      }
+    )
+
+    // should initialize to not be dirty
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].pristine).toBe(true)
+    expect(spy.mock.calls[0][0].dirty).toBe(false)
+    expect(field).toHaveBeenCalledTimes(1)
+    expect(field.mock.calls[0][0].pristine).toBe(true)
+    expect(field.mock.calls[0][0].dirty).toBe(false)
+
+    // change value
+    form.change('foo', 'bark')
+
+    // dirty now
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].pristine).toBe(false)
+    expect(spy.mock.calls[1][0].dirty).toBe(true)
+    expect(field).toHaveBeenCalledTimes(2)
+    expect(field.mock.calls[1][0].pristine).toBe(false)
+    expect(field.mock.calls[1][0].dirty).toBe(true)
+
+    // change value, but equals with our fn
+    form.change('foo', 'BAR')
+
+    // dirty now
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].pristine).toBe(true)
+    expect(spy.mock.calls[2][0].dirty).toBe(false)
+    expect(field).toHaveBeenCalledTimes(3)
+    expect(field.mock.calls[2][0].pristine).toBe(true)
+    expect(field.mock.calls[2][0].dirty).toBe(false)
   })
 })
