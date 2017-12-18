@@ -106,7 +106,7 @@ form.submit() // only submits if all validation passes
     * [`debug?: DebugFunction`](#debug-debugfunction)
     * [`initialValues?: Object`](#initialvalues-object)
     * [`mutators?: { [string]: Mutator }`](#mutators--string-mutator-)
-    * [`onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`](#onsubmit-values-object-callback-errors-object--void--object--promiseobject--void)
+    * [`onSubmit: (values: Object, form: FormApi, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`](#onsubmit-values-object-form-formapi-callback-errors-object--void--object--promiseobject--void)
     * [`validate?: (values: Object) => Object | Promise<Object>`](#validate-values-object--object--promiseobject)
     * [`validateOnBlur?: boolean`](#validateonblur-boolean)
   * [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
@@ -307,7 +307,7 @@ current values to calculate `pristine` and `dirty`.
 
 Optional named mutation functions.
 
-#### `onSubmit: (values: Object, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`
+#### `onSubmit: (values: Object, form: FormApi, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`
 
 Function to call when the form is submitted. There are three possible ways to
 write an `onSubmit` function:

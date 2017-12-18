@@ -190,6 +190,7 @@ export type Config = {
   mutators?: { [key: string]: Mutator }
   onSubmit: (
     values: object,
+    form: FormApi,
     callback?: (errors?: object) => void
   ) => object | Promise<object | undefined> | undefined | void
   validate?: (values: object) => object | Promise<object>
