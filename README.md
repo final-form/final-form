@@ -541,12 +541,6 @@ Blurs (marks inactive) the given field.
 
 Changes the value of the given field.
 
-#### `endBatch: () => void`
-
-Ends a batch session, in which no subscribers will be notified, and notifieds
-all subscribers that need to be notified. It is recommended that you perform all
-batch operations with [`batch()`](#batch-fn---void--void).
-
 #### `focus: (name: string) => void`
 
 Focuses (marks active) the given field.
@@ -569,12 +563,6 @@ The form will be `pristine` after this call.
 #### `mutators: ?{ [string]: Function }`
 
 The state-bound versions of the mutators provided to [`Config`](#config).
-
-#### `startBatch: () => void`
-
-Starts a batch session, in which no subscribers will be notified. **Be sure that
-you call `endBatch()` when you are done!** It is recommended that you perform
-all batch operations with [`batch()`](#batch-fn---void--void).
 
 #### `submit: () => ?Promise<?Object>`
 
