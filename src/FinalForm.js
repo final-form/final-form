@@ -369,9 +369,11 @@ const createForm = (config: Config): FormApi => {
 
   const api: FormApi = {
     batch: (fn: () => void) => {
-      api.startBatch()
+      inBatch = true
       fn()
-      api.endBatch()
+      inBatch = false
+      notifyFieldListeners()
+      notifyFormListeners()
     },
 
     blur: (name: string) => {
@@ -410,14 +412,6 @@ const createForm = (config: Config): FormApi => {
             notifyFormListeners()
           })
         }
-      }
-    },
-
-    endBatch: () => {
-      if (inBatch) {
-        inBatch = false
-        notifyFieldListeners()
-        notifyFormListeners()
       }
     },
 
@@ -541,10 +535,6 @@ const createForm = (config: Config): FormApi => {
 
     reset: () => {
       api.initialize(state.formState.initialValues || {})
-    },
-
-    startBatch: () => {
-      inBatch = true
     },
 
     submit: () => {
