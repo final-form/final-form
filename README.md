@@ -87,6 +87,8 @@ form.submit() // only submits if all validation passes
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
@@ -109,6 +111,10 @@ form.submit() // only submits if all validation passes
     * [`validateOnBlur?: boolean`](#validateonblur-boolean)
   * [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
   * [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
+  * [`FieldConfig`](#fieldconfig)
+    * [`isEqual?: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
+    * [`validate?: (value: ?any, allValues: Object) => ?any`](#validate-value-any-allvalues-object--any)
+    * [`validateFields?: string[]`](#validatefields-string)
   * [`FieldState`](#fieldstate)
     * [`active?: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void)
@@ -198,12 +204,13 @@ form.submit() // only submits if all validation passes
     * [`change: (value: any) => void`](#change-value-any--void-1)
     * [`data: Object`](#data-object)
     * [`focus: () => void`](#focus---void-1)
-    * [`initial?: any`](#initial-any-1)
+    * [`isEqual: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
     * [`name: string`](#name-string-1)
     * [`pristine: boolean`](#pristine-boolean)
     * [`touched: boolean`](#touched-boolean)
+    * [`validateFields: ?(string[])`](#validatefields-string)
+    * [`validators: { [number]: (value: ?any, allValues: Object) => ?any | Promise<?any> } }`](#validators--number-value-any-allvalues-object--any--promiseany--)
     * [`valid: boolean`](#valid-boolean)
-    * [`value?: any`](#value-any-1)
     * [`visited: boolean`](#visited-boolean)
   * [`InternalFormState`](#internalformstate)
     * [`active?: string`](#active-string-1)
@@ -223,7 +230,7 @@ form.submit() // only submits if all validation passes
     * [`formState: InternalFormState`](#formstate-internalformstate)
     * [`fields: { [string]: InternalFieldState }`](#fields--string-internalfieldstate-)
   * [`Mutator: (args: any[], state: MutableState, tools: Tools) => any`](#mutator-args-any-state-mutablestate-tools-tools--any)
-  * [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-validate-value-any-allvalues-object--any--unsubscribe)
+  * [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, config?: FieldConfig) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-config-fieldconfig--unsubscribe)
   * [`Tools`](#tools)
     * [`Tools.changeValue: (state: MutableState, name: string, mutate: (value: any) => any) => void`](#toolschangevalue-state-mutablestate-name-string-mutate-value-any--any--void)
     * [`Tools.getIn: (state: Object, complexKey: string) => any`](#toolsgetin-state-object-complexkey-string--any)
@@ -353,6 +360,25 @@ form by subscribing to it and making changes as the form state changes, and
 returns an [`Unsubscribe`](#unsubscribe----void) function to detach itself from
 the form. e.g.
 [🏁 Final Form Calculate](https://github.com/final-form/final-form-calculate).
+
+### `FieldConfig`
+
+#### `isEqual?: (a: any, b: any) => boolean`
+
+A function to determine if two values are equal. Defaults to `===`.
+
+#### `validate?: (value: ?any, allValues: Object) => ?any`
+
+A field-level validation function to validate a single field value. Returns an
+error if the value is not valid, or `undefined` if the value is valid.
+
+#### `validateFields?: string[]`
+
+An array of field names to validate when this field changes. If `undefined`,
+_every_ field will be validated when this one changes; if `[]`, _only this
+field_ will have its field-level validation function called when it changes; if
+other field names are specified, those fields _and this one_ will be validated
+when this field changes.
 
 ### `FieldState`
 
@@ -772,9 +798,10 @@ A place for arbitrary values to be placed by mutators.
 
 A function to focus the field (mark it as active).
 
-#### `initial?: any`
+#### `isEqual: (a: any, b: any) => boolean`
 
-The initial value of the field. `undefined` if it was never initialized.
+A function to determine if two values are equal. Used to calculate
+`pristine`/`dirty`.
 
 #### `name: string`
 
@@ -790,13 +817,17 @@ are `!===`.
 `true` if this field has ever gained and lost focus. `false` otherwise. Useful
 for knowing when to display error messages.
 
+#### `validateFields: ?(string[])`
+
+Fields to validate when this field value changes.
+
+#### `validators: { [number]: (value: ?any, allValues: Object) => ?any | Promise<?any> } }`
+
+Field-level validators for each field that is registered.
+
 #### `valid: boolean`
 
 `true` if this field has no validation or submission errors. `false` otherwise.
-
-#### `value?: any`
-
-The value of the field.
 
 #### `visited: boolean`
 
@@ -887,7 +918,12 @@ A mutator function that takes some arguments, the internal form
 [`MutableState`](#mutablestate), and some [`Tools`](#tools) and optionally
 modifies the form state.
 
-### `RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, validate?: (value: ?any, allValues: Object) => ?any) => Unsubscribe`
+### `RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, config?: FieldConfig) => Unsubscribe`
+
+Takes a name, and a
+[`FieldSubscriber`](#fieldsubscriber-state-fieldstate--void),
+[`FieldSubscriber`](#fieldsubscriber-state-fieldstate--void), and a
+[`FieldConfig`](#fieldconfig) and registers a field subscription.
 
 ### `Tools`
 
