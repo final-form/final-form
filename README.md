@@ -84,7 +84,6 @@ form.submit() // only submits if all validation passes
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 * [Examples](#examples)
@@ -150,11 +149,13 @@ form.submit() // only submits if all validation passes
     * [`batch: (fn: () => void) => void)`](#batch-fn---void--void)
     * [`blur: (name: string) => void`](#blur-name-string--void)
     * [`change: (name: string, value: ?any) => void`](#change-name-string-value-any--void)
+    * [`endBatch: () => void`](#endbatch---void)
     * [`focus: (name: string) => void`](#focus-name-string--void)
     * [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
     * [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
+    * [`startBatch: () => void`](#startbatch---void)
     * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
     * [`registerField: RegisterField`](#registerfield-registerfield)
