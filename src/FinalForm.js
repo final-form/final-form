@@ -28,7 +28,7 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
-export const version = '2.0.0'
+export const version = '3.0.0'
 
 const tripleEquals: IsEqual = (a, b) => a === b
 
@@ -590,9 +590,9 @@ const createForm = (config: Config): FormApi => {
       formState.submitting = true
       formState.submitFailed = false
       formState.submitSucceeded = false
-      if (onSubmit.length === 2) {
+      if (onSubmit.length === 3) {
         // onSubmit is expecting a callback, first try synchronously
-        onSubmit(formState.values, complete)
+        onSubmit(formState.values, api, complete)
         if (!completeCalled) {
           // must be async, so we should return a Promise
           notifyFormListeners() // let everyone know we are submitting
@@ -602,7 +602,7 @@ const createForm = (config: Config): FormApi => {
         }
       } else {
         // onSubmit is either sync or async with a Promise
-        const result = onSubmit(formState.values)
+        const result = onSubmit(formState.values, api)
         if (result && isPromise(result)) {
           // onSubmit is async with a Promise
           notifyFormListeners() // let everyone know we are submitting

@@ -189,6 +189,7 @@ export type Config = {
   mutators?: { [string]: Mutator },
   onSubmit: (
     values: Object,
+    form: FormApi,
     callback: ?(errors: ?Object) => void
   ) => ?Object | Promise<?Object> | void,
   validate?: (values: Object) => Object | Promise<Object>,

@@ -1,6 +1,6 @@
 {
   "name": "final-form",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description":
     "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
@@ -26,7 +26,7 @@
   "homepage": "https://github.com/final-form/final-form#readme",
   "devDependencies": {
     "babel-eslint": "^8.0.3",
-    "babel-jest": "^21.2.0",
+    "babel-jest": "^22.0.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-env": "^1.6.1",
@@ -43,14 +43,14 @@
     "flow": "^0.2.3",
     "flow-bin": "^0.61.0",
     "husky": "^0.14.3",
-    "jest": "^21.2.1",
+    "jest": "^22.0.0",
     "lint-staged": "^6.0.0",
     "nps": "^5.7.1",
     "nps-utils": "^1.5.0",
     "prettier": "^1.9.2",
     "prettier-eslint-cli": "^4.6.1",
     "rollup": "^0.52.2",
-    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-flow": "^1.1.1",
     "rollup-plugin-node-resolve": "^3.0.0",

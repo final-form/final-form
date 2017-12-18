@@ -146,7 +146,7 @@ describe('FinalForm.submission', () => {
   })
 
   it('should support synchronous submission with errors via callback', () => {
-    const onSubmit = jest.fn((values, callback) => {
+    const onSubmit = jest.fn((values, form, callback) => {
       const errors = {}
       if (values.foo === 'bar') {
         errors.foo = 'Sorry, "bar" is an illegal value'
@@ -205,7 +205,7 @@ describe('FinalForm.submission', () => {
   })
 
   it('should support asynchronous submission with errors via callback', async () => {
-    const onSubmit = jest.fn((values, callback) => {
+    const onSubmit = jest.fn((values, form, callback) => {
       setTimeout(() => {
         const errors = {}
         if (values.foo === 'bar') {
