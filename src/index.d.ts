@@ -133,11 +133,13 @@ export type FormApi = {
   batch: (fn: () => void) => void
   blur: (name: string) => void
   change: (name: string, value?: any) => void
+  endBatch: () => void
   focus: (name: string) => void
   initialize: (values: object) => void
   getRegisteredFields: () => string[]
   getState: () => FormState
   mutators?: { [key: string]: Function }
+  startBatch: () => void
   submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
