@@ -1,6 +1,7 @@
 // @flow
 export type Subscription = { [string]: boolean }
 export type Subscriber<V> = (value: V) => void
+export type IsEqual = (a: any, b: any) => boolean
 
 export type FormSubscription = $Shape<{
   active: boolean,
@@ -87,11 +88,17 @@ export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
+export type FieldConfig = $Shape<{
+  isEqual: IsEqual,
+  validate: (value: ?any, allValues: Object) => ?any,
+  validateFields: string[]
+}>
+
 export type RegisterField = (
   name: string,
   subscriber: FieldSubscriber,
   subscription: FieldSubscription,
-  validate?: (value: ?any, allValues: Object) => ?any
+  config?: FieldConfig
 ) => Unsubscribe
 
 export type InternalFieldState = {
@@ -100,11 +107,13 @@ export type InternalFieldState = {
   change: (value: any) => void,
   data: Object,
   focus: () => void,
+  isEqual: IsEqual,
   lastFieldState: ?FieldState,
   length?: any,
   name: string,
   pristine: boolean,
   touched: boolean,
+  validateFields: ?(string[]),
   validators: {
     [number]: (value: ?any, allValues: Object) => ?any | Promise<?any>
   },
@@ -160,7 +169,6 @@ export type MutableState = {
 
 export type GetIn = (state: Object, complexKey: string) => any
 export type SetIn = (state: Object, key: string, value: any) => Object
-export type ShallowEqual = (a: any, b: any) => boolean
 export type ChangeValue = (
   state: MutableState,
   name: string,
@@ -170,7 +178,7 @@ export type Tools = {
   changeValue: ChangeValue,
   getIn: GetIn,
   setIn: SetIn,
-  shallowEqual: ShallowEqual
+  shallowEqual: IsEqual
 }
 
 export type Mutator = (args: any[], state: MutableState, tools: Tools) => any

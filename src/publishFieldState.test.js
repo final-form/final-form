@@ -34,6 +34,7 @@ const check = (error, initial, value, submitError) => {
       data,
       focus,
       initial,
+      isEqual: (a, b) => a === b,
       name,
       value
     }

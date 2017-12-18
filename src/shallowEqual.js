@@ -1,7 +1,7 @@
 // @flow
-import type { ShallowEqual } from './types'
+import type { IsEqual } from './types'
 
-const shallowEqual: ShallowEqual = (a: any, b: any): boolean => {
+const shallowEqual: IsEqual = (a: any, b: any): boolean => {
   if (a === b) {
     return true
   }
