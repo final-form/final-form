@@ -93,6 +93,7 @@ form.submit() // only submits if all validation passes
   * [Simple React Example](#simple-react-example)
 * [Libraries](#libraries)
   * [🏁 React Final Form](#-react-final-form)
+  * [Vue Final Form](#vue-final-form)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
@@ -257,6 +258,10 @@ For more examples using React, see
 ### [🏁 React Final Form](https://github.com/final-form/react-final-form#-react-final-form)
 
 A form state management system for React that uses 🏁 Final Form under the hood.
+
+### [Vue Final Form](https://github.com/egoist/vue-finalform)
+
+A form state management system for Vue that uses 🏁 Final Form under the hood.
 
 ## API
 
