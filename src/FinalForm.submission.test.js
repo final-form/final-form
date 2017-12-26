@@ -182,6 +182,8 @@ describe('FinalForm.submission', () => {
 
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(onSubmit.mock.calls[0][0]).toEqual({ foo: 'bar', foo2: 'baz' })
+    expect(typeof onSubmit.mock.calls[0][1]).toBe('object')
+    expect(typeof onSubmit.mock.calls[0][2]).toBe('function')
 
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy).toHaveBeenCalledWith({
@@ -194,7 +196,9 @@ describe('FinalForm.submission', () => {
     form.submit()
 
     expect(onSubmit).toHaveBeenCalledTimes(2)
-    expect(onSubmit.mock.calls[0][0]).toEqual({ foo: 'bar', foo2: 'baz' })
+    expect(onSubmit.mock.calls[1][0]).toEqual({ foo: 'notbar', foo2: 'baz' })
+    expect(typeof onSubmit.mock.calls[1][1]).toBe('object')
+    expect(typeof onSubmit.mock.calls[1][2]).toBe('function')
 
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy).toHaveBeenCalledWith({
@@ -264,7 +268,7 @@ describe('FinalForm.submission', () => {
     await promise
 
     expect(onSubmit).toHaveBeenCalledTimes(2)
-    expect(onSubmit.mock.calls[0][0]).toEqual({ foo: 'bar', foo2: 'baz' })
+    expect(onSubmit.mock.calls[1][0]).toEqual({ foo: 'notbar', foo2: 'baz' })
 
     expect(spy).toHaveBeenCalledTimes(4)
     expect(spy).toHaveBeenCalledWith({
