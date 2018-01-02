@@ -37,7 +37,7 @@ export type FormState = Partial<{
   submitting: boolean
   valid: boolean
   validating: boolean
-  values: object
+  values: { [key: string]: any }
 }>
 
 export type FormSubscriber = Subscriber<FormState>
