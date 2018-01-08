@@ -1,48 +1,48 @@
-export type Subscription = { [key: string]: boolean }
+export interface Subscription { [key: string]: boolean }
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 
-export type FormSubscription = Partial<{
-  active: boolean
-  dirty: boolean
-  error: boolean
-  errors: boolean
-  initialValues: boolean
-  invalid: boolean
-  pristine: boolean
-  submitError: boolean
-  submitErrors: boolean
-  submitFailed: boolean
-  submitSucceeded: boolean
-  submitting: boolean
-  valid: boolean
-  validating: boolean
-  values: boolean
-}> &
-  Subscription
+export interface FormSubscription extends Subscription {
+  active?: boolean
+  dirty?: boolean
+  error?: boolean
+  errors?: boolean
+  initialValues?: boolean
+  invalid?: boolean
+  pristine?: boolean
+  submitError?: boolean
+  submitErrors?: boolean
+  submitFailed?: boolean
+  submitSucceeded?: boolean
+  submitting?: boolean
+  valid?: boolean
+  validating?: boolean
+  values?: boolean
+}
 
-export type FormState = Partial<{
+
+export interface FormState {
   // all values are optional because they must be subscribed to
-  active: string
-  dirty: boolean
-  error: any
-  errors: object
-  initialValues: object
-  invalid: boolean
-  pristine: boolean
-  submitError: any
-  submitErrors: object
-  submitFailed: boolean
+  active?: string
+  dirty?: boolean
+  error?: any
+  errors?: object
+  initialValues?: object
+  invalid?: boolean
+  pristine?: boolean
+  submitError?: any
+  submitErrors?: object
+  submitFailed?: boolean
   submitSucceeded: boolean
-  submitting: boolean
-  valid: boolean
-  validating: boolean
-  values: { [key: string]: any }
-}>
+  submitting?: boolean
+  valid?: boolean
+  validating?: boolean
+  values?: { [key: string]: any }
+}
 
 export type FormSubscriber = Subscriber<FormState>
 
-export type FieldState = {
+export interface FieldState {
   active?: boolean
   blur: () => void
   change: (value: any) => void
@@ -64,34 +64,34 @@ export type FieldState = {
   visited?: boolean
 }
 
-export type FieldSubscription = Partial<{
-  active: boolean
-  data: boolean
-  dirty: boolean
-  error: boolean
-  initial: boolean
-  invalid: boolean
-  length: boolean
-  pristine: boolean
-  submitError: boolean
-  submitFailed: boolean
-  submitSucceeded: boolean
-  touched: boolean
-  valid: boolean
-  value: boolean
-  visited: boolean
-}> &
-  Subscription
+export interface FieldSubscription extends Subscription {
+  active?: boolean
+  data?: boolean
+  dirty?: boolean
+  error?: boolean
+  initial?: boolean
+  invalid?: boolean
+  length?: boolean
+  pristine?: boolean
+  submitError?: boolean
+  submitFailed?: boolean
+  submitSucceeded?: boolean
+  touched?: boolean
+  valid?: boolean
+  value?: boolean
+  visited?: boolean
+}
+
 
 export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
-export type FieldConfig = Partial<{
-  isEqual: IsEqual
-  validate: (value: any, allValues: object) => any
-  validateFields: string[]
-}>
+export interface FieldConfig {
+  isEqual?: IsEqual
+  validate?: (value: any, allValues: object) => any
+  validateFields?: string[]
+}
 
 export type RegisterField = (
   name: string,
@@ -100,7 +100,7 @@ export type RegisterField = (
   config: FieldConfig
 ) => Unsubscribe
 
-export type InternalFieldState = {
+export interface InternalFieldState {
   active: boolean
   blur: () => void
   change: (value: any) => void
@@ -122,7 +122,7 @@ export type InternalFieldState = {
   visited: boolean
 }
 
-export type InternalFormState = {
+export interface InternalFormState {
   active?: string
   error?: any
   errors: object
@@ -138,7 +138,7 @@ export type InternalFormState = {
   values: object
 }
 
-export type FormApi = {
+export interface FormApi {
   batch: (fn: () => void) => void
   blur: (name: string) => void
   change: (name: string, value?: any) => void
@@ -161,7 +161,7 @@ export type DebugFunction = (
   fieldStates: { [key: string]: FieldState }
 ) => void
 
-export type MutableState = {
+export interface MutableState {
   formState: InternalFormState
   fields: {
     [key: string]: InternalFieldState
@@ -175,7 +175,7 @@ export type ChangeValue = (
   name: string,
   mutate: (value: any) => any
 ) => void
-export type Tools = {
+export interface Tools {
   changeValue: ChangeValue
   getIn: GetIn
   setIn: SetIn
@@ -184,7 +184,7 @@ export type Tools = {
 
 export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
 
-export type Config = {
+export interface Config {
   debug?: DebugFunction
   initialValues?: object
   mutators?: { [key: string]: Mutator }
