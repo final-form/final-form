@@ -59,6 +59,7 @@ export type StateFilter<T> = (
 const convertToExternalFormState = ({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
   active,
+  dirtySinceLastSubmit,
   error,
   errors,
   initialValues,
@@ -74,6 +75,7 @@ const convertToExternalFormState = ({
 }: InternalFormState): FormState => ({
   active,
   dirty: !pristine,
+  dirtySinceLastSubmit,
   error,
   errors,
   invalid: !valid,
@@ -136,7 +138,7 @@ const createForm = (config: Config): FormApi => {
     fieldSubscribers: {},
     fields: {},
     formState: {
-      dirty: false,
+      dirtySinceLastSubmit: false,
       errors: {},
       initialValues: initialValues && { ...initialValues },
       invalid: false,
@@ -342,7 +344,16 @@ const createForm = (config: Config): FormApi => {
     formState.pristine = fieldKeys.every(key =>
       fields[key].isEqual(
         getIn(formState.values, key),
-        getIn(formState.initialValues, key)
+        getIn(formState.initialValues || {}, key)
+      )
+    )
+    formState.dirtySinceLastSubmit = !!(
+      formState.lastSubmittedValues &&
+      !fieldKeys.every(key =>
+        fields[key].isEqual(
+          getIn(formState.values, key),
+          getIn(formState.lastSubmittedValues, key)
+        )
       )
     )
     formState.valid =
@@ -495,7 +506,6 @@ const createForm = (config: Config): FormApi => {
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
           name,
-          pristine: true,
           touched: false,
           valid: true,
           validateFields: fieldConfig && fieldConfig.validateFields,
@@ -590,6 +600,7 @@ const createForm = (config: Config): FormApi => {
       formState.submitting = true
       formState.submitFailed = false
       formState.submitSucceeded = false
+      formState.lastSubmittedValues = { ...formState.values }
       if (onSubmit.length === 3) {
         // onSubmit is expecting a callback, first try synchronously
         onSubmit(formState.values, api, complete)

@@ -1,10 +1,13 @@
-export interface Subscription { [key: string]: boolean }
+export interface Subscription {
+  [key: string]: boolean
+}
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 
 export interface FormSubscription extends Subscription {
   active?: boolean
   dirty?: boolean
+  dirtySinceLastSubmit?: boolean
   error?: boolean
   errors?: boolean
   initialValues?: boolean
@@ -20,11 +23,11 @@ export interface FormSubscription extends Subscription {
   values?: boolean
 }
 
-
 export interface FormState {
   // all values are optional because they must be subscribed to
   active?: string
   dirty?: boolean
+  dirtySinceLastSubmit?: boolean
   error?: any
   errors?: object
   initialValues?: object
@@ -48,6 +51,7 @@ export interface FieldState {
   change: (value: any) => void
   data?: object
   dirty?: boolean
+  dirtySinceLastSubmit?: boolean
   error?: any
   focus: () => void
   initial?: any
@@ -68,6 +72,7 @@ export interface FieldSubscription extends Subscription {
   active?: boolean
   data?: boolean
   dirty?: boolean
+  dirtySinceLastSubmit?: boolean
   error?: boolean
   initial?: boolean
   invalid?: boolean
@@ -81,7 +86,6 @@ export interface FieldSubscription extends Subscription {
   value?: boolean
   visited?: boolean
 }
-
 
 export type FieldSubscriber = Subscriber<FieldState>
 
@@ -124,9 +128,11 @@ export interface InternalFieldState {
 
 export interface InternalFormState {
   active?: string
+  dirtySinceLastSubmit: boolean
   error?: any
   errors: object
   initialValues?: object
+  lastSubmittedValues?: object
   pristine: boolean
   submitError?: any
   submitErrors?: object

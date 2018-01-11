@@ -407,8 +407,11 @@ A place for arbitrary values to be placed by mutators.
 
 #### `dirty?: boolean`
 
-`true` when the value of the field is `!==` the initial value, `false` if the
-values are `===`.
+`true` when the value of the field is not equal to the initial value (using the [`isEqual`](#isequal-a-any-b-any--boolean) comparator provided at field registration), `false` if the values are equal.
+
+#### `dirtySinceLastSubmit?: boolean`
+
+`true` when the value of the field is not equal to the value last submitted (using the [`isEqual`](#isequal-a-any-b-any--boolean) comparator provided at field registration), `false` if the values are equal.
 
 #### `error?: any`
 
@@ -487,8 +490,11 @@ value in `FieldState`.
 
 #### `dirty?: boolean`
 
-When `true` the `FieldSubscriber` will be notified of changes to the `dirty`
-value in `FieldState`.
+When `true` the `FieldSubscriber` will be notified of changes to the `dirty` value in `FieldState`.
+
+#### `dirtySinceLastSubmit?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the `dirtySinceLastSubmit` value in `FieldState`.
 
 #### `error?: boolean`
 
@@ -714,6 +720,10 @@ value in `FormState`.
 When `true` the `FormSubscriber` will be notified of changes to the `dirty`
 value in `FormState`.
 
+#### `dirtySinceLastSubmit?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the `dirtySinceLastSubmit` value in `FormState`.
+
 #### `error?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `error`
@@ -812,11 +822,6 @@ A function to determine if two values are equal. Used to calculate
 
 The name of the field.
 
-#### `pristine: boolean`
-
-`true` if the current value is `===` to the initial value, `false` if the values
-are `!===`.
-
 #### `touched: boolean`
 
 `true` if this field has ever gained and lost focus. `false` otherwise. Useful
@@ -847,6 +852,10 @@ differences.
 
 The name of the currently active field. `undefined` if none are active.
 
+#### `dirtySinceLastSubmit: boolean`
+
+`true` if the form values have changed since the last time the form was submitted, `false` otherwise.
+
 #### `error?: any`
 
 The whole-form error returned by a validation function under the `FORM_ERROR`
@@ -861,6 +870,10 @@ shape of the form's values.
 
 The values the form was initialized with. `undefined` if the form was never
 initialized.
+
+#### `lastSubmittedValues?: Object`
+
+The values last submitted. Used to calculate `dirtySinceLastSubmit`.
 
 #### `pristine: boolean`
 
