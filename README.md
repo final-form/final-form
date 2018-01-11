@@ -91,6 +91,11 @@ form.submit() // only submits if all validation passes
 
 * [Examples](#examples)
   * [Simple React Example](#simple-react-example)
+* [Official Mutators](#official-mutators)
+  * [🏁 Final Form Arrays](#-final-form-arrays)
+  * [🏁 Final Form Set Field Data](#-final-form-set-field-data)
+  * [🏁 Final Form Set Field Error](#-final-form-set-field-error)
+  * [🏁 Final Form Set Field Touched](#-final-form-set-field-touched)
 * [Libraries](#libraries)
   * [🏁 React Final Form](#-react-final-form)
   * [Vue Final Form](#vue-final-form)
@@ -252,6 +257,24 @@ does for you out of the box.
 
 For more examples using React, see
 [🏁 React Final Form Examples](https://github.com/final-form/react-final-form#examples).
+
+## Official Mutators
+
+### [🏁 Final Form Arrays](https://github.com/final-form/final-form-arrays)
+
+Helps managing array structures in form data.
+
+### [🏁 Final Form Set Field Data](https://github.com/final-form/final-form-set-field-data)
+
+Sets arbitrary data for fields.
+
+### [🏁 Final Form Set Field Error](https://github.com/final-form/final-form-set-field-error)
+
+Allows total control over field errors.
+
+### [🏁 Final Form Set Field Touched](https://github.com/final-form/final-form-set-field-touched)
+
+Allows control over the `touched` flags for fields.
 
 ## Libraries
 
