@@ -13,6 +13,7 @@ const publishFieldState = (
   const {
     errors,
     initialValues,
+    lastSubmittedValues,
     submitErrors,
     submitFailed,
     submitSucceeded,
@@ -24,6 +25,10 @@ const publishFieldState = (
   const submitError = submitErrors && getIn((submitErrors: Object), name)
   const initial = initialValues && getIn(initialValues, name)
   const pristine = field.isEqual(initial, value)
+  const dirtySinceLastSubmit = !!(
+    lastSubmittedValues &&
+    !field.isEqual(getIn(lastSubmittedValues, name), value)
+  )
   const valid = !error && !submitError
   return {
     active,
@@ -31,6 +36,7 @@ const publishFieldState = (
     change,
     data,
     dirty: !pristine,
+    dirtySinceLastSubmit,
     error,
     focus,
     initial,

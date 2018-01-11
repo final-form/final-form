@@ -3,6 +3,7 @@ export default [
   'active',
   'data',
   'dirty',
+  'dirtySinceLastSubmit',
   'error',
   'initial',
   'invalid',

@@ -6,6 +6,7 @@ export type IsEqual = (a: any, b: any) => boolean
 export type FormSubscription = $Shape<{
   active: boolean,
   dirty: boolean,
+  dirtySinceLastSubmit: boolean,
   error: boolean,
   errors: boolean,
   initialValues: boolean,
@@ -26,6 +27,7 @@ export type FormState = $Shape<{
   // all values are optional because they must be subscribed to
   active: string,
   dirty: boolean,
+  dirtySinceLastSubmit: boolean,
   error: any,
   errors: Object,
   initialValues: Object,
@@ -49,6 +51,7 @@ export type FieldState = {
   change: (value: any) => void,
   data?: Object,
   dirty?: boolean,
+  dirtySinceLastSubmit?: boolean,
   error?: any,
   focus: () => void,
   initial?: any,
@@ -69,6 +72,7 @@ export type FieldSubscription = $Shape<{
   active: boolean,
   data: boolean,
   dirty: boolean,
+  dirtySinceLastSubmit: boolean,
   error: boolean,
   initial: boolean,
   invalid: boolean,
@@ -111,7 +115,6 @@ export type InternalFieldState = {
   lastFieldState: ?FieldState,
   length?: any,
   name: string,
-  pristine: boolean,
   touched: boolean,
   validateFields: ?(string[]),
   validators: {
@@ -123,9 +126,11 @@ export type InternalFieldState = {
 
 export type InternalFormState = {
   active?: string,
+  dirtySinceLastSubmit: boolean,
   error?: any,
   errors: Object,
   initialValues?: Object,
+  lastSubmittedValues?: Object,
   pristine: boolean,
   submitError?: any,
   submitErrors?: Object,

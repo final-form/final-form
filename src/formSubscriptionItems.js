@@ -2,6 +2,7 @@
 export default [
   'active',
   'dirty',
+  'dirtySinceLastSubmit',
   'error',
   'errors',
   'initialValues',
