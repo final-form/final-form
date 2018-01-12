@@ -202,17 +202,24 @@ const createForm = (config: Config): FormApi => {
     return promises
   }
 
+  const getValidators = (field: InternalFieldState) =>
+    Object.keys(field.validators).reduce((result, index) => {
+      const validator = field.validators[Number(index)]()
+      if (validator) {
+        result.push(validator)
+      }
+      return result
+    }, [])
+
   const runFieldLevelValidation = (
     field: InternalFieldState,
     setError: (error: ?any) => void
   ): Promise<*>[] => {
-    const { validators } = field
     const promises = []
-    const validatorKeys = Object.keys(validators)
-    if (validatorKeys.length) {
+    const validators = getValidators(field)
+    if (validators.length) {
       let error
-      Object.keys(validators).forEach((index: string) => {
-        const validator = validators[Number(index)]
+      validators.forEach(validator => {
         const errorOrPromise = validator(
           getIn(state.formState.values, field.name),
           state.formState.values
@@ -234,10 +241,7 @@ const createForm = (config: Config): FormApi => {
     let fieldKeys = Object.keys(fields)
     if (
       !validate &&
-      !fieldKeys.some(
-        key =>
-          fields[key].validators && Object.keys(fields[key].validators).length
-      )
+      !fieldKeys.some(key => getValidators(fields[key]).length)
     ) {
       if (callback) {
         callback()
@@ -513,8 +517,8 @@ const createForm = (config: Config): FormApi => {
           visited: false
         }
       }
-      if (fieldConfig && fieldConfig.validate) {
-        state.fields[name].validators[index] = fieldConfig.validate
+      if (fieldConfig && fieldConfig.getValidator) {
+        state.fields[name].validators[index] = fieldConfig.getValidator
       }
 
       let sentFirstNotification = false

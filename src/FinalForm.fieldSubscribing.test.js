@@ -156,7 +156,7 @@ describe('Field.subscribing', () => {
         foo: { error: true }
       },
       {
-        foo: { validate: value => (value ? undefined : 'Required') }
+        foo: { getValidator: () => value => (value ? undefined : 'Required') }
       }
     )
 
@@ -285,7 +285,7 @@ describe('Field.subscribing', () => {
         foo: { invalid: true }
       },
       {
-        foo: { validate: value => (value ? undefined : 'Required') }
+        foo: { getValidator: () => value => (value ? undefined : 'Required') }
       }
     )
 
@@ -462,7 +462,7 @@ describe('Field.subscribing', () => {
         foo: { valid: true }
       },
       {
-        foo: { validate: value => (value ? undefined : 'Required') }
+        foo: { getValidator: () => value => (value ? undefined : 'Required') }
       }
     )
 
