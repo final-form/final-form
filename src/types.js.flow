@@ -92,9 +92,12 @@ export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
+type FieldValidator = (value: ?any, allValues: Object) => ?any | Promise<?any>
+type GetFieldValidator = () => FieldValidator
+
 export type FieldConfig = $Shape<{
   isEqual: IsEqual,
-  validate: (value: ?any, allValues: Object) => ?any,
+  getValidator: GetFieldValidator,
   validateFields: string[]
 }>
 
@@ -118,7 +121,7 @@ export type InternalFieldState = {
   touched: boolean,
   validateFields: ?(string[]),
   validators: {
-    [number]: (value: ?any, allValues: Object) => ?any | Promise<?any>
+    [number]: GetFieldValidator
   },
   valid: boolean,
   visited: boolean

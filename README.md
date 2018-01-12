@@ -94,7 +94,6 @@ form.submit() // only submits if all validation passes
 * [Official Mutators](#official-mutators)
   * [🏁 Final Form Arrays](#-final-form-arrays)
   * [🏁 Final Form Set Field Data](#-final-form-set-field-data)
-  * [🏁 Final Form Set Field Error](#-final-form-set-field-error)
   * [🏁 Final Form Set Field Touched](#-final-form-set-field-touched)
 * [Libraries](#libraries)
   * [🏁 React Final Form](#-react-final-form)
@@ -271,10 +270,6 @@ Helps managing array structures in form data.
 ### [🏁 Final Form Set Field Data](https://github.com/final-form/final-form-set-field-data)
 
 Sets arbitrary data for fields.
-
-### [🏁 Final Form Set Field Error](https://github.com/final-form/final-form-set-field-error)
-
-Allows total control over field errors.
 
 ### [🏁 Final Form Set Field Touched](https://github.com/final-form/final-form-set-field-touched)
 

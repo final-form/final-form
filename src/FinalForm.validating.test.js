@@ -133,7 +133,7 @@ describe('Field.validation', () => {
       'foo',
       spy1,
       { error: true },
-      { validate: value => (value ? undefined : 'Required') }
+      { getValidator: () => value => (value ? undefined : 'Required') }
     )
 
     const spy2 = jest.fn()
@@ -142,7 +142,8 @@ describe('Field.validation', () => {
       spy2,
       { error: true },
       {
-        validate: value => (value !== 'correct' ? 'Incorrect value' : undefined)
+        getValidator: () => value =>
+          value !== 'correct' ? 'Incorrect value' : undefined
       }
     )
 
@@ -247,7 +248,7 @@ describe('Field.validation', () => {
       confirm,
       { error: true },
       {
-        validate: (value, allValues) =>
+        getValidator: () => (value, allValues) =>
           value === allValues.password ? undefined : 'Does not match'
       }
     )
@@ -287,6 +288,21 @@ describe('Field.validation', () => {
     expect(confirm.mock.calls[3][0].error).toBe('Does not match')
   })
 
+  it('should not mind if getValidator returns nothing', () => {
+    // this is mostly for code coverage
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.registerField(
+      'foo',
+      spy,
+      { error: true },
+      { getValidator: () => undefined }
+    )
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].error).toBeUndefined()
+  })
+
   it('should use field level error over record level error', () => {
     const form = createForm({
       onSubmit: onSubmitMock,
@@ -303,7 +319,7 @@ describe('Field.validation', () => {
       'foo',
       spy,
       { error: true },
-      { validate: value => (value ? undefined : 'Required') }
+      { getValidator: () => value => (value ? undefined : 'Required') }
     )
 
     expect(spy).toHaveBeenCalledTimes(1)
@@ -396,7 +412,7 @@ describe('Field.validation', () => {
       spy,
       { error: true },
       {
-        validate: async (value, allErrors) => {
+        getValidator: () => async (value, allErrors) => {
           const error = value === 'erikras' ? 'Username taken' : undefined
           await sleep(delay)
           return error
@@ -454,7 +470,7 @@ describe('Field.validation', () => {
       spy,
       { error: true },
       {
-        validate: async (value, allErrors) => {
+        getValidator: () => async (value, allErrors) => {
           const error = value === 'erikras' ? 'Username taken' : undefined
           await sleep(delay)
           return error
@@ -498,7 +514,12 @@ describe('Field.validation', () => {
     )
     const spy = jest.fn()
     form.subscribe(spy, { errors: true })
-    form.registerField('customers', array, { error: true }, { validate })
+    form.registerField(
+      'customers',
+      array,
+      { error: true },
+      { getValidator: () => validate }
+    )
     expect(validate).toHaveBeenCalledTimes(1)
     expect(validate.mock.calls[0][0]).toBeUndefined()
     expect(array).toHaveBeenCalledTimes(1)
@@ -585,10 +606,20 @@ describe('Field.validation', () => {
       'foo',
       foo,
       { error: true },
-      { validate: validateFoo, validateFields: [] }
+      { getValidator: () => validateFoo, validateFields: [] }
     )
-    form.registerField('bar', bar, { error: true }, { validate: validateBar })
-    form.registerField('baz', baz, { error: true }, { validate: validateBaz })
+    form.registerField(
+      'bar',
+      bar,
+      { error: true },
+      { getValidator: () => validateBar }
+    )
+    form.registerField(
+      'baz',
+      baz,
+      { error: true },
+      { getValidator: () => validateBaz }
+    )
 
     expect(validateFoo).toHaveBeenCalledTimes(3)
     expect(validateFoo.mock.calls[0][0]).toBeUndefined()
@@ -636,10 +667,20 @@ describe('Field.validation', () => {
       'foo',
       foo,
       { error: true },
-      { validate: validateFoo, validateFields: ['baz'] }
+      { getValidator: () => validateFoo, validateFields: ['baz'] }
     )
-    form.registerField('bar', bar, { error: true }, { validate: validateBar })
-    form.registerField('baz', baz, { error: true }, { validate: validateBaz })
+    form.registerField(
+      'bar',
+      bar,
+      { error: true },
+      { getValidator: () => validateBar }
+    )
+    form.registerField(
+      'baz',
+      baz,
+      { error: true },
+      { getValidator: () => validateBaz }
+    )
 
     expect(validateFoo).toHaveBeenCalledTimes(3)
     expect(validateFoo.mock.calls[0][0]).toBeUndefined()

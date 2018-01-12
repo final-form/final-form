@@ -91,9 +91,12 @@ export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
+type FieldValidator = (value: any, allValues: object) => any | Promise<any>
+type GetFieldValidator = () => FieldValidator
+
 export interface FieldConfig {
   isEqual?: IsEqual
-  validate?: (value: any, allValues: object) => any
+  getValidator?: GetFieldValidator
   validateFields?: string[]
 }
 
@@ -120,7 +123,7 @@ export interface InternalFieldState {
   touched: boolean
   validateFields?: string[]
   validators: {
-    [index: number]: (value: any, allValues: object) => any | Promise<any>
+    [index: number]: GetFieldValidator
   }
   valid: boolean
   visited: boolean
