@@ -28,7 +28,7 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
-export const version = '3.1.0'
+export const version = '4.0.0'
 
 const tripleEquals: IsEqual = (a, b) => a === b
 
