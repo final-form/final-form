@@ -24,22 +24,23 @@ export interface FormSubscription extends Partial<Subscription> {
 }
 
 export interface FormState {
-  active: string
-  dirty: boolean
-  dirtySinceLastSubmit: boolean
-  error: any
-  errors: object
-  initialValues: object
-  invalid: boolean
-  pristine: boolean
-  submitError: any
-  submitErrors: object
-  submitFailed: boolean
-  submitSucceeded: boolean
-  submitting: boolean
-  valid: boolean
-  validating: boolean
-  values: { [key: string]: any }
+  // all values are optional because they must be subscribed to
+  active?: string
+  dirty?: boolean
+  dirtySinceLastSubmit?: boolean
+  error?: any
+  errors?: object
+  initialValues?: object
+  invalid?: boolean
+  pristine?: boolean
+  submitError?: any
+  submitErrors?: object
+  submitFailed?: boolean
+  submitSucceeded?: boolean
+  submitting?: boolean
+  valid?: boolean
+  validating?: boolean
+  values?: { [key: string]: any }
 }
 
 export type FormSubscriber = Subscriber<FormState>
