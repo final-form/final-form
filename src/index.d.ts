@@ -4,23 +4,23 @@ export interface Subscription {
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 
-export interface FormSubscription extends Subscription {
-  active?: boolean
-  dirty?: boolean
-  dirtySinceLastSubmit?: boolean
-  error?: boolean
-  errors?: boolean
-  initialValues?: boolean
-  invalid?: boolean
-  pristine?: boolean
-  submitError?: boolean
-  submitErrors?: boolean
-  submitFailed?: boolean
-  submitSucceeded?: boolean
-  submitting?: boolean
-  valid?: boolean
-  validating?: boolean
-  values?: boolean
+export interface FormSubscription extends Partial<Subscription> {
+  active: boolean
+  dirty: boolean
+  dirtySinceLastSubmit: boolean
+  error: boolean
+  errors: boolean
+  initialValues: boolean
+  invalid: boolean
+  pristine: boolean
+  submitError: boolean
+  submitErrors: boolean
+  submitFailed: boolean
+  submitSucceeded: boolean
+  submitting: boolean
+  valid: boolean
+  validating: boolean
+  values: boolean
 }
 
 export interface FormState {
@@ -36,7 +36,7 @@ export interface FormState {
   submitError?: any
   submitErrors?: object
   submitFailed?: boolean
-  submitSucceeded: boolean
+  submitSucceeded?: boolean
   submitting?: boolean
   valid?: boolean
   validating?: boolean
@@ -68,23 +68,23 @@ export interface FieldState {
   visited?: boolean
 }
 
-export interface FieldSubscription extends Subscription {
-  active?: boolean
-  data?: boolean
-  dirty?: boolean
-  dirtySinceLastSubmit?: boolean
-  error?: boolean
-  initial?: boolean
-  invalid?: boolean
-  length?: boolean
-  pristine?: boolean
-  submitError?: boolean
-  submitFailed?: boolean
-  submitSucceeded?: boolean
-  touched?: boolean
-  valid?: boolean
-  value?: boolean
-  visited?: boolean
+export interface FieldSubscription extends Partial<Subscription> {
+  active: boolean
+  data: boolean
+  dirty: boolean
+  dirtySinceLastSubmit: boolean
+  error: boolean
+  initial: boolean
+  invalid: boolean
+  length: boolean
+  pristine: boolean
+  submitError: boolean
+  submitFailed: boolean
+  submitSucceeded: boolean
+  touched: boolean
+  valid: boolean
+  value: boolean
+  visited: boolean
 }
 
 export type FieldSubscriber = Subscriber<FieldState>
@@ -209,9 +209,9 @@ export interface Config {
 export type Decorator = (form: FormApi) => Unsubscribe
 
 export function createForm(config: Config): FormApi
-export var fieldSubscriptionItems: string[]
-export var formSubscriptionItems: string[]
-export var FORM_ERROR: any
+export const fieldSubscriptionItems: string[]
+export const formSubscriptionItems: string[]
+export const FORM_ERROR: any
 export function getIn(state: object, complexKey: string): any
 export function setIn(state: object, key: string, value: any): object
-export var version: string
+export const version: string
