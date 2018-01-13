@@ -1,6 +1,6 @@
 // tslint:disable no-console
 
-import { Config, createForm } from 'final-form'
+import { Config, createForm } from './index'
 
 const onSubmit: Config['onSubmit'] = (values, callback) => {}
 
