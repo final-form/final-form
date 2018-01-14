@@ -1,13 +1,29 @@
 // tslint:disable no-console
 
-import { Config, createForm } from './index'
+import {Config, createForm, AnyObject} from './index'
 
 const onSubmit: Config['onSubmit'] = (values, callback) => {}
 
-let form = createForm({ onSubmit })
+let form = createForm({ initialValues: {foo: 'bar'}, onSubmit })
+let formState = form.getState()
 
-console.log(form.getState().initialValues as { [key: string]: any })
-console.log(form.getState().values as { [key: string]: any })
+console.log(formState.active as string, formState.active as undefined)
+console.log(formState.dirty as boolean)
+console.log(formState.dirtySinceLastSubmit as boolean)
+console.log(formState.error.foo, formState.error as string, formState.error as boolean)
+console.log(formState.errors as AnyObject, formState.errors.foo)
+console.log(formState.initialValues as AnyObject, formState.initialValues.foo)
+console.log(formState.invalid as boolean)
+console.log(formState.pristine as boolean)
+console.log(formState.submitError as string, formState.submitError as object, formState.submitError as undefined)
+console.log(formState.submitErrors as AnyObject, formState.submitErrors.foo)
+console.log(formState.submitFailed as boolean)
+console.log(formState.submitSucceeded as boolean)
+console.log(formState.submitSucceeded as boolean)
+console.log(formState.submitting as boolean)
+console.log(formState.valid as  boolean)
+console.log(formState.validating as boolean)
+console.log(formState.values as AnyObject, formState.values.foo)
 
 const initialValues: Config['initialValues'] = {
   a: 'a',
@@ -16,6 +32,7 @@ const initialValues: Config['initialValues'] = {
 }
 
 form = createForm({ onSubmit, initialValues })
+formState = form.getState()
 
-console.log(form.getState().pristine as boolean)
-console.log(form.getState().dirty as boolean)
+console.log(formState.pristine as boolean)
+console.log(formState.dirty as boolean)

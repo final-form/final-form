@@ -3,8 +3,9 @@ export interface Subscription {
 }
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
+export interface AnyObject { [key: string]: any }
 
-export interface FormSubscription extends Partial<Subscription> {
+export interface FormSubscription extends Subscription {
   active: boolean
   dirty: boolean
   dirtySinceLastSubmit: boolean
@@ -24,23 +25,23 @@ export interface FormSubscription extends Partial<Subscription> {
 }
 
 export interface FormState {
-  // all values are optional because they must be subscribed to
-  active?: string
-  dirty?: boolean
-  dirtySinceLastSubmit?: boolean
-  error?: any
-  errors?: object
-  initialValues?: object
-  invalid?: boolean
-  pristine?: boolean
-  submitError?: any
-  submitErrors?: object
-  submitFailed?: boolean
-  submitSucceeded?: boolean
-  submitting?: boolean
-  valid?: boolean
-  validating?: boolean
-  values?: { [key: string]: any }
+  // by default: all values are subscribed. if subscription is specified, some values may be undefined
+  active: undefined | string
+  dirty: boolean
+  dirtySinceLastSubmit: boolean
+  error: any
+  errors: AnyObject
+  initialValues: AnyObject
+  invalid: boolean
+  pristine: boolean
+  submitError: any
+  submitErrors: AnyObject
+  submitFailed: boolean
+  submitSucceeded: boolean
+  submitting: boolean
+  valid: boolean
+  validating: boolean
+  values: AnyObject
 }
 
 export type FormSubscriber = Subscriber<FormState>
@@ -68,7 +69,7 @@ export interface FieldState {
   visited?: boolean
 }
 
-export interface FieldSubscription extends Partial<Subscription> {
+export interface FieldSubscription extends Subscription {
   active: boolean
   data: boolean
   dirty: boolean
