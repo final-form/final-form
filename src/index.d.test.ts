@@ -33,6 +33,9 @@ const initialValues: Config['initialValues'] = {
 
 form = createForm({ onSubmit, initialValues })
 formState = form.getState()
-
 console.log(formState.pristine as boolean)
 console.log(formState.dirty as boolean)
+
+// subscription
+form = createForm({ onSubmit, initialValues })
+form.subscribe((state) => {}, { pristine: true })

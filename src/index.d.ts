@@ -1,27 +1,24 @@
-export interface Subscription {
-  [key: string]: boolean
-}
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 export interface AnyObject { [key: string]: any }
 
-export interface FormSubscription extends Subscription {
-  active: boolean
-  dirty: boolean
-  dirtySinceLastSubmit: boolean
-  error: boolean
-  errors: boolean
-  initialValues: boolean
-  invalid: boolean
-  pristine: boolean
-  submitError: boolean
-  submitErrors: boolean
-  submitFailed: boolean
-  submitSucceeded: boolean
-  submitting: boolean
-  valid: boolean
-  validating: boolean
-  values: boolean
+export interface FormSubscription {
+  active?: boolean
+  dirty?: boolean
+  dirtySinceLastSubmit?: boolean
+  error?: boolean
+  errors?: boolean
+  initialValues?: boolean
+  invalid?: boolean
+  pristine?: boolean
+  submitError?: boolean
+  submitErrors?: boolean
+  submitFailed?: boolean
+  submitting?: boolean
+  submitSucceeded?: boolean
+  valid?: boolean
+  validating?: boolean
+  values?: boolean
 }
 
 export interface FormState {
@@ -69,23 +66,23 @@ export interface FieldState {
   visited?: boolean
 }
 
-export interface FieldSubscription extends Subscription {
-  active: boolean
-  data: boolean
-  dirty: boolean
-  dirtySinceLastSubmit: boolean
-  error: boolean
-  initial: boolean
-  invalid: boolean
-  length: boolean
-  pristine: boolean
-  submitError: boolean
-  submitFailed: boolean
-  submitSucceeded: boolean
-  touched: boolean
-  valid: boolean
-  value: boolean
-  visited: boolean
+export interface FieldSubscription {
+  active?: boolean
+  data?: boolean
+  dirty?: boolean
+  dirtySinceLastSubmit?: boolean
+  error?: boolean
+  initial?: boolean
+  invalid?: boolean
+  length?: boolean
+  pristine?: boolean
+  submitError?: boolean
+  submitFailed?: boolean
+  submitSucceeded?: boolean
+  touched?: boolean
+  valid?: boolean
+  value?: boolean
+  visited?: boolean
 }
 
 export type FieldSubscriber = Subscriber<FieldState>
