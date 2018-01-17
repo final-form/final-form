@@ -32,14 +32,13 @@ if (es) {
   throw new Error('no format specified. --environment FORMAT:xxx')
 }
 
-// eslint-disable-next-line no-nested-ternary
-const exports = !es ? 'default' : 'named'
-
 export default {
-  name: 'final-form',
   input: 'src/index.js',
-  output,
-  exports,
+  output: {
+    name: 'final-form',
+    exports: 'named',
+    ...output
+  },
   external: [],
   plugins: [
     resolve({ jsnext: true, main: true }),

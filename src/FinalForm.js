@@ -28,7 +28,7 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
-export const version = '4.0.0'
+export const version = '4.0.1'
 
 const tripleEquals: IsEqual = (a, b) => a === b
 
@@ -356,7 +356,7 @@ const createForm = (config: Config): FormApi => {
       !fieldKeys.every(key =>
         fields[key].isEqual(
           getIn(formState.values, key),
-          getIn(formState.lastSubmittedValues, key)
+          getIn(formState.lastSubmittedValues || {}, key) // || {} is for flow, but causes branch coverage complaint
         )
       )
     )
