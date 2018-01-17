@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "noEmit": true,
     "strict": true
   },
-  "files": ["src/index.d.ts", "src/index.d.test.ts"]
+  "include": [
+    "./src/**/*"
+  ]
 }
