@@ -572,6 +572,8 @@ const createForm = (config: Config): FormApi => {
         Object.keys(fields).forEach(key => {
           fields[key].touched = true
         })
+        state.formState.submitFailed = true
+        notifyFormListeners()
         notifyFieldListeners()
         return // no submit for you!!
       }
