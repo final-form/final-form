@@ -57,8 +57,16 @@ describe('FinalForm.submission', () => {
         return errors
       }
     })
+    const spy = jest.fn()
+    form.subscribe(spy, {
+      submitFailed: true
+    })
     const username = jest.fn()
     form.registerField('username', username, { error: true })
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith({ submitFailed: false })
     expect(username).toHaveBeenCalledTimes(1)
     expect(username.mock.calls[0][0].error).toBe('Required')
 
@@ -66,10 +74,14 @@ describe('FinalForm.submission', () => {
 
     expect(username).toHaveBeenCalledTimes(2)
     expect(username.mock.calls[1][0].error).toBeUndefined()
+    expect(spy).toHaveBeenCalledTimes(1)
 
     expect(onSubmit).not.toHaveBeenCalled()
     form.submit()
     expect(onSubmit).not.toHaveBeenCalled()
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenCalledWith({ submitFailed: true })
   })
 
   it('should call onSubmit when form.submit() is called', () => {
