@@ -1,6 +1,6 @@
 // tslint:disable no-console
 
-import {Config, createForm, AnyObject} from './index'
+import {Config, createForm, AnyObject, Mutator} from './index'
 
 const onSubmit: Config['onSubmit'] = (values, callback) => {}
 
@@ -39,3 +39,19 @@ console.log(formState.dirty as boolean)
 // subscription
 form = createForm({ onSubmit, initialValues })
 form.subscribe((state) => {}, { pristine: true })
+
+
+// mutators
+const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
+  changeValue(state, name, value => newValue)
+}
+
+type Mutators = { setValue: (name: string, value: string) => void }
+form = createForm({
+  mutators: { setValue },
+  onSubmit
+})
+
+// Get form.mutators cast to Mutators
+const mutators: Mutators = form.mutators as Mutators
+mutators.setValue('firstName', 'Kevin')

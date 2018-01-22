@@ -185,7 +185,7 @@ const createForm = (config: Config): FormApi => {
         return returnValue
       }
       return result
-    }, {})
+    }, {}) || {}
 
   const runRecordLevelValidation = (
     setErrors: (errors: Object) => void

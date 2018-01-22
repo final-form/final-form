@@ -153,7 +153,7 @@ export interface FormApi {
   initialize: (values: object) => void
   getRegisteredFields: () => string[]
   getState: () => FormState
-  mutators?: { [key: string]: Function }
+  mutators: { [key: string]: Function }
   submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
