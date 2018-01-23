@@ -34,11 +34,13 @@ if (es) {
 
 export default {
   input: 'src/index.js',
-  output: {
-    name: 'final-form',
-    exports: 'named',
-    ...output
-  },
+  output: Object.assign(
+    {
+      name: 'final-form',
+      exports: 'named'
+    },
+    output
+  ),
   external: [],
   plugins: [
     resolve({ jsnext: true, main: true }),

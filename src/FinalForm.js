@@ -28,7 +28,7 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
-export const version = '4.0.3'
+export const version = '4.0.4'
 
 const tripleEquals: IsEqual = (a, b) => a === b
 
@@ -163,29 +163,30 @@ const createForm = (config: Config): FormApi => {
 
   // bind state to mutators
   const mutatorsApi =
-    mutators &&
-    Object.keys(mutators).reduce((result, key) => {
-      result[key] = (...args) => {
-        const mutatableState = {
-          formState: state.formState,
-          fields: state.fields
+    (mutators &&
+      Object.keys(mutators).reduce((result, key) => {
+        result[key] = (...args) => {
+          const mutatableState = {
+            formState: state.formState,
+            fields: state.fields
+          }
+          const returnValue = mutators[key](args, mutatableState, {
+            changeValue,
+            getIn,
+            setIn,
+            shallowEqual
+          })
+          state.formState = mutatableState.formState
+          state.fields = mutatableState.fields
+          runValidation(undefined, () => {
+            notifyFieldListeners()
+            notifyFormListeners()
+          })
+          return returnValue
         }
-        const returnValue = mutators[key](args, mutatableState, {
-          changeValue,
-          getIn,
-          setIn,
-          shallowEqual
-        })
-        state.formState = mutatableState.formState
-        state.fields = mutatableState.fields
-        runValidation(undefined, () => {
-          notifyFieldListeners()
-          notifyFormListeners()
-        })
-        return returnValue
-      }
-      return result
-    }, {}) || {}
+        return result
+      }, {})) ||
+    {}
 
   const runRecordLevelValidation = (
     setErrors: (errors: Object) => void
