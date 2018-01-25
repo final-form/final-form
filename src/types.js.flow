@@ -17,9 +17,11 @@ export type FormSubscription = $Shape<{
   submitFailed: boolean,
   submitSucceeded: boolean,
   submitting: boolean,
+  touched: boolean,
   valid: boolean,
   validating: boolean,
-  values: boolean
+  values: boolean,
+  visited: boolean
 }> &
   Subscription
 
@@ -38,9 +40,11 @@ export type FormState = $Shape<{
   submitFailed: boolean,
   submitSucceeded: boolean,
   submitting: boolean,
+  touched: { [string]: boolean },
   valid: boolean,
   validating: boolean,
-  values: Object
+  values: Object,
+  visited: { [string]: boolean }
 }>
 
 export type FormSubscriber = Subscriber<FormState>

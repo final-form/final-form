@@ -185,9 +185,11 @@ form.submit() // only submits if all validation passes
     * [`submitFailed?: boolean`](#submitfailed-boolean-2)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-2)
     * [`submitting?: boolean`](#submitting-boolean)
+    * [`touched: { [string]: boolean }`](#touched--string-boolean-)
     * [`valid?: boolean`](#valid-boolean-2)
     * [`validating?: boolean`](#validating-boolean)
     * [`values?: Object`](#values-object)
+    * [`visited: { [string]: boolean }`](#visited--string-boolean-)
   * [`FormSubscriber: (state: FormState) => void`](#formsubscriber-state-formstate--void)
   * [`FormSubscription: { [string]: boolean }`](#formsubscription--string-boolean-)
     * [`active?: boolean`](#active-boolean-2)
@@ -203,9 +205,11 @@ form.submit() // only submits if all validation passes
     * [`submitFailed?: boolean`](#submitfailed-boolean-3)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-3)
     * [`submitting?: boolean`](#submitting-boolean-1)
+    * [`touched?: boolean`](#touched-boolean-2)
     * [`valid?: boolean`](#valid-boolean-3)
     * [`validating?: boolean`](#validating-boolean-1)
     * [`values?: boolean`](#values-boolean)
+    * [`visited?: boolean`](#visited-boolean-2)
   * [`InternalFieldState`](#internalfieldstate)
     * [`active: boolean`](#active-boolean)
     * [`blur: () => void`](#blur---void-1)
@@ -710,6 +714,10 @@ errors. `false` otherwise.
 `true` if the form is currently being submitted asynchronously. `false`
 otherwise.
 
+#### `touched: { [string]: boolean }`
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `touched` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `touched` value for that field will be available under `touched['addresses.shipping.street']`.
+
 #### `valid?: boolean`
 
 `true` if neither the form nor any of its fields has a validation or submission
@@ -724,6 +732,10 @@ otherwise.
 #### `values?: Object`
 
 The current values of the form.
+
+#### `visited: { [string]: boolean }`
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `visited` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `visited` value for that field will be available under `visited['addresses.shipping.street']`.
 
 ### `FormSubscriber: (state: FormState) => void`
 
@@ -795,6 +807,11 @@ When `true` the `FormSubscriber` will be notified of changes to the
 When `true` the `FormSubscriber` will be notified of changes to the `submitting`
 value in `FormState`.
 
+#### `touched?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the `touched`
+value in `FormState`.
+
 #### `valid?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `valid`
@@ -808,6 +825,11 @@ value in `FormState`.
 #### `values?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `values`
+value in `FormState`.
+
+#### `visited?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the `visited`
 value in `FormState`.
 
 ### `InternalFieldState`

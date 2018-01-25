@@ -12,9 +12,11 @@ describe('filterFormState', () => {
     submitFailed: false,
     submitSucceeded: false,
     submitError: 'some submit error',
+    touched: { foo: true, bar: false },
     valid: true,
     validating: false,
-    values: { foo: 'bar' }
+    values: { foo: 'bar' },
+    visited: { foo: true, bar: false }
   }
 
   const testValue = (key, state, newValue) => {
@@ -80,6 +82,10 @@ describe('filterFormState', () => {
     testValue('submitError', state, !state.submitError)
   })
 
+  describe('filterFormState.touched', () => {
+    testValue('touched', state, { foo: true, bar: true })
+  })
+
   describe('filterFormState.valid', () => {
     testValue('valid', state, !state.valid)
   })
@@ -90,5 +96,9 @@ describe('filterFormState', () => {
 
   describe('filterFormState.values', () => {
     testValue('values', state, { foo: 'baz' })
+  })
+
+  describe('filterFormState.visited', () => {
+    testValue('visited', state, { foo: true, bar: true })
   })
 })
