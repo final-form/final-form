@@ -194,7 +194,7 @@ describe('structure.setIn', () => {
     expect(output.a).toBe(a)
     expect(output.b).toBe(b)
     expect(output.dog).toBeDefined()
-    expect(output.dog.length).toBe(1)
+    expect(output.dog.length).toBe(2)
     expect(output.dog[0]).toBe(c)
   })
 
@@ -208,7 +208,7 @@ describe('structure.setIn', () => {
     expect(output.a).toBe(a)
     expect(output.b).toBe(b)
     expect(output.dog).toBeDefined()
-    expect(output.dog.length).toBe(1)
+    expect(output.dog.length).toBe(2)
     expect(output.dog[0]).toBe(c)
   })
 
