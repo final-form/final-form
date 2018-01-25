@@ -361,12 +361,29 @@ const createForm = (config: Config): FormApi => {
         )
       )
     )
+
     formState.valid =
       !formState.error &&
       !formState.submitError &&
       !Object.keys(formState.errors).length &&
       !(formState.submitErrors && Object.keys(formState.submitErrors).length)
     const nextFormState = convertToExternalFormState(formState)
+    const { touched, visited } = fieldKeys.reduce(
+      (result, key) => {
+        result.touched[key] = fields[key].touched
+        result.visited[key] = fields[key].visited
+        return result
+      },
+      { touched: {}, visited: {} }
+    )
+    nextFormState.touched =
+      lastFormState && shallowEqual(lastFormState.touched, touched)
+        ? lastFormState.touched
+        : touched
+    nextFormState.visited =
+      lastFormState && shallowEqual(lastFormState.visited, visited)
+        ? lastFormState.visited
+        : visited
     return lastFormState && shallowEqual(lastFormState, nextFormState)
       ? lastFormState
       : nextFormState

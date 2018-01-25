@@ -196,6 +196,45 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].pristine).toBe(true)
   })
 
+  it('should allow subscribing to touched', () => {
+    const { spy, blur, focus } = prepareFormSubscriber('foo', {
+      touched: true
+    })
+
+    // called twice, once with initial {} and again when field is registered
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[0][0].touched).toEqual({})
+    expect(spy.mock.calls[1][0].touched).toEqual({ foo: false })
+
+    focus('bar')
+
+    // not touched yet
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    blur('bar')
+
+    // foo is now touched
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].touched).toEqual({ foo: true })
+  })
+
+  it('should allow subscribing to visited', () => {
+    const { spy, focus } = prepareFormSubscriber('foo', {
+      visited: true
+    })
+
+    // called twice, once with initial {} and again when field is registered
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[0][0].visited).toEqual({})
+    expect(spy.mock.calls[1][0].visited).toEqual({ foo: false })
+
+    focus('bar')
+
+    // foo is now visited
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].visited).toEqual({ foo: true })
+  })
+
   it('should allow subscribing to form error', () => {
     const { spy, change } = prepareFormSubscriber(
       'foo',
@@ -234,7 +273,7 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].error).toBe('Why no foo?')
   })
 
-  it('should allow subscribing to alls errors', () => {
+  it('should allow subscribing to all errors', () => {
     const { spy, change } = prepareFormSubscriber(
       'foo',
       {

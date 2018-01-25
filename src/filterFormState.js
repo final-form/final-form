@@ -4,7 +4,7 @@ import subscriptionFilter from './subscriptionFilter'
 import type { StateFilter } from './FinalForm'
 import type { FormState, FormSubscription } from './types'
 
-const shallowEqualKeys = []
+const shallowEqualKeys = ['touched', 'visited']
 
 /**
  * Filters items in a FormState based on a FormSubscription

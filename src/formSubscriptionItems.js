@@ -13,7 +13,9 @@ export default [
   'submitErrors',
   'submitFailed',
   'submitSucceeded',
+  'touched',
   'valid',
   'validating',
-  'values'
+  'values',
+  'visited'
 ]
