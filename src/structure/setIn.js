@@ -78,11 +78,7 @@ const setInRecursor = (
 
   // current exists, so make a copy of all its values, and add/update the new one
   const array = [...current]
-  if (result === undefined) {
-    array.splice(numericKey, 1)
-  } else {
-    array[numericKey] = result
-  }
+  array[numericKey] = result
   return array
 }
 
