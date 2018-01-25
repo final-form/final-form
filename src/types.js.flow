@@ -22,8 +22,7 @@ export type FormSubscription = $Shape<{
   validating: boolean,
   values: boolean,
   visited: boolean
-}> &
-  Subscription
+}>
 
 export type FormState = $Shape<{
   // all values are optional because they must be subscribed to
@@ -89,8 +88,7 @@ export type FieldSubscription = $Shape<{
   valid: boolean,
   value: boolean,
   visited: boolean
-}> &
-  Subscription
+}>
 
 export type FieldSubscriber = Subscriber<FieldState>
 
