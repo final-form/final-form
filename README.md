@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 **3.5k gzipped** 💥
+✅ 💥 **3.8k gzipped** 💥
 
 ---
 
@@ -168,10 +168,12 @@ form.submit() // only submits if all validation passes
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
     * [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
-    * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
-    * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
+    * [`pauseValidation: () => void`](#pausevalidation---void)
     * [`registerField: RegisterField`](#registerfield-registerfield)
     * [`reset: () => void`](#reset---void)
+    * [`resumeValidation: () => void`](#resumevalidation---void)
+    * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
+    * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
   * [`FormState`](#formstate)
     * [`active?: string`](#active-string)
     * [`dirty?: boolean`](#dirty-boolean-2)
@@ -626,16 +628,9 @@ The form will be `pristine` after this call.
 
 The state-bound versions of the mutators provided to [`Config`](#config).
 
-#### `submit: () => ?Promise<?Object>`
+#### `pauseValidation: () => void`
 
-Submits the form if there are currently no validation errors. It may return
-`undefined` or a `Promise` depending on the nature of the `onSubmit`
-configuration value given to the form when it was created.
-
-#### `subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`
-
-Subscribes to changes to the form. **The `subscriber` will _only_ be called when
-values specified in `subscription` change.** A form can have many subscribers.
+If called, validation will be paused until `resumeValidation()` is called.
 
 #### `registerField: RegisterField`
 
@@ -652,6 +647,21 @@ error.
 
 Resets the values back to the initial values the form was initialized with. Or
 empties all the values if the form was not initialized.
+
+#### `resumeValidation: () => void`
+
+Resumes validation paused by `pauseValidation()`. If validation was blocked while it was paused, validation will be run.
+
+#### `submit: () => ?Promise<?Object>`
+
+Submits the form if there are currently no validation errors. It may return
+`undefined` or a `Promise` depending on the nature of the `onSubmit`
+configuration value given to the form when it was created.
+
+#### `subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`
+
+Subscribes to changes to the form. **The `subscriber` will _only_ be called when
+values specified in `subscription` change.** A form can have many subscribers.
 
 ### `FormState`
 

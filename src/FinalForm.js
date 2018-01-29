@@ -153,6 +153,8 @@ const createForm = (config: Config): FormApi => {
     lastFormState: undefined
   }
   let inBatch = false
+  let validationPaused = false
+  let validationBlocked = false
   const changeValue: ChangeValue = (state, name, mutate) => {
     if (state.fields[name]) {
       const before = getIn(state.formState.values, name)
@@ -238,6 +240,15 @@ const createForm = (config: Config): FormApi => {
   }
 
   const runValidation = (fieldChanged: ?string, callback: ?() => void) => {
+    if (validationPaused) {
+      validationBlocked = true
+      /* istanbul ignore next */
+      if (callback) {
+        callback()
+      }
+      return
+    }
+
     const { fields, formState } = state
     let fieldKeys = Object.keys(fields)
     if (
@@ -496,6 +507,10 @@ const createForm = (config: Config): FormApi => {
       })
     },
 
+    pauseValidation: () => {
+      validationPaused = true
+    },
+
     registerField: (
       name: string,
       subscriber: FieldSubscriber,
@@ -581,6 +596,18 @@ const createForm = (config: Config): FormApi => {
 
     reset: () => {
       api.initialize(state.formState.initialValues || {})
+    },
+
+    resumeValidation: () => {
+      validationPaused = false
+      if (validationBlocked) {
+        // validation was attempted while it was paused, so run it now
+        runValidation(undefined, () => {
+          notifyFieldListeners()
+          notifyFormListeners()
+        })
+      }
+      validationBlocked = false
     },
 
     submit: () => {

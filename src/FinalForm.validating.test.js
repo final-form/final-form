@@ -713,4 +713,68 @@ describe('Field.validation', () => {
     expect(validateBaz).toHaveBeenCalledTimes(3)
     expect(validateBaz.mock.calls[2][0]).toBeUndefined()
   })
+
+  it('should allow validation to be paused', () => {
+    const validate = jest.fn()
+    const form = createForm({ onSubmit: onSubmitMock, validate })
+    expect(validate).toHaveBeenCalledTimes(1)
+
+    const fooValidate = jest.fn()
+    const barValidate = jest.fn()
+    const bazValidate = jest.fn()
+    form.pauseValidation()
+    form.registerField(
+      'foo',
+      () => {},
+      { error: true },
+      { getValidator: () => fooValidate }
+    )
+    form.registerField(
+      'bar',
+      () => {},
+      { error: true },
+      { getValidator: () => barValidate }
+    )
+    form.registerField(
+      'baz',
+      () => {},
+      { error: true },
+      { getValidator: () => bazValidate }
+    )
+
+    expect(validate).toHaveBeenCalledTimes(1)
+    expect(fooValidate).not.toHaveBeenCalled()
+    expect(barValidate).not.toHaveBeenCalled()
+    expect(bazValidate).not.toHaveBeenCalled()
+
+    form.resumeValidation()
+
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(fooValidate).toHaveBeenCalledTimes(1)
+    expect(barValidate).toHaveBeenCalledTimes(1)
+    expect(bazValidate).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not fire validation on resume if it is not needed', () => {
+    const validate = jest.fn()
+    const form = createForm({ onSubmit: onSubmitMock, validate })
+    expect(validate).toHaveBeenCalledTimes(1)
+
+    const fooValidate = jest.fn()
+    form.registerField(
+      'foo',
+      () => {},
+      { error: true },
+      { getValidator: () => fooValidate }
+    )
+
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(fooValidate).toHaveBeenCalledTimes(1)
+
+    form.pauseValidation()
+    form.resumeValidation()
+
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(fooValidate).toHaveBeenCalledTimes(1)
+  })
 })

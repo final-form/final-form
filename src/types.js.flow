@@ -156,13 +156,15 @@ export type FormApi = {
   getRegisteredFields: () => string[],
   getState: () => FormState,
   mutators: { [string]: Function },
+  pauseValidation: () => void,
+  registerField: RegisterField,
+  reset: () => void,
+  resumeValidation: () => void,
   submit: () => ?Promise<?Object>,
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
-  ) => Unsubscribe,
-  registerField: RegisterField,
-  reset: () => void
+  ) => Unsubscribe
 }
 
 export type DebugFunction = (
