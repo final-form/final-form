@@ -205,7 +205,8 @@ export type Config = {
     callback: ?(errors: ?Object) => void
   ) => ?Object | Promise<?Object> | void,
   validate?: (values: Object) => Object | Promise<Object>,
-  validateOnBlur?: boolean
+  validateOnBlur?: boolean,
+  persistentSubmitErrors?: boolean
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe
