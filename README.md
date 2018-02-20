@@ -98,6 +98,7 @@ form.submit() // only submits if all validation passes
 * [Libraries](#libraries)
   * [🏁 React Final Form](#-react-final-form)
   * [Vue Final Form](#vue-final-form)
+  * [Define Form and React Define Form](#define-form-and-react-define-form)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
@@ -269,6 +270,8 @@ For more examples using React, see
 
 ## Official Mutators
 
+Mutators are functions that can be provided to 🏁 Final Form that are allowed to mutate _any_ part of the form state. You provide an object of mutators when you call `createForm()`, and then they are exposed (bound to the form state) on the `form` instance you get back, under `form.mutators.whatever()`. A mutator function is given: the arguments it was called with, the form state, and a collection of utility functions, like `getIn` and `setIn` to read and mutate arbitrarily deep values, as well as `changeValue`, which updates a field value in the form state. They can mutate the state however they wish, and then the form and field subscribers that need to be notified will be notified. [Read more about Mutators](https://medium.com/@erikras/final-form-arrays-and-mutators-13159cb7d285).
+
 ### [🏁 Final Form Arrays](https://github.com/final-form/final-form-arrays)
 
 Helps managing array structures in form data.
@@ -290,6 +293,10 @@ A form state management system for React that uses 🏁 Final Form under the hoo
 ### [Vue Final Form](https://github.com/egoist/vue-finalform)
 
 A form state management system for Vue that uses 🏁 Final Form under the hood.
+
+### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
+
+Define Form offers alternative typescript bindings for 🏁 Final Form. The key difference is that _the form data is now a strongly typed object_, rather than an `any`. This makes the `initialValues` config option required.
 
 ## API
 
