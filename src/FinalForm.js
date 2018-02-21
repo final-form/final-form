@@ -155,6 +155,13 @@ const createForm = (config: Config): FormApi => {
   let inBatch = false
   let validationPaused = false
   let validationBlocked = false
+  let nextAsyncValidationKey = 0
+  const asyncValidationPromises: { [number]: Promise<*> } = {}
+  const clearAsyncValidationPromise = key => result => {
+    delete asyncValidationPromises[key]
+    return result
+  }
+
   const changeValue: ChangeValue = (state, name, mutate) => {
     if (state.fields[name]) {
       const before = getIn(state.formState.values, name)
@@ -197,7 +204,12 @@ const createForm = (config: Config): FormApi => {
     if (validate) {
       const errorsOrPromise = validate({ ...state.formState.values }) // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
-        promises.push(errorsOrPromise.then(setErrors))
+        const asyncValidationPromiseKey = nextAsyncValidationKey++
+        const promise = errorsOrPromise
+          .then(setErrors)
+          .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+        promises.push(promise)
+        asyncValidationPromises[asyncValidationPromiseKey] = promise
       } else {
         setErrors(errorsOrPromise)
       }
@@ -228,7 +240,12 @@ const createForm = (config: Config): FormApi => {
           state.formState.values
         )
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          promises.push(errorOrPromise.then(setError))
+          const asyncValidationPromiseKey = nextAsyncValidationKey++
+          const promise = errorOrPromise
+            .then(setError)
+            .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+          promises.push(promise)
+          asyncValidationPromises[asyncValidationPromiseKey] = promise
         } else if (!error) {
           // first registered validator wins
           error = errorOrPromise
@@ -622,6 +639,18 @@ const createForm = (config: Config): FormApi => {
         notifyFieldListeners()
         return // no submit for you!!
       }
+      const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises)
+      if (asyncValidationPromisesKeys.length) {
+        // still waiting on async validation to complete...
+        Promise.all(
+          asyncValidationPromisesKeys.reduce((result, key) => {
+            result.push(asyncValidationPromises[Number(key)])
+            return result
+          }, [])
+        ).then(() => api.submit())
+        return
+      }
+
       let resolvePromise
       let completeCalled = false
       const complete = (errors: ?Object) => {
