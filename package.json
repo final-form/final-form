@@ -44,7 +44,7 @@
     "glow": "^1.2.2",
     "husky": "^0.14.3",
     "jest": "^22.4.0",
-    "lint-staged": "^6.1.1",
+    "lint-staged": "^7.0.0",
     "nps": "^5.7.1",
     "nps-utils": "^1.5.0",
     "prettier": "^1.10.2",
