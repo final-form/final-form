@@ -462,4 +462,24 @@ describe('FinalForm.submission', () => {
     expect(foo2).toHaveBeenCalledTimes(2)
     expect(foo2.mock.calls[1][0].dirtySinceLastSubmit).toBe(true)
   })
+
+  it('should not submit if form is still validating', () => {
+    const onSubmit = jest.fn()
+    const form = createForm({ onSubmit })
+
+    const username = jest.fn()
+    form.registerField(
+      'username',
+      username,
+      { error: true },
+      {
+        getValidator: () => () => {
+          return new Promise(resolve => resolve('Error'))
+        }
+      }
+    )
+
+    form.submit()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
 })
