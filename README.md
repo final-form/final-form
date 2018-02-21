@@ -99,6 +99,7 @@ form.submit() // only submits if all validation passes
   * [🏁 React Final Form](#-react-final-form)
   * [Vue Final Form](#vue-final-form)
   * [Define Form and React Define Form](#define-form-and-react-define-form)
+* [Polyfills](#polyfills)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
@@ -297,6 +298,15 @@ A form state management system for Vue that uses 🏁 Final Form under the hood.
 ### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
 
 Define Form offers alternative typescript bindings for 🏁 Final Form. The key difference is that _the form data is now a strongly typed object_, rather than an `any`. This makes the `initialValues` config option required.
+
+## Polyfills
+
+React Native and some versions of IE will require that you install two polyfills for 🏁 Final Form to work properly.
+
+```js
+import 'core-js/es6/symbol'
+import 'core-js/fn/symbol/iterator'
+```
 
 ## API
 
