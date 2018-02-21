@@ -359,6 +359,80 @@ describe('FinalForm.submission', () => {
     })
   })
 
+  it('should clear submission flags and errors on reset', () => {
+    const onSubmit = jest.fn((values, form) => {
+      const errors = {}
+      if (values.foo === 'bar') {
+        errors.foo = 'Sorry, "bar" is an illegal value'
+      }
+      return errors
+    })
+    const form = createForm({ onSubmit })
+    const spy = jest.fn()
+    expect(spy).not.toHaveBeenCalled()
+    form.subscribe(spy, {
+      dirtySinceLastSubmit: true,
+      valid: true,
+      submitSucceeded: true,
+      submitFailed: true
+    })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({
+      dirtySinceLastSubmit: false,
+      valid: true,
+      submitSucceeded: false,
+      submitFailed: false
+    })
+    const foo = jest.fn()
+    form.registerField('foo', foo, { submitError: true, valid: true })
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0]).toEqual(
+      expect.objectContaining({
+        submitError: undefined,
+        valid: true
+      })
+    )
+
+    form.change('foo', 'bar')
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    form.submit()
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0]).toEqual({
+      dirtySinceLastSubmit: false,
+      valid: false,
+      submitSucceeded: false,
+      submitFailed: true
+    })
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0]).toEqual(
+      expect.objectContaining({
+        submitError: 'Sorry, "bar" is an illegal value',
+        valid: false
+      })
+    )
+
+    form.reset()
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0]).toEqual({
+      dirtySinceLastSubmit: false,
+      valid: true,
+      submitSucceeded: false,
+      submitFailed: false
+    })
+    expect(foo).toHaveBeenCalledTimes(3)
+    expect(foo.mock.calls[2][0]).toEqual(
+      expect.objectContaining({
+        submitError: undefined,
+        valid: true
+      })
+    )
+  })
+
   it('should maintain field-level and form-level dirtySinceLastSubmit', () => {
     const onSubmit = jest.fn((values, form) => {
       const errors = {}
