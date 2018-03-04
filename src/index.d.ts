@@ -1,6 +1,8 @@
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
-export interface AnyObject { [key: string]: any }
+export interface AnyObject {
+  [key: string]: any
+}
 
 export interface FormSubscription {
   active?: boolean
@@ -154,6 +156,7 @@ export interface FormApi {
   getRegisteredFields: () => string[]
   getState: () => FormState
   mutators: { [key: string]: Function }
+  setConfig: (name: string, value: any) => void
   submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,

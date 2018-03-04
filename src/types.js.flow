@@ -160,6 +160,7 @@ export type FormApi = {
   registerField: RegisterField,
   reset: () => void,
   resumeValidation: () => void,
+  setConfig: (name: string, value: any) => void,
   submit: () => ?Promise<?Object>,
   subscribe: (
     subscriber: FormSubscriber,
