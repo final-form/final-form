@@ -173,27 +173,27 @@ const createForm = (config: Config): FormApi => {
 
   // bind state to mutators
   const getMutatorApi = key => (...args) => {
-    if (!mutators) {
-      throw new Error('mutators should not be null or undefined')
+    if (mutators) {
+      const mutatableState = {
+        formState: state.formState,
+        fields: state.fields
+      }
+      const returnValue = mutators[key](args, mutatableState, {
+        changeValue,
+        getIn,
+        setIn,
+        shallowEqual
+      })
+      state.formState = mutatableState.formState
+      state.fields = mutatableState.fields
+      runValidation(undefined, () => {
+        notifyFieldListeners()
+        notifyFormListeners()
+      })
+      return returnValue
     }
-    const mutatableState = {
-      formState: state.formState,
-      fields: state.fields
-    }
-    const returnValue = mutators[key](args, mutatableState, {
-      changeValue,
-      getIn,
-      setIn,
-      shallowEqual
-    })
-    state.formState = mutatableState.formState
-    state.fields = mutatableState.fields
-    runValidation(undefined, () => {
-      notifyFieldListeners()
-      notifyFormListeners()
-    })
-    return returnValue
   }
+  
   const mutatorsApi =
     (mutators &&
       Object.keys(mutators).reduce((result, key) => {
