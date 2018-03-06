@@ -666,6 +666,10 @@ const createForm = (config: Config): FormApi => {
           break
         case 'validate':
           validate = value
+          runValidation(undefined, () => {
+            notifyFieldListeners()
+            notifyFormListeners()
+          })
           break
         case 'validateOnBlur':
           validateOnBlur = value
