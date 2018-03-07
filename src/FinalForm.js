@@ -121,7 +121,7 @@ const createForm = (config: Config): FormApi => {
   if (!config) {
     throw new Error('No config specified')
   }
-  const {
+  let {
     debug,
     initialValues,
     mutators,
@@ -171,28 +171,32 @@ const createForm = (config: Config): FormApi => {
   }
 
   // bind state to mutators
+  const getMutatorApi = key => (...args) => {
+    if (mutators) {
+      const mutatableState = {
+        formState: state.formState,
+        fields: state.fields
+      }
+      const returnValue = mutators[key](args, mutatableState, {
+        changeValue,
+        getIn,
+        setIn,
+        shallowEqual
+      })
+      state.formState = mutatableState.formState
+      state.fields = mutatableState.fields
+      runValidation(undefined, () => {
+        notifyFieldListeners()
+        notifyFormListeners()
+      })
+      return returnValue
+    }
+  }
+  
   const mutatorsApi =
     (mutators &&
       Object.keys(mutators).reduce((result, key) => {
-        result[key] = (...args) => {
-          const mutatableState = {
-            formState: state.formState,
-            fields: state.fields
-          }
-          const returnValue = mutators[key](args, mutatableState, {
-            changeValue,
-            getIn,
-            setIn,
-            shallowEqual
-          })
-          state.formState = mutatableState.formState
-          state.fields = mutatableState.fields
-          runValidation(undefined, () => {
-            notifyFieldListeners()
-            notifyFormListeners()
-          })
-          return returnValue
-        }
+        result[key] = getMutatorApi(key)
         return result
       }, {})) ||
     {}
@@ -629,6 +633,49 @@ const createForm = (config: Config): FormApi => {
         })
       }
       validationBlocked = false
+    },
+
+    setConfig: (name: string, value: any) => {
+      switch (name) {
+        case 'debug':
+          debug = value
+          break
+        case 'initialValues':
+          api.initialize(value)
+          break
+        case 'mutators':
+          mutators = value
+          if (value) {
+            Object.keys(mutatorsApi).forEach(key => {
+              if (!(key in value)) {
+                delete mutatorsApi[key]
+              }
+            })
+            Object.keys(value).forEach(key => {
+              mutatorsApi[key] = getMutatorApi(key)
+            })
+          } else {
+            Object.keys(mutatorsApi).forEach(key => {
+              delete mutatorsApi[key]
+            })
+          }
+          break
+        case 'onSubmit':
+          onSubmit = value
+          break
+        case 'validate':
+          validate = value
+          runValidation(undefined, () => {
+            notifyFieldListeners()
+            notifyFormListeners()
+          })
+          break
+        case 'validateOnBlur':
+          validateOnBlur = value
+          break
+        default:
+          throw new Error('Unrecognised option ' + name)
+      }
     },
 
     submit: () => {
