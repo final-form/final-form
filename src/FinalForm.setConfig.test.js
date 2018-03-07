@@ -1,6 +1,5 @@
 import createForm from './FinalForm'
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const onSubmitMock = (values, callback) => {}
 
 describe('FinalForm.setConfig', () => {

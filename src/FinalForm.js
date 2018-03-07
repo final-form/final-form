@@ -22,7 +22,6 @@ import type {
   InternalFormState,
   IsEqual,
   MutableState,
-  Mutator,
   Subscriber,
   Subscription,
   Unsubscribe
