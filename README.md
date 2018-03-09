@@ -1013,7 +1013,7 @@ modifies the form state.
 
 Takes a name, and a
 [`FieldSubscriber`](#fieldsubscriber-state-fieldstate--void),
-[`FieldSubscriber`](#fieldsubscriber-state-fieldstate--void), and a
+[`FieldSubscription`](#fieldsubscription--string-boolean-), and a
 [`FieldConfig`](#fieldconfig) and registers a field subscription.
 
 ### `Tools`
