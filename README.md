@@ -204,6 +204,7 @@ form.submit() // only submits if all validation passes
     * [`initialValues?: boolean`](#initialvalues-boolean)
     * [`invalid?: boolean`](#invalid-boolean-3)
     * [`pristine?: boolean`](#pristine-boolean-3)
+    * [`setConfig: (name: string, value: any) => void`](#setconfig-name-string-value-any--void)
     * [`submitError?: boolean`](#submiterror-boolean-1)
     * [`submitErrors?: boolean`](#submiterrors-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-3)
@@ -811,6 +812,10 @@ value in `FormState`.
 
 When `true` the `FormSubscriber` will be notified of changes to the `pristine`
 value in `FormState`.
+
+#### `setConfig: (name: string, value: any) => void`
+
+Allows mutating the values on the original [`Config`](#config).
 
 #### `submitError?: boolean`
 
