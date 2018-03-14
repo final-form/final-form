@@ -730,4 +730,34 @@ describe('FinalForm.subscribing', () => {
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].valid).toBe(false)
   })
+
+  it('should schedule form notifications for after current notifications are complete', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const subscriber1 = jest.fn(({ values }) => {
+      if (values.foo && values.foo % 2 === 1) {
+        // increment foo to make it even
+        form.change('foo', values.foo + 1)
+      }
+    })
+    const subscriber2 = jest.fn()
+    form.subscribe(subscriber1, { values: true })
+    form.subscribe(subscriber2, { values: true })
+    expect(subscriber1).toHaveBeenCalled()
+    expect(subscriber1).toHaveBeenCalledTimes(1)
+    expect(subscriber1.mock.calls[0][0].values).toEqual({})
+    expect(subscriber2).toHaveBeenCalled()
+    expect(subscriber2).toHaveBeenCalledTimes(1)
+    expect(subscriber2.mock.calls[0][0].values).toEqual({})
+    form.registerField('foo', () => {}, {})
+
+    form.change('foo', 1)
+
+    expect(subscriber1).toHaveBeenCalledTimes(3)
+    expect(subscriber1.mock.calls[1][0].values).toEqual({ foo: 1 })
+    expect(subscriber1.mock.calls[2][0].values).toEqual({ foo: 2 })
+
+    expect(subscriber2).toHaveBeenCalledTimes(3)
+    expect(subscriber2.mock.calls[1][0].values).toEqual({ foo: 1 })
+    expect(subscriber2.mock.calls[2][0].values).toEqual({ foo: 2 })
+  })
 })

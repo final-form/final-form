@@ -30,7 +30,7 @@ import type {
 export const FORM_ERROR = Symbol('form-error')
 export const version = '4.2.0'
 
-const tripleEquals: IsEqual = (a, b) => a === b
+const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
 
 type Subscribers<T: Object> = {
   index: number,
@@ -173,6 +173,7 @@ const createForm = (config: Config): FormApi => {
   // bind state to mutators
   const getMutatorApi = key => (...args) => {
     if (mutators) {
+      // ^^ causes branch coverage warning, but needed to appease the Flow gods
       const mutatableState = {
         formState: state.formState,
         fields: state.fields
@@ -192,7 +193,7 @@ const createForm = (config: Config): FormApi => {
       return returnValue
     }
   }
-  
+
   const mutatorsApi =
     (mutators &&
       Object.keys(mutators).reduce((result, key) => {
@@ -432,16 +433,32 @@ const createForm = (config: Config): FormApi => {
       }, {})
     )
 
+  let notifying: boolean = false
+  let scheduleNotification: boolean = false
   const notifyFormListeners = () => {
-    callDebug()
-    if (inBatch) {
-      return
-    }
-    const { lastFormState } = state
-    const nextFormState = calculateNextFormState()
-    if (nextFormState !== lastFormState) {
-      state.lastFormState = nextFormState
-      notify(state.subscribers, nextFormState, lastFormState, filterFormState)
+    if (notifying) {
+      scheduleNotification = true
+    } else {
+      notifying = true
+      callDebug()
+      if (!inBatch) {
+        const { lastFormState } = state
+        const nextFormState = calculateNextFormState()
+        if (nextFormState !== lastFormState) {
+          state.lastFormState = nextFormState
+          notify(
+            state.subscribers,
+            nextFormState,
+            lastFormState,
+            filterFormState
+          )
+        }
+      }
+      notifying = false
+      if (scheduleNotification) {
+        scheduleNotification = false
+        notifyFormListeners()
+      }
     }
   }
 
@@ -635,7 +652,7 @@ const createForm = (config: Config): FormApi => {
       validationBlocked = false
     },
 
-    setConfig: (name: string, value: any) => {
+    setConfig: (name: string, value: any): void => {
       switch (name) {
         case 'debug':
           debug = value
