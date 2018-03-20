@@ -3,48 +3,48 @@ export type Subscription = { [string]: boolean }
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 
-export type FormSubscription = $Shape<{
-  active: boolean,
-  dirty: boolean,
-  dirtySinceLastSubmit: boolean,
-  error: boolean,
-  errors: boolean,
-  initialValues: boolean,
-  invalid: boolean,
-  pristine: boolean,
-  submitError: boolean,
-  submitErrors: boolean,
-  submitFailed: boolean,
-  submitSucceeded: boolean,
-  submitting: boolean,
-  touched: boolean,
-  valid: boolean,
-  validating: boolean,
-  values: boolean,
-  visited: boolean
-}>
+export type FormSubscription = {
+  active?: boolean,
+  dirty?: boolean,
+  dirtySinceLastSubmit?: boolean,
+  error?: boolean,
+  errors?: boolean,
+  initialValues?: boolean,
+  invalid?: boolean,
+  pristine?: boolean,
+  submitError?: boolean,
+  submitErrors?: boolean,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  submitting?: boolean,
+  touched?: boolean,
+  valid?: boolean,
+  validating?: boolean,
+  values?: boolean,
+  visited?: boolean
+}
 
-export type FormState = $Shape<{
+export type FormState = {
   // all values are optional because they must be subscribed to
-  active: string,
-  dirty: boolean,
-  dirtySinceLastSubmit: boolean,
-  error: any,
-  errors: Object,
-  initialValues: Object,
-  invalid: boolean,
-  pristine: boolean,
-  submitError: any,
-  submitErrors: Object,
-  submitFailed: boolean,
-  submitSucceeded: boolean,
-  submitting: boolean,
-  touched: { [string]: boolean },
-  valid: boolean,
-  validating: boolean,
-  values: Object,
-  visited: { [string]: boolean }
-}>
+  active?: string,
+  dirty?: boolean,
+  dirtySinceLastSubmit?: boolean,
+  error?: any,
+  errors?: Object,
+  initialValues?: Object,
+  invalid?: boolean,
+  pristine?: boolean,
+  submitError?: any,
+  submitErrors?: Object,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  submitting?: boolean,
+  touched?: { [string]: boolean },
+  valid?: boolean,
+  validating?: boolean,
+  values?: Object,
+  visited?: { [string]: boolean }
+}
 
 export type FormSubscriber = Subscriber<FormState>
 
@@ -71,37 +71,40 @@ export type FieldState = {
   visited?: boolean
 }
 
-export type FieldSubscription = $Shape<{
-  active: boolean,
-  data: boolean,
-  dirty: boolean,
-  dirtySinceLastSubmit: boolean,
-  error: boolean,
-  initial: boolean,
-  invalid: boolean,
-  length: boolean,
-  pristine: boolean,
-  submitError: boolean,
-  submitFailed: boolean,
-  submitSucceeded: boolean,
-  touched: boolean,
-  valid: boolean,
-  value: boolean,
-  visited: boolean
-}>
+export type FieldSubscription = {
+  active?: boolean,
+  data?: boolean,
+  dirty?: boolean,
+  dirtySinceLastSubmit?: boolean,
+  error?: boolean,
+  initial?: boolean,
+  invalid?: boolean,
+  length?: boolean,
+  pristine?: boolean,
+  submitError?: boolean,
+  submitFailed?: boolean,
+  submitSucceeded?: boolean,
+  touched?: boolean,
+  valid?: boolean,
+  value?: boolean,
+  visited?: boolean
+}
 
 export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
-type FieldValidator = (value: ?any, allValues: Object) => ?any | Promise<?any>
-type GetFieldValidator = () => FieldValidator
+export type FieldValidator = (
+  value: ?any,
+  allValues: Object
+) => ?any | Promise<?any>
+export type GetFieldValidator = () => ?FieldValidator
 
-export type FieldConfig = $Shape<{
-  isEqual: IsEqual,
-  getValidator: GetFieldValidator,
-  validateFields: string[]
-}>
+export type FieldConfig = {
+  isEqual?: IsEqual,
+  getValidator?: GetFieldValidator,
+  validateFields?: string[]
+}
 
 export type RegisterField = (
   name: string,
@@ -160,6 +163,7 @@ export type FormApi = {
   registerField: RegisterField,
   reset: () => void,
   resumeValidation: () => void,
+  setConfig: (name: string, value: any) => void,
   submit: () => ?Promise<?Object>,
   subscribe: (
     subscriber: FormSubscriber,

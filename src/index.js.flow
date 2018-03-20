@@ -7,12 +7,16 @@ export type {
   Decorator,
   FieldState,
   FieldSubscription,
+  FieldValidator,
+  FormApi,
   FormState,
   FormSubscription,
+  GetFieldValidator,
   MutableState,
   Mutator,
   RegisterField,
-  Tools
+  Tools,
+  Unsubscribe
 } from './types'
 
 declare export function createForm(config: Config): FormApi

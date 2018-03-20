@@ -28,9 +28,9 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
-export const version = '4.2.0'
+export const version = '4.3.1'
 
-const tripleEquals: IsEqual = (a, b) => a === b
+const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
 
 type Subscribers<T: Object> = {
   index: number,
@@ -121,7 +121,7 @@ const createForm = (config: Config): FormApi => {
   if (!config) {
     throw new Error('No config specified')
   }
-  const {
+  let {
     debug,
     initialValues,
     mutators,
@@ -156,6 +156,13 @@ const createForm = (config: Config): FormApi => {
   let inBatch = false
   let validationPaused = false
   let validationBlocked = false
+  let nextAsyncValidationKey = 0
+  const asyncValidationPromises: { [number]: Promise<*> } = {}
+  const clearAsyncValidationPromise = key => result => {
+    delete asyncValidationPromises[key]
+    return result
+  }
+
   const changeValue: ChangeValue = (state, name, mutate) => {
     if (state.fields[name]) {
       const before = getIn(state.formState.values, name)
@@ -165,28 +172,33 @@ const createForm = (config: Config): FormApi => {
   }
 
   // bind state to mutators
+  const getMutatorApi = key => (...args) => {
+    if (mutators) {
+      // ^^ causes branch coverage warning, but needed to appease the Flow gods
+      const mutatableState = {
+        formState: state.formState,
+        fields: state.fields
+      }
+      const returnValue = mutators[key](args, mutatableState, {
+        changeValue,
+        getIn,
+        setIn,
+        shallowEqual
+      })
+      state.formState = mutatableState.formState
+      state.fields = mutatableState.fields
+      runValidation(undefined, () => {
+        notifyFieldListeners()
+        notifyFormListeners()
+      })
+      return returnValue
+    }
+  }
+
   const mutatorsApi =
     (mutators &&
       Object.keys(mutators).reduce((result, key) => {
-        result[key] = (...args) => {
-          const mutatableState = {
-            formState: state.formState,
-            fields: state.fields
-          }
-          const returnValue = mutators[key](args, mutatableState, {
-            changeValue,
-            getIn,
-            setIn,
-            shallowEqual
-          })
-          state.formState = mutatableState.formState
-          state.fields = mutatableState.fields
-          runValidation(undefined, () => {
-            notifyFieldListeners()
-            notifyFormListeners()
-          })
-          return returnValue
-        }
+        result[key] = getMutatorApi(key)
         return result
       }, {})) ||
     {}
@@ -198,7 +210,12 @@ const createForm = (config: Config): FormApi => {
     if (validate) {
       const errorsOrPromise = validate({ ...state.formState.values }) // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
-        promises.push(errorsOrPromise.then(setErrors))
+        const asyncValidationPromiseKey = nextAsyncValidationKey++
+        const promise = errorsOrPromise
+          .then(setErrors)
+          .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+        promises.push(promise)
+        asyncValidationPromises[asyncValidationPromiseKey] = promise
       } else {
         setErrors(errorsOrPromise)
       }
@@ -229,7 +246,12 @@ const createForm = (config: Config): FormApi => {
           state.formState.values
         )
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          promises.push(errorOrPromise.then(setError))
+          const asyncValidationPromiseKey = nextAsyncValidationKey++
+          const promise = errorOrPromise
+            .then(setError)
+            .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+          promises.push(promise)
+          asyncValidationPromises[asyncValidationPromiseKey] = promise
         } else if (!error) {
           // first registered validator wins
           error = errorOrPromise
@@ -412,16 +434,32 @@ const createForm = (config: Config): FormApi => {
       }, {})
     )
 
+  let notifying: boolean = false
+  let scheduleNotification: boolean = false
   const notifyFormListeners = () => {
-    callDebug()
-    if (inBatch) {
-      return
-    }
-    const { lastFormState } = state
-    const nextFormState = calculateNextFormState()
-    if (nextFormState !== lastFormState) {
-      state.lastFormState = nextFormState
-      notify(state.subscribers, nextFormState, lastFormState, filterFormState)
+    if (notifying) {
+      scheduleNotification = true
+    } else {
+      notifying = true
+      callDebug()
+      if (!inBatch) {
+        const { lastFormState } = state
+        const nextFormState = calculateNextFormState()
+        if (nextFormState !== lastFormState) {
+          state.lastFormState = nextFormState
+          notify(
+            state.subscribers,
+            nextFormState,
+            lastFormState,
+            filterFormState
+          )
+        }
+      }
+      notifying = false
+      if (scheduleNotification) {
+        scheduleNotification = false
+        notifyFormListeners()
+      }
     }
   }
 
@@ -596,6 +634,10 @@ const createForm = (config: Config): FormApi => {
     },
 
     reset: () => {
+      state.formState.submitFailed = false
+      state.formState.submitSucceeded = false
+      delete state.formState.submitErrors
+      delete state.formState.lastSubmittedValues
       api.initialize(state.formState.initialValues || {})
     },
 
@@ -611,6 +653,49 @@ const createForm = (config: Config): FormApi => {
       validationBlocked = false
     },
 
+    setConfig: (name: string, value: any): void => {
+      switch (name) {
+        case 'debug':
+          debug = value
+          break
+        case 'initialValues':
+          api.initialize(value)
+          break
+        case 'mutators':
+          mutators = value
+          if (value) {
+            Object.keys(mutatorsApi).forEach(key => {
+              if (!(key in value)) {
+                delete mutatorsApi[key]
+              }
+            })
+            Object.keys(value).forEach(key => {
+              mutatorsApi[key] = getMutatorApi(key)
+            })
+          } else {
+            Object.keys(mutatorsApi).forEach(key => {
+              delete mutatorsApi[key]
+            })
+          }
+          break
+        case 'onSubmit':
+          onSubmit = value
+          break
+        case 'validate':
+          validate = value
+          runValidation(undefined, () => {
+            notifyFieldListeners()
+            notifyFormListeners()
+          })
+          break
+        case 'validateOnBlur':
+          validateOnBlur = value
+          break
+        default:
+          throw new Error('Unrecognised option ' + name)
+      }
+    },
+
     submit: () => {
       const { formState, fields } = state
       if (hasSyncErrors() && !persistentSubmitErrors) {
@@ -623,6 +708,18 @@ const createForm = (config: Config): FormApi => {
         notifyFieldListeners()
         return // no submit for you!!
       }
+      const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises)
+      if (asyncValidationPromisesKeys.length) {
+        // still waiting on async validation to complete...
+        Promise.all(
+          asyncValidationPromisesKeys.reduce((result, key) => {
+            result.push(asyncValidationPromises[Number(key)])
+            return result
+          }, [])
+        ).then(() => api.submit())
+        return
+      }
+
       let resolvePromise
       let completeCalled = false
       const complete = (errors: ?Object) => {

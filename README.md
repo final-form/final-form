@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 **3.8k gzipped** 💥
+✅ 💥 [**4.1k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -98,6 +98,8 @@ form.submit() // only submits if all validation passes
 * [Libraries](#libraries)
   * [🏁 React Final Form](#-react-final-form)
   * [Vue Final Form](#vue-final-form)
+  * [Define Form and React Define Form](#define-form-and-react-define-form)
+* [Polyfills](#polyfills)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
@@ -202,6 +204,7 @@ form.submit() // only submits if all validation passes
     * [`initialValues?: boolean`](#initialvalues-boolean)
     * [`invalid?: boolean`](#invalid-boolean-3)
     * [`pristine?: boolean`](#pristine-boolean-3)
+    * [`setConfig: (name: string, value: any) => void`](#setconfig-name-string-value-any--void)
     * [`submitError?: boolean`](#submiterror-boolean-1)
     * [`submitErrors?: boolean`](#submiterrors-boolean)
     * [`submitFailed?: boolean`](#submitfailed-boolean-3)
@@ -252,6 +255,9 @@ form.submit() // only submits if all validation passes
     * [`Tools.setIn: (state: Object, key: string, value: any) => Object`](#toolssetin-state-object-key-string-value-any--object)
     * [`Tools.shallowEqual: (a: any, b: any) => boolean`](#toolsshallowequal-a-any-b-any--boolean)
   * [`Unsubscribe : () => void`](#unsubscribe----void)
+* [Contributors](#contributors)
+* [Backers](#backers)
+* [Sponsors](#sponsors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -268,6 +274,8 @@ For more examples using React, see
 [🏁 React Final Form Examples](https://github.com/final-form/react-final-form#examples).
 
 ## Official Mutators
+
+Mutators are functions that can be provided to 🏁 Final Form that are allowed to mutate _any_ part of the form state. You provide an object of mutators when you call `createForm()`, and then they are exposed (bound to the form state) on the `form` instance you get back, under `form.mutators.whatever()`. A mutator function is given: the arguments it was called with, the form state, and a collection of utility functions, like `getIn` and `setIn` to read and mutate arbitrarily deep values, as well as `changeValue`, which updates a field value in the form state. They can mutate the state however they wish, and then the form and field subscribers that need to be notified will be notified. [Read more about Mutators](https://medium.com/@erikras/final-form-arrays-and-mutators-13159cb7d285).
 
 ### [🏁 Final Form Arrays](https://github.com/final-form/final-form-arrays)
 
@@ -290,6 +298,19 @@ A form state management system for React that uses 🏁 Final Form under the hoo
 ### [Vue Final Form](https://github.com/egoist/vue-finalform)
 
 A form state management system for Vue that uses 🏁 Final Form under the hood.
+
+### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
+
+Define Form offers alternative typescript bindings for 🏁 Final Form. The key difference is that _the form data is now a strongly typed object_, rather than an `any`. This makes the `initialValues` config option required.
+
+## Polyfills
+
+React Native and some versions of IE will require that you install two polyfills for 🏁 Final Form to work properly.
+
+```js
+import 'core-js/es6/symbol'
+import 'core-js/fn/symbol/iterator'
+```
 
 ## API
 
@@ -792,6 +813,10 @@ value in `FormState`.
 When `true` the `FormSubscriber` will be notified of changes to the `pristine`
 value in `FormState`.
 
+#### `setConfig: (name: string, value: any) => void`
+
+Allows mutating the values on the original [`Config`](#config).
+
 #### `submitError?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the
@@ -993,7 +1018,7 @@ modifies the form state.
 
 Takes a name, and a
 [`FieldSubscriber`](#fieldsubscriber-state-fieldstate--void),
-[`FieldSubscriber`](#fieldsubscriber-state-fieldstate--void), and a
+[`FieldSubscription`](#fieldsubscription--string-boolean-), and a
 [`FieldConfig`](#fieldconfig) and registers a field subscription.
 
 ### `Tools`
@@ -1024,3 +1049,29 @@ objects have the same keys and the values are `===`, `false` otherwise.
 ### `Unsubscribe : () => void`
 
 Unsubscribes a listener.
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/final-form/react-final-form/graphs/contributors"><img src="https://opencollective.com/final-form/contributors.svg?width=890" /></a>
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/final-form#backer)]
+
+<a href="https://opencollective.com/final-form#backers" target="_blank"><img src="https://opencollective.com/final-form/backers.svg?width=890"></a>
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/final-form#sponsor)]
+
+<a href="https://opencollective.com/final-form/sponsor/0/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/1/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/2/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/3/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/4/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/5/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/6/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/7/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/8/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/final-form/sponsor/9/website" target="_blank"><img src="https://opencollective.com/final-form/sponsor/9/avatar.svg"></a>

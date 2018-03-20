@@ -156,6 +156,7 @@ export interface FormApi {
   getRegisteredFields: () => string[]
   getState: () => FormState
   mutators: { [key: string]: Function }
+  setConfig: (name: string, value: any) => void
   submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
