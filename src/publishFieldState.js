@@ -2,6 +2,7 @@
 import type { InternalFieldState, InternalFormState } from './types'
 import type { FieldState } from './types'
 import getIn from './structure/getIn'
+import { ARRAY_ERROR } from './FinalForm'
 
 /**
  * Converts internal field state to published field state
@@ -21,7 +22,10 @@ const publishFieldState = (
   } = formState
   const { active, blur, change, data, focus, name, touched, visited } = field
   const value = getIn(values, name)
-  const error = getIn(errors, name)
+  let error = getIn(errors, name)
+  if (error && error[ARRAY_ERROR]) {
+    error = error[ARRAY_ERROR]
+  }
   const submitError = submitErrors && getIn((submitErrors: Object), name)
   const initial = initialValues && getIn(initialValues, name)
   const pristine = field.isEqual(initial, value)
