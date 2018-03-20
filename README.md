@@ -631,9 +631,9 @@ Changes the value of the given field.
 
 Focuses (marks active) the given field.
 
-#### `getFormState: (field: string) => FieldState`
+#### `getFieldState: (field: string) => ?FieldState`
 
-Returns the state of a specific field as it was last reported to its listeners.
+Returns the state of a specific field as it was last reported to its listeners, or `undefined` if the field has not been registered.
 
 #### `getRegisteredFields: () => string[]`
 
