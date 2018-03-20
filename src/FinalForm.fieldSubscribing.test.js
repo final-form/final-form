@@ -44,6 +44,16 @@ describe('Field.subscribing', () => {
     expect(form.getRegisteredFields()).toEqual(['foo', 'bar', 'baz'])
   })
 
+  it('should provide a access to field state', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    form.registerField('foo', () => {}, {})
+    form.registerField('bar', () => {}, {})
+    form.registerField('baz', () => {}, {})
+    expect(form.getFieldState('foo')).toBeDefined()
+    expect(form.getFieldState('foo').name).toBe('foo')
+    expect(form.getFieldState('notafield')).toBeUndefined()
+  })
+
   it('should allow subscribing to active', () => {
     const { foo: { blur, focus, spy } } = prepareFieldSubscribers(
       {},

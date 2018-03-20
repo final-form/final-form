@@ -166,6 +166,7 @@ form.submit() // only submits if all validation passes
     * [`blur: (name: string) => void`](#blur-name-string--void)
     * [`change: (name: string, value: ?any) => void`](#change-name-string-value-any--void)
     * [`focus: (name: string) => void`](#focus-name-string--void)
+    * [`getFormState: (field: string) => FieldState`](#getformstate-field-string--fieldstate)
     * [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
@@ -633,6 +634,10 @@ Changes the value of the given field.
 #### `focus: (name: string) => void`
 
 Focuses (marks active) the given field.
+
+#### `getFieldState: (field: string) => ?FieldState`
+
+Returns the state of a specific field as it was last reported to its listeners, or `undefined` if the field has not been registered.
 
 #### `getRegisteredFields: () => string[]`
 
