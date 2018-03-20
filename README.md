@@ -331,6 +331,10 @@ field. Useful for subscribing to everything.
 An _à la carte_ list of all the possible things you can subscribe to for a form.
 Useful for subscribing to everything.
 
+### `ARRAY_ERROR: Symbol`
+
+A special `Symbol` key used to return an error for an array of fields.
+
 ### `FORM_ERROR: Symbol`
 
 A special `Symbol` key used to return a whole-form error inside error objects

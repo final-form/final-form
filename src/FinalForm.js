@@ -28,6 +28,7 @@ import type {
 } from './types'
 
 export const FORM_ERROR = Symbol('form-error')
+export const ARRAY_ERROR = Symbol('array-error')
 export const version = '4.3.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
@@ -312,14 +313,28 @@ const createForm = (config: Config): FormApi => {
 
     const processErrors = () => {
       let merged = { ...recordLevelErrors }
-      fieldKeys.forEach(name => {
-        if (fields[name]) {
-          // make sure field is still registered
-          // field-level errors take precedent over record-level errors
-          const error = fieldLevelErrors[name] || getIn(recordLevelErrors, name)
-          if (error) {
-            merged = setIn(merged, name, error)
+      const forEachError = (fn: (name: string, error: any) => void) => {
+        fieldKeys.forEach(name => {
+          if (fields[name]) {
+            // make sure field is still registered
+            // field-level errors take precedent over record-level errors
+            const error =
+              fieldLevelErrors[name] || getIn(recordLevelErrors, name)
+            if (error) {
+              fn(name, error)
+            }
           }
+        })
+      }
+      forEachError((name, error) => {
+        merged = setIn(merged, name, error)
+      })
+      forEachError((name, error) => {
+        if (error && error[ARRAY_ERROR]) {
+          const existing = getIn(merged, name)
+          const copy: any = [...existing]
+          copy[ARRAY_ERROR] = error[ARRAY_ERROR]
+          merged = setIn(merged, name, copy)
         }
       })
       if (!shallowEqual(formState.errors, merged)) {

@@ -1,4 +1,4 @@
-import createForm from './FinalForm'
+import createForm, { ARRAY_ERROR } from './FinalForm'
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const onSubmitMock = (values, callback) => {}
@@ -776,5 +776,50 @@ describe('Field.validation', () => {
 
     expect(validate).toHaveBeenCalledTimes(2)
     expect(fooValidate).toHaveBeenCalledTimes(1)
+  })
+
+  it('should allow for array fields to both have errors and for the array itself to have an error', () => {
+    const validate = jest.fn(values => {
+      const errors = {}
+      errors.items = values.items.map(value => (value ? undefined : 'Required'))
+      errors.items[ARRAY_ERROR] = 'Need more items'
+      return errors
+    })
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate,
+      initialValues: {
+        items: ['Dog', '']
+      }
+    })
+    expect(validate).toHaveBeenCalledTimes(1)
+
+    const items = jest.fn()
+    const items0 = jest.fn()
+    const items1 = jest.fn()
+    form.registerField('items', items, { error: true })
+    expect(items).toHaveBeenCalled()
+    expect(items).toHaveBeenCalledTimes(1)
+    expect(items.mock.calls[0][0].error).toBe('Need more items')
+
+    form.registerField('items[0]', items0, { error: true })
+    expect(items0).toHaveBeenCalled()
+    expect(items0).toHaveBeenCalledTimes(1)
+    expect(items0.mock.calls[0][0].error).toBeUndefined()
+
+    form.registerField('items[1]', items1, { error: true })
+    expect(items1).toHaveBeenCalled()
+    expect(items1).toHaveBeenCalledTimes(1)
+    expect(items1.mock.calls[0][0].error).toBe('Required')
+
+    expect(validate).toHaveBeenCalledTimes(4)
+
+    form.change('items[1]', 'Cat')
+    expect(validate).toHaveBeenCalledTimes(5)
+    expect(items).toHaveBeenCalledTimes(1)
+    expect(items0).toHaveBeenCalledTimes(1)
+    expect(items1).toHaveBeenCalledTimes(2)
+    expect(items1.mock.calls[1][0].error).toBeUndefined()
   })
 })
