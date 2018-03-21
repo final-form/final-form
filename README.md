@@ -3,7 +3,7 @@
 ![Final Form](banner.png)
 
 [![NPM Version](https://img.shields.io/npm/v/final-form.svg?style=flat)](https://www.npmjs.com/package/final-form)
-[![NPM Downloads](https://img.shields.io/npm/dm/final-form.svg?style=flat)](https://www.npmjs.com/package/final-form)
+[![NPM Downloads](https://img.shields.io/npm/dm/final-form.svg?style=flat)](https://npm-stat.com/charts.html?package=final-form)
 [![Build Status](https://travis-ci.org/final-form/final-form.svg?branch=master)](https://travis-ci.org/final-form/final-form)
 [![codecov.io](https://codecov.io/gh/final-form/final-form/branch/master/graph/badge.svg)](https://codecov.io/gh/final-form/final-form)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
