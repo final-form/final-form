@@ -894,4 +894,37 @@ describe('Field.validation', () => {
     expect(bar).toHaveBeenCalledTimes(2)
     expect(bar.mock.calls[1][0].error).toBeUndefined()
   })
+
+  it('should show form as invalid if has field-level validation errors', () => {
+    // Created while debugging https://github.com/final-form/react-final-form/issues/196
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { invalid: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].invalid).toBe(false)
+
+    const foo = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { error: true, invalid: true },
+      { getValidator: () => value => (value ? undefined : 'Required') }
+    )
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].invalid).toBe(true)
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBe('Required')
+    expect(foo.mock.calls[0][0].invalid).toBe(true)
+
+    form.change('foo', 'hi')
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].invalid).toBe(false)
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].error).toBeUndefined()
+    expect(foo.mock.calls[1][0].invalid).toBe(false)
+  })
 })
