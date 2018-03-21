@@ -2,7 +2,7 @@
 import type { InternalFieldState, InternalFormState } from './types'
 import type { FieldState } from './types'
 import getIn from './structure/getIn'
-import { ARRAY_ERROR } from './FinalForm'
+import { ARRAY_ERROR } from './symbols'
 
 /**
  * Converts internal field state to published field state
