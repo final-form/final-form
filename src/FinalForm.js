@@ -26,9 +26,7 @@ import type {
   Subscription,
   Unsubscribe
 } from './types'
-
-export const FORM_ERROR = Symbol('form-error')
-export const ARRAY_ERROR = Symbol('array-error')
+import { FORM_ERROR, ARRAY_ERROR } from './symbols'
 export const version = '4.3.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
@@ -285,9 +283,11 @@ const createForm = (config: Config): FormApi => {
     }
 
     // pare down field keys to actually validate
+    let limitedFieldLevelValidation = false
     if (fieldChanged) {
       const { validateFields } = fields[fieldChanged]
       if (validateFields) {
+        limitedFieldLevelValidation = true
         fieldKeys = validateFields.length
           ? validateFields.concat(fieldChanged)
           : [fieldChanged]
@@ -312,22 +312,27 @@ const createForm = (config: Config): FormApi => {
     ]
 
     const processErrors = () => {
-      let merged = { ...recordLevelErrors }
+      let merged = {
+        ...(limitedFieldLevelValidation ? formState.errors : {}),
+        ...recordLevelErrors
+      }
       const forEachError = (fn: (name: string, error: any) => void) => {
         fieldKeys.forEach(name => {
           if (fields[name]) {
             // make sure field is still registered
             // field-level errors take precedent over record-level errors
-            const error =
-              fieldLevelErrors[name] || getIn(recordLevelErrors, name)
-            if (error) {
-              fn(name, error)
+            if (getValidators(fields[name]).length) {
+              // this field uses field-level validation
+              fn(name, fieldLevelErrors[name])
+            } else if (validate) {
+              // we have record level validation
+              fn(name, getIn(recordLevelErrors, name))
             }
           }
         })
       }
       forEachError((name, error) => {
-        merged = setIn(merged, name, error)
+        merged = setIn(merged, name, error) || {}
       })
       forEachError((name, error) => {
         if (error && error[ARRAY_ERROR]) {

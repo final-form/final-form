@@ -1,4 +1,5 @@
-import createForm, { ARRAY_ERROR } from './FinalForm'
+import createForm from './FinalForm'
+import { ARRAY_ERROR } from './symbols'
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const onSubmitMock = (values, callback) => {}
@@ -329,21 +330,20 @@ describe('Field.validation', () => {
 
     change('hi')
 
-    // error now changes to record level
+    // record level errors will be ignored
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy.mock.calls[1][0].error).toBe('Too short')
+    expect(spy.mock.calls[1][0].error).toBeUndefined()
 
     change('hi there')
 
     // no errors
-    expect(spy).toHaveBeenCalledTimes(3)
-    expect(spy.mock.calls[2][0].error).toBeUndefined()
+    expect(spy).toHaveBeenCalledTimes(2)
 
     change('')
 
-    // error goes back to field level
-    expect(spy).toHaveBeenCalledTimes(4)
-    expect(spy.mock.calls[3][0].error).toBe('Required')
+    // field level error returns
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].error).toBe('Required')
   })
 
   it('should allow record-level async validation via promises', async () => {
@@ -518,7 +518,10 @@ describe('Field.validation', () => {
       'customers',
       array,
       { error: true },
-      { getValidator: () => validate }
+      {
+        getValidator: () => validate,
+        validateFields: []
+      }
     )
     expect(validate).toHaveBeenCalledTimes(1)
     expect(validate.mock.calls[0][0]).toBeUndefined()
@@ -821,5 +824,73 @@ describe('Field.validation', () => {
     expect(items0).toHaveBeenCalledTimes(1)
     expect(items1).toHaveBeenCalledTimes(2)
     expect(items1.mock.calls[1][0].error).toBeUndefined()
+  })
+
+  it('should not blow away all field-level validation errors when one is remedied and no validateFields', () => {
+    // https://github.com/final-form/final-form/issues/75
+    const form = createForm({ onSubmit: onSubmitMock })
+    const config = {
+      getValidator: () => value => (value ? undefined : 'Required'),
+      validateFields: []
+    }
+
+    const foo = jest.fn()
+    const bar = jest.fn()
+    form.registerField('foo', foo, { error: true }, config)
+    form.registerField('bar', bar, { error: true }, config)
+
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBe('Required')
+
+    expect(bar).toHaveBeenCalled()
+    expect(bar).toHaveBeenCalledTimes(1)
+    expect(bar.mock.calls[0][0].error).toBe('Required')
+
+    form.change('bar', 'hi')
+
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(bar).toHaveBeenCalledTimes(2)
+    expect(bar.mock.calls[1][0].error).toBeUndefined()
+  })
+
+  it('should not blow away all field-level validation errors when one is remedied and one validateFields', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+
+    const foo = jest.fn()
+    const bar = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { error: true },
+      {
+        getValidator: () => value => (value ? undefined : 'Required'),
+        validateFields: ['baz']
+      }
+    )
+    form.registerField(
+      'bar',
+      bar,
+      { error: true },
+      {
+        getValidator: () => value => (value ? undefined : 'Required'),
+        validateFields: ['baz']
+      }
+    )
+    form.registerField('baz', () => {}, {})
+
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBe('Required')
+
+    expect(bar).toHaveBeenCalled()
+    expect(bar).toHaveBeenCalledTimes(1)
+    expect(bar.mock.calls[0][0].error).toBe('Required')
+
+    form.change('bar', 'hi')
+
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(bar).toHaveBeenCalledTimes(2)
+    expect(bar.mock.calls[1][0].error).toBeUndefined()
   })
 })

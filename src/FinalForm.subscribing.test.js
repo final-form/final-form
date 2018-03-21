@@ -1,4 +1,5 @@
-import createForm, { FORM_ERROR } from './FinalForm'
+import createForm from './FinalForm'
+import { FORM_ERROR } from './symbols'
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const onSubmitMock = (values, callback) => {}
