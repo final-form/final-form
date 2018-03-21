@@ -330,20 +330,21 @@ describe('Field.validation', () => {
 
     change('hi')
 
-    // record level errors will be ignored
+    // error now changes to record level
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy.mock.calls[1][0].error).toBeUndefined()
+    expect(spy.mock.calls[1][0].error).toBe('Too short')
 
     change('hi there')
 
     // no errors
-    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].error).toBeUndefined()
 
     change('')
 
-    // field level error returns
-    expect(spy).toHaveBeenCalledTimes(3)
-    expect(spy.mock.calls[2][0].error).toBe('Required')
+    // error goes back to field level
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].error).toBe('Required')
   })
 
   it('should allow record-level async validation via promises', async () => {

@@ -321,13 +321,18 @@ const createForm = (config: Config): FormApi => {
           if (fields[name]) {
             // make sure field is still registered
             // field-level errors take precedent over record-level errors
-            if (getValidators(fields[name]).length) {
-              // this field uses field-level validation
-              fn(name, fieldLevelErrors[name])
-            } else if (validate) {
-              // we have record level validation
-              fn(name, getIn(recordLevelErrors, name))
-            }
+            const recordLevelError = getIn(recordLevelErrors, name)
+            const errorFromParent = getIn(merged, name)
+            const hasFieldLevelValidation = getValidators(fields[name]).length
+            const fieldLevelError = fieldLevelErrors[name]
+            fn(
+              name,
+              (hasFieldLevelValidation && fieldLevelError) ||
+                (validate && recordLevelError) ||
+                (!recordLevelError && !limitedFieldLevelValidation
+                  ? errorFromParent
+                  : undefined)
+            )
           }
         })
       }
