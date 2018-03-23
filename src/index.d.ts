@@ -206,6 +206,7 @@ export interface Config {
   ) => object | Promise<object | undefined> | undefined | void
   validate?: (values: object) => object | Promise<object>
   validateOnBlur?: boolean
+  persistentSubmitErrors?: boolean
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe

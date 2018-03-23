@@ -126,7 +126,8 @@ const createForm = (config: Config): FormApi => {
     mutators,
     onSubmit,
     validate,
-    validateOnBlur
+    validateOnBlur,
+    persistentSubmitErrors
   } = config
   if (!onSubmit) {
     throw new Error('No onSubmit function specified')
@@ -727,7 +728,7 @@ const createForm = (config: Config): FormApi => {
 
     submit: () => {
       const { formState, fields } = state
-      if (hasSyncErrors()) {
+      if (hasSyncErrors() && !persistentSubmitErrors) {
         // mark all fields as touched
         Object.keys(fields).forEach(key => {
           fields[key].touched = true

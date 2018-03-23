@@ -42,6 +42,33 @@ describe('FinalForm.submission', () => {
     expect(onSubmit.mock.calls[0][0].username).toBe('erikras')
   })
 
+  it('should submit if form has validation errors and persistentSubmitErrors is true', () => {
+    const onSubmit = jest.fn()
+    const persistentSubmitErrors = true
+    const form = createForm({
+      onSubmit,
+      persistentSubmitErrors,
+      validate: values => {
+        const errors = {}
+        if (!values.username) {
+          errors.username = 'Required'
+        }
+        return errors
+      }
+    })
+    const username = jest.fn()
+    const password = jest.fn()
+    form.registerField('username', username, { error: true })
+    form.registerField('password', password, { touched: true })
+    expect(username).toHaveBeenCalledTimes(1)
+    expect(username.mock.calls[0][0].error).toBe('Required')
+    expect(password).toHaveBeenCalledTimes(1)
+    expect(password.mock.calls[0][0].touched).toBe(false)
+
+    form.submit()
+    expect(onSubmit).toHaveBeenCalled()
+  })
+
   it('should not submit if form has validation errors, even on non-registered fields', () => {
     const onSubmit = jest.fn()
     const form = createForm({
