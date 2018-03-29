@@ -409,16 +409,16 @@ Validation errors must be in the same shape as the values of the form. You may
 return a generic error for the whole form using the special `FORM_ERROR` symbol
 key.
 
-An optional callback for debugging that returns the form state and the states of
-all the fields. It's called _on every state change_. A typical thing to pass in
-might be `console.log`.
-
 #### `validateOnBlur?: boolean`
 
 If `true`, validation will happen on blur. If `false`, validation will happen on
 change. Defaults to `false`.
 
 ### `DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`
+
+An optional callback for debugging that receives the form state and the states of
+all the fields. It's called _on every state change_. A typical thing to pass in
+might be `console.log`.
 
 ### `Decorator: (form: FormApi) => Unsubscribe`
 
