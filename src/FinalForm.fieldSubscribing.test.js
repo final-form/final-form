@@ -248,6 +248,32 @@ describe('Field.subscribing', () => {
     expect(spy.mock.calls[1][0].initial).toBe('baz')
   })
 
+  it('should allow reseting with specific initial new values', () => {
+    const { form, foo: { spy } } = prepareFieldSubscribers(
+      {},
+      {
+        foo: { initial: true }
+      },
+      {},
+      {}
+    )
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].initial).toBeUndefined()
+
+    form.reset()
+
+    // same initial value, duh
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    form.reset({ foo: 'baz' })
+
+    // new initial value
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].initial).toBe('baz')
+  })
+
   it('should allow subscribing to invalid with whole-record validation', () => {
     const { foo: { change, spy } } = prepareFieldSubscribers(
       {},

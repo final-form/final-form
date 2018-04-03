@@ -681,10 +681,9 @@ that should return `undefined` if the value is valid, or an error. It can
 optionally return a `Promise` that _resolves_ (not rejects) to `undefined` or an
 error.
 
-#### `reset: () => void`
+#### `reset: (initialValues: ?Object) => void`
 
-Resets the values back to the initial values the form was initialized with. Or
-empties all the values if the form was not initialized.
+Resets the values back to the initial values the form was initialized with. Or empties all the values if the form was not initialized. If you provide `initialValues` they will be used as the new initial values.
 
 #### `resumeValidation: () => void`
 
