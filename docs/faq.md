@@ -69,4 +69,4 @@ import 'core-js/fn/symbol/iterator'
 
 ## Why do my numeric keys result in an array structure?
 
-The field name parsing code in 🏁 Final Form was modeled after Lodash's [`_.set()`](https://lodash.com/docs/#set). Writing a parser that detects that `foo.0.bar` is different from `foo[0].bar` is _extremely_ complicated.
+The field name parsing code in 🏁 Final Form was modeled after Lodash's [`_.set()`](https://lodash.com/docs/#set). Writing a parser that detects that `foo.0.bar` is different from `foo[0].bar` is _extremely_ complicated. [Read more about field names](https://github.com/final-form/final-form#field-names).
