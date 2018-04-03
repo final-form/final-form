@@ -108,10 +108,12 @@ form.submit() // only submits if all validation passes
   * [Vue Final Form](#vue-final-form)
   * [Define Form and React Define Form](#define-form-and-react-define-form)
 * [Polyfills](#polyfills)
+* [Field Names](#field-names)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
   * [`formSubscriptionItems: string[]`](#formsubscriptionitems-string)
+  * [`ARRAY_ERROR: Symbol`](#array_error-symbol)
   * [`FORM_ERROR: Symbol`](#form_error-symbol)
   * [`getIn(state: Object, complexKey: string): any`](#getinstate-object-complexkey-string-any)
   * [`setIn(state: Object, key: string, value: any): Object`](#setinstate-object-key-string-value-any-object)
@@ -174,14 +176,14 @@ form.submit() // only submits if all validation passes
     * [`blur: (name: string) => void`](#blur-name-string--void)
     * [`change: (name: string, value: ?any) => void`](#change-name-string-value-any--void)
     * [`focus: (name: string) => void`](#focus-name-string--void)
-    * [`getFormState: (field: string) => FieldState`](#getformstate-field-string--fieldstate)
+    * [`getFieldState: (field: string) => ?FieldState`](#getfieldstate-field-string--fieldstate)
     * [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
     * [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
     * [`pauseValidation: () => void`](#pausevalidation---void)
     * [`registerField: RegisterField`](#registerfield-registerfield)
-    * [`reset: () => void`](#reset---void)
+    * [`reset: (initialValues: ?Object) => void`](#reset-initialvalues-object--void)
     * [`resumeValidation: () => void`](#resumevalidation---void)
     * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
@@ -320,6 +322,32 @@ React Native and some versions of IE will require that you install two polyfills
 import 'core-js/es6/symbol'
 import 'core-js/fn/symbol/iterator'
 ```
+
+## Field Names
+
+Field names are strings that allow dot-and-bracket syntax, allowing you to create arbitrarily deeply nested fields. There are four main things you need to understand about how field names are used to read and write the form values in 🏁 Final Form.
+
+* `.` and `[` are treated the same.
+* `]` is ignored.
+* `Number` keys will result in array structures. [Why?](#why-do-my-numeric-keys-result-in-an-array-structure)
+* Setting `undefined` or `''` to a field value deletes empty structures. [Why?](https://github.com/final-form/final-form/blob/master/docs/faq.md#why-does--final-form-set-my--field-value-to-undefined)
+
+It is very similar to Lodash's [`_.set()`](https://lodash.com/docs/#set), except that empty structures are removed. Let's look at some examples:
+
+| Field Name    | Initial Structure                     | Setting Value | Result                         |
+| ------------- | ------------------------------------- | ------------- | ------------------------------ |
+| `bar`         | `{}`                                  | `'foo'`       | `{ bar: 'foo' }`               |
+| `bar.frog`    | `{}`                                  | `'foo'`       | `{ bar: { frog: 'foo' } }`     |
+| `bar[0]`      | `{}`                                  | `'foo'`       | `{ bar: [ 'foo' ] }`           |
+| `bar.0`       | `{}`                                  | `'foo'`       | `{ bar: [ 'foo' ] }`           |
+| `bar[1]`      | `{}`                                  | `'foo'`       | `{ bar: [ null, 'foo' ] }`     |
+| `bar[0].frog` | `{}`                                  | `'foo'`       | `{ bar: [ { frog: 'foo' } ] }` |
+| `bar`         | `{ bar: 'foo' }`                      | `undefined`   | `{ }`                          |
+| `bar`         | `{ bar: 'foo' }`                      | `''`          | `{ }`                          |
+| `bar.frog`    | `{ bar: { frog: 'foo' }, other: 42 }` | `undefined`   | `{ other: 42 }`                |
+| `bar.frog`    | `{ bar: { frog: 'foo' }, other: 42 }` | `''`          | `{ other: 42 }`                |
+
+[Here is a sandbox](https://8ypq7n41z0.codesandbox.io/) that you can play around with to get a better understanding of how it works.
 
 ## API
 
