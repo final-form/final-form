@@ -107,6 +107,9 @@ form.submit() // only submits if all validation passes
   * [🏁 React Final Form](#-react-final-form)
   * [Vue Final Form](#vue-final-form)
   * [Define Form and React Define Form](#define-form-and-react-define-form)
+  * [🏁 Final Form Focus 🧐](#-final-form-focus-)
+  * [🏁 React Final Form HTML5 Validation](#-react-final-form-html5-validation)
+  * [🏁 React Final Form Listeners](#-react-final-form-listeners)
 * [Polyfills](#polyfills)
 * [Field Names](#field-names)
 * [API](#api)
@@ -313,6 +316,18 @@ A form state management system for Vue that uses 🏁 Final Form under the hood.
 ### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
 
 Define Form offers alternative typescript bindings for 🏁 Final Form. The key difference is that _the form data is now a strongly typed object_, rather than an `any`. This makes the `initialValues` config option required.
+
+### [🏁 Final Form Focus 🧐](https://github.com/final-form/final-form-focus)
+
+A "decorator" that will attempt to apply focus to the first field with an error upon an attempted form submission.
+
+### [🏁 React Final Form HTML5 Validation](https://github.com/final-form/react-final-form-html5-validation)
+
+A swap-in replacement for 🏁 React Final Form's `<Field>` component to provide HTML5 Validation.
+
+### [🏁 React Final Form Listeners](https://github.com/final-form/react-final-form-listeners)
+
+A collection of useful components for listening to fields in a 🏁 React Final Form.
 
 ## Polyfills
 
