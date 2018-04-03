@@ -662,12 +662,12 @@ const createForm = (config: Config): FormApi => {
       }
     },
 
-    reset: () => {
+    reset: (initialValues = state.formState.initialValues) => {
       state.formState.submitFailed = false
       state.formState.submitSucceeded = false
       delete state.formState.submitErrors
       delete state.formState.lastSubmittedValues
-      api.initialize(state.formState.initialValues || {})
+      api.initialize(initialValues || {})
     },
 
     resumeValidation: () => {
