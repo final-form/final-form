@@ -329,7 +329,7 @@ Field names are strings that allow dot-and-bracket syntax, allowing you to creat
 
 * `.` and `[` are treated the same.
 * `]` is ignored.
-* `Number` keys will result in array structures. [Why?](#why-do-my-numeric-keys-result-in-an-array-structure)
+* `Number` keys will result in array structures. [Why?](https://github.com/final-form/final-form/blob/master/docs/faq.md#why-do-my-numeric-keys-result-in-an-array-structure)
 * Setting `undefined` or `''` to a field value deletes empty structures. [Why?](https://github.com/final-form/final-form/blob/master/docs/faq.md#why-does--final-form-set-my--field-value-to-undefined)
 
 It is very similar to Lodash's [`_.set()`](https://lodash.com/docs/#set), except that empty structures are removed. Let's look at some examples:
