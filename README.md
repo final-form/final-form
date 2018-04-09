@@ -840,7 +840,7 @@ value in `FormState`.
 #### `dirty?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `dirty`
-value in `FormState`.
+value in `FormState`. This value is the opposite to the `pristine` value (`dirty = !pristine`).
 
 #### `dirtySinceLastSubmit?: boolean`
 
