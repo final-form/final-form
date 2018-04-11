@@ -195,6 +195,8 @@ form.submit() // only submits if all validation passes
     * [`dirty?: boolean`](#dirty-boolean-2)
     * [`error?: any`](#error-any-1)
     * [`errors?: Object`](#errors-object)
+    * [`hasSubmitErrors?: boolean`](#hassubmiterrors-boolean)
+    * [`hasValidationErrors?: boolean`](#hasvalidationerrors-boolean)
     * [`initialValues?: Object`](#initialvalues-object-1)
     * [`invalid?: boolean`](#invalid-boolean-2)
     * [`pristine?: boolean`](#pristine-boolean-2)
@@ -215,6 +217,8 @@ form.submit() // only submits if all validation passes
     * [`dirtySinceLastSubmit?: boolean`](#dirtysincelastsubmit-boolean-2)
     * [`error?: boolean`](#error-boolean-1)
     * [`errors?: boolean`](#errors-boolean)
+    * [`hasSubmitErrors?: boolean`](#hassubmiterrors-boolean-1)
+    * [`hasValidationErrors?: boolean`](#hasvalidationerrors-boolean-1)
     * [`initialValues?: boolean`](#initialvalues-boolean)
     * [`invalid?: boolean`](#invalid-boolean-3)
     * [`pristine?: boolean`](#pristine-boolean-3)
@@ -763,6 +767,14 @@ key.
 An object containing all the current validation errors. The shape will match the
 shape of the form's values.
 
+#### `hasSubmitErrors?: boolean`
+
+`true` when the form currently has submit errors. Useful for distinguishing _why_ `invalid` is `true`.
+
+#### `hasValidationErrors?: boolean`
+
+`true` when the form currently has validation errors. Useful for distinguishing _why_ `invalid` is `true`. For example, if your form is `invalid` because of a submit error, you might also want to disable the submit button if user's changes to fix the submit errors causes the form to have sync validation errors.
+
 #### `initialValues?: Object`
 
 The values the form was initialized with. `undefined` if the form was never
@@ -855,6 +867,16 @@ value in `FormState`.
 
 When `true` the `FormSubscriber` will be notified of changes to the `errors`
 value in `FormState`.
+
+#### `hasSubmitErrors?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the
+`hasSubmitErrors` value in `FormState`.
+
+#### `hasValidationErrors?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the
+`hasValidationErrors` value in `FormState`.
 
 #### `initialValues?: boolean`
 

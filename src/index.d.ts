@@ -10,6 +10,8 @@ export interface FormSubscription {
   dirtySinceLastSubmit?: boolean
   error?: boolean
   errors?: boolean
+  hasSubmitErrors?: boolean
+  hasValidationErrors?: boolean
   initialValues?: boolean
   invalid?: boolean
   pristine?: boolean
@@ -30,6 +32,8 @@ export interface FormState {
   dirtySinceLastSubmit: boolean
   error: any
   errors: AnyObject
+  hasSubmitErrors: boolean
+  hasValidationErrors: boolean
   initialValues: AnyObject
   invalid: boolean
   pristine: boolean

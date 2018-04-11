@@ -5,6 +5,8 @@ export default [
   'dirtySinceLastSubmit',
   'error',
   'errors',
+  'hasSubmitErrors',
+  'hasValidationErrors',
   'initialValues',
   'invalid',
   'pristine',
