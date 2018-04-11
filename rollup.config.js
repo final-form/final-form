@@ -50,11 +50,15 @@ export default {
       exclude: 'node_modules/**',
       babelrc: false,
       presets: [
-        ['env', {
-          modules: false,
-          loose: true,
-          exclude: ['transform-es2015-typeof-symbol'],
-        }], 'stage-2'],
+        [
+          'env',
+          {
+            modules: false,
+            loose: true
+          }
+        ],
+        'stage-2'
+      ],
       plugins: ['external-helpers']
     }),
     umd

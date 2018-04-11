@@ -1,2 +1,2 @@
-export const FORM_ERROR = Symbol('form-error')
-export const ARRAY_ERROR = Symbol('array-error')
+export const FORM_ERROR = 'FINAL_FORM/form-error'
+export const ARRAY_ERROR = 'FINAL_FORM/array-error'

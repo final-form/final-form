@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**3.9k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.1k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -110,7 +110,6 @@ form.submit() // only submits if all validation passes
   * [🏁 Final Form Focus 🧐](#-final-form-focus-)
   * [🏁 React Final Form HTML5 Validation](#-react-final-form-html5-validation)
   * [🏁 React Final Form Listeners](#-react-final-form-listeners)
-* [Polyfills](#polyfills)
 * [Field Names](#field-names)
 * [API](#api)
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
