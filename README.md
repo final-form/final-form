@@ -116,8 +116,8 @@ form.submit() // only submits if all validation passes
   * [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
   * [`fieldSubscriptionItems: string[]`](#fieldsubscriptionitems-string)
   * [`formSubscriptionItems: string[]`](#formsubscriptionitems-string)
-  * [`ARRAY_ERROR: Symbol`](#array_error-symbol)
-  * [`FORM_ERROR: Symbol`](#form_error-symbol)
+  * [`ARRAY_ERROR: string`](#array_error-string)
+  * [`FORM_ERROR: string`](#form_error-string)
   * [`getIn(state: Object, complexKey: string): any`](#getinstate-object-complexkey-string-any)
   * [`setIn(state: Object, key: string, value: any): Object`](#setinstate-object-key-string-value-any-object)
   * [`version: string`](#version-string)
@@ -333,15 +333,6 @@ A swap-in replacement for 🏁 React Final Form's `<Field>` component to provide
 
 A collection of useful components for listening to fields in a 🏁 React Final Form.
 
-## Polyfills
-
-React Native and some versions of IE will require that you install two polyfills for 🏁 Final Form to work properly.
-
-```js
-import 'core-js/es6/symbol'
-import 'core-js/fn/symbol/iterator'
-```
-
 ## Field Names
 
 Field names are strings that allow dot-and-bracket syntax, allowing you to create arbitrarily deeply nested fields. There are four main things you need to understand about how field names are used to read and write the form values in 🏁 Final Form.
@@ -386,13 +377,13 @@ field. Useful for subscribing to everything.
 An _à la carte_ list of all the possible things you can subscribe to for a form.
 Useful for subscribing to everything.
 
-### `ARRAY_ERROR: Symbol`
+### `ARRAY_ERROR: string`
 
-A special `Symbol` key used to return an error for an array of fields.
+A special `string` key used to return an error for an array of fields.
 
-### `FORM_ERROR: Symbol`
+### `FORM_ERROR: string`
 
-A special `Symbol` key used to return a whole-form error inside error objects
+A special `string` key used to return a whole-form error inside error objects
 returned from validation or submission.
 
 ### `getIn(state: Object, complexKey: string): any`
@@ -436,7 +427,7 @@ write an `onSubmit` function:
 
 Submission errors must be in the same shape as the values of the form. You may
 return a generic error for the whole form (e.g. `'Login Failed'`) using the
-special `FORM_ERROR` symbol key.
+special `FORM_ERROR` string key.
 
 #### `validate?: (values: Object) => Object | Promise<Object>`
 
@@ -452,7 +443,7 @@ returns any validation errors. There are three possible ways to write a
   when there is a server or communications error.
 
 Validation errors must be in the same shape as the values of the form. You may
-return a generic error for the whole form using the special `FORM_ERROR` symbol
+return a generic error for the whole form using the special `FORM_ERROR` string
 key.
 
 #### `validateOnBlur?: boolean`
