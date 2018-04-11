@@ -361,6 +361,38 @@ describe('FinalForm.submission', () => {
     })
   })
 
+  it('should mark all fields as touched on submit that returns submit errors', () => {
+    // https://github.com/final-form/react-final-form/issues/186
+    const form = createForm({
+      onSubmit: () => ({ username: 'Invalid username' }),
+      validate: values => {
+        const errors = {}
+        if (!values.password) {
+          errors.password = 'Required'
+        }
+        return errors
+      }
+    })
+    const username = jest.fn()
+    form.registerField('username', username, { touched: true })
+    expect(username).toHaveBeenCalled()
+    expect(username).toHaveBeenCalledTimes(1)
+    expect(username.mock.calls[0][0].touched).toBe(false)
+    const password = jest.fn()
+    form.registerField('password', password, { touched: true })
+    expect(password).toHaveBeenCalled()
+    expect(password).toHaveBeenCalledTimes(1)
+    expect(password.mock.calls[0][0].touched).toBe(false)
+
+    form.change('password', 'finalformrocks')
+    form.submit()
+
+    expect(username).toHaveBeenCalledTimes(2)
+    expect(username.mock.calls[1][0].touched).toBe(true)
+    expect(password).toHaveBeenCalledTimes(2)
+    expect(password.mock.calls[1][0].touched).toBe(true)
+  })
+
   it('should clear submission flags and errors on reset', () => {
     const onSubmit = jest.fn((values, form) => {
       const errors = {}

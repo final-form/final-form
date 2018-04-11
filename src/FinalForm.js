@@ -401,6 +401,13 @@ const createForm = (config: Config): FormApi => {
     })
   }
 
+  const markAllFieldsTouched = (): void => {
+    // mark all fields as touched
+    Object.keys(state.fields).forEach(key => {
+      state.fields[key].touched = true
+    })
+  }
+
   const hasSyncErrors = () =>
     !!(state.formState.error || Object.keys(state.formState.errors).length)
 
@@ -735,10 +742,7 @@ const createForm = (config: Config): FormApi => {
     submit: () => {
       const { formState, fields } = state
       if (hasSyncErrors()) {
-        // mark all fields as touched
-        Object.keys(fields).forEach(key => {
-          fields[key].touched = true
-        })
+        markAllFieldsTouched()
         state.formState.submitFailed = true
         notifyFormListeners()
         notifyFieldListeners()
@@ -765,6 +769,7 @@ const createForm = (config: Config): FormApi => {
           formState.submitSucceeded = false
           formState.submitErrors = errors
           formState.submitError = errors[FORM_ERROR]
+          markAllFieldsTouched()
         } else {
           delete formState.submitErrors
           delete formState.submitError
