@@ -499,6 +499,63 @@ describe('Field.validation', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('should remove field-level validation errors when a field is unregistered', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { errors: 1 })
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].errors).toEqual({})
+
+    const unregister = form.registerField(
+      'username',
+      () => {},
+      { errors: true },
+      {
+        getValidator: () => value => (value ? undefined : 'Required')
+      }
+    )
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].errors).toEqual({ username: 'Required' })
+
+    unregister()
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].errors).toEqual({})
+  })
+
+  it('should not remove record-level validation errors when a field is unregistered', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate: values => ({ username: 'Required by record-level' })
+    })
+    const spy = jest.fn()
+    form.subscribe(spy, { errors: 1 })
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].errors).toEqual({
+      username: 'Required by record-level'
+    })
+
+    const unregister = form.registerField(
+      'username',
+      () => {},
+      { errors: true },
+      {
+        getValidator: () => value => (value ? undefined : 'Required')
+      }
+    )
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].errors).toEqual({ username: 'Required' })
+
+    unregister()
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].errors).toEqual({
+      username: 'Required by record-level'
+    })
+  })
+
   it('should allow field-level for array fields', () => {
     const form = createForm({ onSubmit: onSubmitMock })
     const array = jest.fn()
