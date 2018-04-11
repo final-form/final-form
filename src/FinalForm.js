@@ -659,6 +659,8 @@ const createForm = (config: Config): FormApi => {
         if (!Object.keys(state.fieldSubscribers[name].entries).length) {
           delete state.fieldSubscribers[name]
           delete state.fields[name]
+          state.formState.errors =
+            setIn(state.formState.errors, name, undefined) || {}
         }
         runValidation(undefined, () => {
           notifyFieldListeners()
