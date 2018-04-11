@@ -3,9 +3,11 @@
     [
       "env",
       {
+        "loose": true,
         "targets": {
           "node": "8"
-        }
+        },
+        "exclude": ["transform-es2015-typeof-symbol"]
       }
     ],
     "stage-2"
