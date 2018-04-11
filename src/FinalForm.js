@@ -772,8 +772,9 @@ const createForm = (config: Config): FormApi => {
         notifyFieldListeners()
         completeCalled = true
         if (resolvePromise) {
-          resolvePromise()
+          resolvePromise(errors)
         }
+        return errors
       }
       formState.submitting = true
       formState.submitFailed = false

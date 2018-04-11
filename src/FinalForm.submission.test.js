@@ -324,7 +324,9 @@ describe('FinalForm.submission', () => {
     expect(spy).toHaveBeenCalledTimes(1)
     expect(onSubmit).not.toHaveBeenCalled()
 
-    await form.submit()
+    const result = await form.submit()
+    expect(result).toBeDefined()
+    expect(result).toEqual({ foo: 'Sorry, "bar" is an illegal value' })
 
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(onSubmit.mock.calls[0][0]).toEqual({ foo: 'bar', foo2: 'baz' })

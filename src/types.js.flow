@@ -207,7 +207,7 @@ export type Config = {
   onSubmit: (
     values: Object,
     form: FormApi,
-    callback: ?(errors: ?Object) => void
+    callback: ?(errors: ?Object) => ?Object
   ) => ?Object | Promise<?Object> | void,
   validate?: (values: Object) => Object | Promise<Object>,
   validateOnBlur?: boolean
