@@ -217,8 +217,8 @@ export type Decorator = (form: FormApi) => Unsubscribe
 export function createForm(config: Config): FormApi
 export const fieldSubscriptionItems: string[]
 export const formSubscriptionItems: string[]
-export const ARRAY_ERROR: any
-export const FORM_ERROR: any
+export const ARRAY_ERROR: string
+export const FORM_ERROR: string
 export function getIn(state: object, complexKey: string): any
 export function setIn(state: object, key: string, value: any): object
 export const version: string

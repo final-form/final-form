@@ -26,7 +26,7 @@ import type {
   Subscription,
   Unsubscribe
 } from './types'
-import { FORM_ERROR, ARRAY_ERROR } from './symbols'
+import { FORM_ERROR, ARRAY_ERROR } from './constants'
 export const version = '4.3.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
@@ -758,11 +758,7 @@ const createForm = (config: Config): FormApi => {
       let completeCalled = false
       const complete = (errors: ?Object) => {
         formState.submitting = false
-        if (
-          errors &&
-          (Object.keys(errors).length ||
-            Object.getOwnPropertySymbols(errors).length)
-        ) {
+        if (errors && Object.keys(errors).length) {
           formState.submitFailed = true
           formState.submitSucceeded = false
           formState.submitErrors = errors

@@ -22,7 +22,8 @@ export type {
 declare export function createForm(config: Config): FormApi
 declare export var fieldSubscriptionItems: string[]
 declare export var formSubscriptionItems: string[]
-declare export var FORM_ERROR: any // Symbol not yet supported in Flow
+declare export var FORM_ERROR: string
+declare export var ARRAY_ERROR: string
 declare export function getIn(state: Object, complexKey: string): any
 declare export function setIn(state: Object, key: string, value: any): Object
 declare export var version: string
