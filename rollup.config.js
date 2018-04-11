@@ -49,7 +49,12 @@ export default {
     babel({
       exclude: 'node_modules/**',
       babelrc: false,
-      presets: [['env', { modules: false }], 'stage-2'],
+      presets: [
+        ['env', {
+          modules: false,
+          loose: true,
+          exclude: ['transform-es2015-typeof-symbol'],
+        }], 'stage-2'],
       plugins: ['external-helpers']
     }),
     umd
