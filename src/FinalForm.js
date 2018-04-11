@@ -77,6 +77,11 @@ const convertToExternalFormState = ({
   dirtySinceLastSubmit,
   error,
   errors,
+  hasSubmitErrors: !!(
+    submitError ||
+    (submitErrors && Object.keys(submitErrors).length)
+  ),
+  hasValidationErrors: !!(error || Object.keys(errors).length),
   invalid: !valid,
   initialValues,
   pristine,
