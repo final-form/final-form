@@ -402,7 +402,6 @@ const createForm = (config: Config): FormApi => {
   }
 
   const markAllFieldsTouched = (): void => {
-    // mark all fields as touched
     Object.keys(state.fields).forEach(key => {
       state.fields[key].touched = true
     })
