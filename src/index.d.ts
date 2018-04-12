@@ -162,7 +162,7 @@ export interface FormApi {
   getState: () => FormState
   mutators: { [key: string]: Function }
   setConfig: (name: string, value: any) => void
-  submit: (additionalValues?: object) => Promise<object | undefined> | undefined
+  submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
