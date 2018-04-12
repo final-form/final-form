@@ -168,7 +168,7 @@ export interface FormApi {
     subscription: FormSubscription
   ) => Unsubscribe
   registerField: RegisterField
-  reset: () => void
+  reset: (initialValues?: object) => void
 }
 
 export type DebugFunction = (
