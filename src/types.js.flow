@@ -169,7 +169,7 @@ export type FormApi = {
   reset: (initialValues?: Object) => void,
   resumeValidation: () => void,
   setConfig: (name: string, value: any) => void,
-  submit: () => ?Promise<?Object>,
+  submit: (additionalValues?: Object) => ?Promise<?Object>,
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
