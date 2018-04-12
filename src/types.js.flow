@@ -166,7 +166,7 @@ export type FormApi = {
   mutators: { [string]: Function },
   pauseValidation: () => void,
   registerField: RegisterField,
-  reset: () => void,
+  reset: (initialValues?: Object) => void,
   resumeValidation: () => void,
   setConfig: (name: string, value: any) => void,
   submit: () => ?Promise<?Object>,
