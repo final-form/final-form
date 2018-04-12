@@ -187,7 +187,7 @@ form.submit() // only submits if all validation passes
     * [`registerField: RegisterField`](#registerfield-registerfield)
     * [`reset: (initialValues: ?Object) => void`](#reset-initialvalues-object--void)
     * [`resumeValidation: () => void`](#resumevalidation---void)
-    * [`submit: (additionalValues?: Object) => ?Promise<?Object>`](#submit-additionalvalues-object--promiseobject)
+    * [`submit: () => ?Promise<?Object>`](#submit---promiseobject)
     * [`subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`](#subscribe-subscriber-formsubscriber-subscription-formsubscription--unsubscribe)
   * [`FormState`](#formstate)
     * [`active?: string`](#active-string)
@@ -725,11 +725,11 @@ Resets the values back to the initial values the form was initialized with. Or e
 
 Resumes validation paused by `pauseValidation()`. If validation was blocked while it was paused, validation will be run.
 
-#### `submit: (additionalValues?: Object) => ?Promise<?Object>`
+#### `submit: () => ?Promise<?Object>`
 
 Submits the form if there are currently no validation errors. It may return
 `undefined` or a `Promise` depending on the nature of the `onSubmit`
-configuration value given to the form when it was created. You may optionally provide some additional values that will be merged into the form values that are submitted. This can be useful for specifying _which_ submit button was pressed.
+configuration value given to the form when it was created.
 
 #### `subscribe: (subscriber: FormSubscriber, subscription: FormSubscription) => Unsubscribe`
 

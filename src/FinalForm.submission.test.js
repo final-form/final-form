@@ -361,25 +361,6 @@ describe('FinalForm.submission', () => {
     })
   })
 
-  it('should allow submitting additional values', () => {
-    const onSubmit = jest.fn()
-    const form = createForm({ onSubmit })
-
-    form.registerField('username', () => {}, {})
-    form.registerField('password', () => {}, {})
-
-    form.change('username', 'erikras')
-
-    expect(onSubmit).not.toHaveBeenCalled()
-    form.submit({ next: '/account' })
-    expect(onSubmit).toHaveBeenCalled()
-    expect(onSubmit).toHaveBeenCalledTimes(1)
-    expect(onSubmit.mock.calls[0][0]).toEqual({
-      username: 'erikras',
-      next: '/account'
-    })
-  })
-
   it('should mark all fields as touched on submit that returns submit errors', () => {
     // https://github.com/final-form/react-final-form/issues/186
     const form = createForm({

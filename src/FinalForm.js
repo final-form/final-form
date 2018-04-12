@@ -738,7 +738,7 @@ const createForm = (config: Config): FormApi => {
       }
     },
 
-    submit: (additionalValues = {}) => {
+    submit: () => {
       const { formState } = state
       if (hasSyncErrors()) {
         markAllFieldsTouched()
@@ -755,7 +755,7 @@ const createForm = (config: Config): FormApi => {
             result.push(asyncValidationPromises[Number(key)])
             return result
           }, [])
-        ).then(() => api.submit(additionalValues))
+        ).then(() => api.submit())
         return
       }
 
@@ -789,7 +789,7 @@ const createForm = (config: Config): FormApi => {
       formState.lastSubmittedValues = { ...formState.values }
       if (onSubmit.length === 3) {
         // onSubmit is expecting a callback, first try synchronously
-        onSubmit({ ...formState.values, ...additionalValues }, api, complete)
+        onSubmit(formState.values, api, complete)
         if (!completeCalled) {
           // must be async, so we should return a Promise
           notifyFormListeners() // let everyone know we are submitting
@@ -799,10 +799,7 @@ const createForm = (config: Config): FormApi => {
         }
       } else {
         // onSubmit is either sync or async with a Promise
-        const result = onSubmit(
-          { ...formState.values, ...additionalValues },
-          api
-        )
+        const result = onSubmit(formState.values, api)
         if (result && isPromise(result)) {
           // onSubmit is async with a Promise
           notifyFormListeners() // let everyone know we are submitting
