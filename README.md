@@ -182,6 +182,7 @@ form.submit() // only submits if all validation passes
     * [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     * [`getState: () => FormState`](#getstate---formstate)
     * [`initialize: (values: Object) => void`](#initialize-values-object--void)
+    * [`isValidationPaused: () => boolean`](#isvalidationpaused---boolean)
     * [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
     * [`pauseValidation: () => void`](#pausevalidation---void)
     * [`registerField: RegisterField`](#registerfield-registerfield)
@@ -697,6 +698,10 @@ Initializes the form to the values provided. All the values will be set to these
 values, and `dirty` and `pristine` will be calculated by performing a
 shallow-equals between the current values and the values last initialized with.
 The form will be `pristine` after this call.
+
+#### `isValidationPaused: () => boolean`
+
+Returns `true` if validation is currently paused, `false` otherwise.
 
 #### `mutators: ?{ [string]: Function }`
 

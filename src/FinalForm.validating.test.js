@@ -783,7 +783,9 @@ describe('Field.validation', () => {
     const fooValidate = jest.fn()
     const barValidate = jest.fn()
     const bazValidate = jest.fn()
+    expect(form.isValidationPaused()).toBe(false)
     form.pauseValidation()
+    expect(form.isValidationPaused()).toBe(true)
     form.registerField(
       'foo',
       () => {},
@@ -809,6 +811,7 @@ describe('Field.validation', () => {
     expect(bazValidate).not.toHaveBeenCalled()
 
     form.resumeValidation()
+    expect(form.isValidationPaused()).toBe(false)
 
     expect(validate).toHaveBeenCalledTimes(2)
     expect(fooValidate).toHaveBeenCalledTimes(1)
