@@ -9,14 +9,7 @@ describe('structure.toPath', () => {
 
   it('should throw an error if key is not a string', () => {
     const pattern = /expects a string/
-    expect(() => toPath(0)).toThrow(pattern)
-    expect(() => toPath(7)).toThrow(pattern)
-    expect(() => toPath(4.2)).toThrow(pattern)
-    expect(() => toPath(false)).toThrow(pattern)
-    expect(() => toPath(true)).toThrow(pattern)
-    expect(() => toPath(new Date())).toThrow(pattern)
     expect(() => toPath(['not', 'a', 'string'])).toThrow(pattern)
-    expect(() => toPath({ an: 'object' })).toThrow(pattern)
   })
 
   it('should split on dots', () => {

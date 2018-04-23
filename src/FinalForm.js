@@ -381,7 +381,7 @@ const createForm = (config: Config): FormApi => {
   }
 
   const notifyFieldListeners = (force: ?string) => {
-    if (inBatch) {
+    if (inBatch || validationPaused) {
       return
     }
     const { fields, fieldSubscribers, formState } = state
@@ -477,7 +477,7 @@ const createForm = (config: Config): FormApi => {
     } else {
       notifying = true
       callDebug()
-      if (!inBatch) {
+      if (!inBatch && !validationPaused) {
         const { lastFormState } = state
         const nextFormState = calculateNextFormState()
         if (nextFormState !== lastFormState) {

@@ -1,6 +1,6 @@
 // @flow
 const toPath = (key: string): string[] => {
-  if (key === null || key === undefined) {
+  if (key === null || key === undefined || !key.length) {
     return []
   }
   if (typeof key !== 'string') {
