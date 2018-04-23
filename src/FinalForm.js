@@ -586,6 +586,8 @@ const createForm = (config: Config): FormApi => {
       })
     },
 
+    isValidationPaused: () => validationPaused,
+
     pauseValidation: () => {
       validationPaused = true
     },

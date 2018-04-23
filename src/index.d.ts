@@ -157,6 +157,7 @@ export interface FormApi {
   change: (name: string, value?: any) => void
   focus: (name: string) => void
   initialize: (values: object) => void
+  isValidationPaused: () => boolean
   getFieldState: (field: string) => FieldState | undefined
   getRegisteredFields: () => string[]
   getState: () => FormState
