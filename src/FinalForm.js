@@ -55,6 +55,16 @@ export type StateFilter<T> = (
   force: boolean
 ) => ?T
 
+const hasAnyError = (errors: Object): boolean => {
+  return Object.entries(errors).some(([key, value]) => {
+    if (value && typeof value === 'object') {
+      return hasAnyError(value)
+    }
+
+    return typeof value !== 'undefined'
+  })
+}
+
 const convertToExternalFormState = ({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
   active,
@@ -79,9 +89,9 @@ const convertToExternalFormState = ({
   errors,
   hasSubmitErrors: !!(
     submitError ||
-    (submitErrors && Object.keys(submitErrors).length)
+    (submitErrors && hasAnyError(submitErrors))
   ),
-  hasValidationErrors: !!(error || Object.keys(errors).length),
+  hasValidationErrors: !!(error || hasAnyError(errors)),
   invalid: !valid,
   initialValues,
   pristine,
@@ -408,7 +418,7 @@ const createForm = (config: Config): FormApi => {
   }
 
   const hasSyncErrors = () =>
-    !!(state.formState.error || Object.keys(state.formState.errors).length)
+    !!(state.formState.error || hasAnyError(state.formState.errors))
 
   const calculateNextFormState = (): FormState => {
     const { fields, formState, lastFormState } = state
@@ -434,8 +444,8 @@ const createForm = (config: Config): FormApi => {
     formState.valid =
       !formState.error &&
       !formState.submitError &&
-      !Object.keys(formState.errors).length &&
-      !(formState.submitErrors && Object.keys(formState.submitErrors).length)
+      !hasAnyError(formState.errors) &&
+      !(formState.submitErrors && hasAnyError(formState.submitErrors))
     const nextFormState = convertToExternalFormState(formState)
     const { touched, visited } = fieldKeys.reduce(
       (result, key) => {
@@ -765,7 +775,7 @@ const createForm = (config: Config): FormApi => {
       let completeCalled = false
       const complete = (errors: ?Object) => {
         formState.submitting = false
-        if (errors && Object.keys(errors).length) {
+        if (errors && hasAnyError(errors)) {
           formState.submitFailed = true
           formState.submitSucceeded = false
           formState.submitErrors = errors
