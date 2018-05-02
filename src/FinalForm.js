@@ -269,7 +269,8 @@ const createForm = (config: Config): FormApi => {
       validators.forEach(validator => {
         const errorOrPromise = validator(
           getIn(state.formState.values, field.name),
-          state.formState.values
+          state.formState.values,
+          publishFieldState(state.formState, state.fields[field.name])
         )
         if (errorOrPromise && isPromise(errorOrPromise)) {
           const asyncValidationPromiseKey = nextAsyncValidationKey++

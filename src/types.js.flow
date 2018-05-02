@@ -102,7 +102,8 @@ export type Unsubscribe = () => void
 
 export type FieldValidator = (
   value: ?any,
-  allValues: Object
+  allValues: Object,
+  meta: FieldState
 ) => ?any | Promise<?any>
 export type GetFieldValidator = () => ?FieldValidator
 
