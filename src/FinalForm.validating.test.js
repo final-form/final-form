@@ -915,6 +915,31 @@ describe('Field.validation', () => {
     expect(bar.mock.calls[1][0].error).toBeUndefined()
   })
 
+  it('should mark the form as valid when all required fields are completed', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const config = {
+      getValidator: () => value => (value ? undefined : 'Required'),
+      validateFields: []
+    }
+
+    const foo = jest.fn()
+    const bar = jest.fn()
+
+    form.registerField('foo', foo, { error: true }, config)
+    form.registerField('bar', bar, { error: true })
+
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBe('Required')
+
+    form.change('foo', 'hi')
+
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].error).toBe(undefined)
+
+    expect(form.getState().invalid).toBe(false)
+  })
+
   it('should not blow away all field-level validation errors when one is remedied and one validateFields', () => {
     const form = createForm({ onSubmit: onSubmitMock })
 
