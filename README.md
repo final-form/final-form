@@ -2,7 +2,7 @@
 
 ![Final Form](banner.png)
 
-[![NPM Version](https://img.shields.io/npm/v/final-form.svg?style=flat)](https://www.npmjs.com/package/final-form)
+/[![NPM Version](https://img.shields.io/npm/v/final-form.svg?style=flat)](https://www.npmjs.com/package/final-form)
 [![NPM Downloads](https://img.shields.io/npm/dm/final-form.svg?style=flat)](https://npm-stat.com/charts.html?package=final-form)
 [![Build Status](https://travis-ci.org/final-form/final-form.svg?branch=master)](https://travis-ci.org/final-form/final-form)
 [![codecov.io](https://codecov.io/gh/final-form/final-form/branch/master/graph/badge.svg)](https://codecov.io/gh/final-form/final-form)
@@ -725,6 +725,8 @@ error.
 #### `reset: (initialValues: ?Object) => void`
 
 Resets the values back to the initial values the form was initialized with. Or empties all the values if the form was not initialized. If you provide `initialValues` they will be used as the new initial values.
+
+Note that if you are calling `reset()` and not specify new initial values, you must call it with no arguments. Be careful to avoid things like `promise.catch(reset)` or `onChange={form.reset}` in React, as they will get arguments passed to them and reinitialize your form.
 
 #### `resumeValidation: () => void`
 
