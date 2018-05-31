@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**4.1k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.2k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -401,6 +401,10 @@ The current used version of 🏁 Final Form.
 ### `Config`
 
 #### `debug?: DebugFunction`
+
+#### `keepDirtyOnReinitialize?: boolean`
+
+If `true`, only pristine values will be overwritten when `initialize(newValues)` is called. This can be useful for allowing a user to continue to edit a record while the record is being saved asynchronously, and the form is reinitialized to the saved values when the save is successful. Defaults to `false`.
 
 #### `initialValues?: Object`
 

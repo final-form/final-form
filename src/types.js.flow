@@ -154,6 +154,15 @@ export type InternalFormState = {
   values: Object
 }
 
+type ConfigKey =
+  | 'debug'
+  | 'initialValues'
+  | 'keepDirtyOnReinitialize'
+  | 'mutators'
+  | 'onSubmit'
+  | 'validate'
+  | 'validateOnBlur'
+
 export type FormApi = {
   batch: (fn: () => void) => void,
   blur: (name: string) => void,
@@ -169,7 +178,7 @@ export type FormApi = {
   registerField: RegisterField,
   reset: (initialValues?: Object) => void,
   resumeValidation: () => void,
-  setConfig: (name: string, value: any) => void,
+  setConfig: (name: ConfigKey, value: any) => void,
   submit: () => ?Promise<?Object>,
   subscribe: (
     subscriber: FormSubscriber,
@@ -208,6 +217,7 @@ export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
 export type Config = {
   debug?: DebugFunction,
   initialValues?: Object,
+  keepDirtyOnReinitialize?: boolean,
   mutators?: { [string]: Mutator },
   onSubmit: (
     values: Object,
