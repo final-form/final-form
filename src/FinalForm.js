@@ -27,6 +27,15 @@ import type {
   Unsubscribe
 } from './types'
 import { FORM_ERROR, ARRAY_ERROR } from './constants'
+export const configOptions = [
+  'debug',
+  'initialValues',
+  'keepDirtyOnReinitialize',
+  'mutators',
+  'onSubmit',
+  'validate',
+  'validateOnBlur'
+]
 export const version = '4.6.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b

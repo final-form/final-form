@@ -233,3 +233,4 @@ export const FORM_ERROR: string
 export function getIn(state: object, complexKey: string): any
 export function setIn(state: object, key: string, value: any): object
 export const version: string
+export const configOptions: string[]
