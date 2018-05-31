@@ -123,6 +123,7 @@ form.submit() // only submits if all validation passes
 * [Types](#types)
   * [`Config`](#config)
     * [`debug?: DebugFunction`](#debug-debugfunction)
+    * [`keepDirtyOnReinitialize?: boolean`](#keepdirtyonreinitialize-boolean)
     * [`initialValues?: Object`](#initialvalues-object)
     * [`mutators?: { [string]: Mutator }`](#mutators--string-mutator-)
     * [`onSubmit: (values: Object, form: FormApi, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`](#onsubmit-values-object-form-formapi-callback-errors-object--void--object--promiseobject--void)
