@@ -27,6 +27,15 @@ import type {
   Unsubscribe
 } from './types'
 import { FORM_ERROR, ARRAY_ERROR } from './constants'
+export const configOptions = [
+  'debug',
+  'initialValues',
+  'keepDirtyOnReinitialize',
+  'mutators',
+  'onSubmit',
+  'validate',
+  'validateOnBlur'
+]
 export const version = '4.6.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
@@ -137,6 +146,7 @@ const createForm = (config: Config): FormApi => {
   }
   let {
     debug,
+    keepDirtyOnReinitialize,
     initialValues,
     mutators,
     onSubmit,
@@ -583,13 +593,25 @@ const createForm = (config: Config): FormApi => {
 
     initialize: (values: Object) => {
       const { fields, formState } = state
-      formState.initialValues = values
-      formState.values = values
+      if (!keepDirtyOnReinitialize) {
+        formState.values = values
+      }
       Object.keys(fields).forEach(key => {
         const field = fields[key]
         field.touched = false
         field.visited = false
+        if (keepDirtyOnReinitialize) {
+          const pristine = fields[key].isEqual(
+            getIn(formState.values, key),
+            getIn(formState.initialValues || {}, key)
+          )
+          if (pristine) {
+            // only update pristine values
+            formState.values = setIn(formState.values, key, getIn(values, key))
+          }
+        }
       })
+      formState.initialValues = values
       runValidation(undefined, () => {
         notifyFieldListeners()
         notifyFormListeners()
@@ -714,6 +736,9 @@ const createForm = (config: Config): FormApi => {
           break
         case 'initialValues':
           api.initialize(value)
+          break
+        case 'keepDirtyOnReinitialize':
+          keepDirtyOnReinitialize = value
           break
         case 'mutators':
           mutators = value

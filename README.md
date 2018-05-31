@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**4.1k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.2k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -123,6 +123,7 @@ form.submit() // only submits if all validation passes
 * [Types](#types)
   * [`Config`](#config)
     * [`debug?: DebugFunction`](#debug-debugfunction)
+    * [`keepDirtyOnReinitialize?: boolean`](#keepdirtyonreinitialize-boolean)
     * [`initialValues?: Object`](#initialvalues-object)
     * [`mutators?: { [string]: Mutator }`](#mutators--string-mutator-)
     * [`onSubmit: (values: Object, form: FormApi, callback: ?(errors: ?Object) => void) => ?Object | Promise<?Object> | void`](#onsubmit-values-object-form-formapi-callback-errors-object--void--object--promiseobject--void)
@@ -401,6 +402,10 @@ The current used version of 🏁 Final Form.
 ### `Config`
 
 #### `debug?: DebugFunction`
+
+#### `keepDirtyOnReinitialize?: boolean`
+
+If `true`, only pristine values will be overwritten when `initialize(newValues)` is called. This can be useful for allowing a user to continue to edit a record while the record is being saved asynchronously, and the form is reinitialized to the saved values when the save is successful. Defaults to `false`.
 
 #### `initialValues?: Object`
 

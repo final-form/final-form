@@ -29,7 +29,7 @@ describe('FinalForm.setConfig', () => {
       }
     })
     const spy = jest.fn()
-    form.registerField('foo', spy, { initial: true })
+    form.registerField('foo', spy, { initial: true, value: true })
 
     // should initialize with initial value
     expect(spy).toHaveBeenCalledTimes(1)
@@ -40,11 +40,18 @@ describe('FinalForm.setConfig', () => {
     // same initial value, duh
     expect(spy).toHaveBeenCalledTimes(1)
 
-    form.setConfig('initialValues', { foo: 'baz' })
+    spy.mock.calls[0][0].change('baz')
 
-    // new initial value
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy.mock.calls[1][0].initial).toBe('baz')
+    expect(spy.mock.calls[1][0].initial).toBe('bar')
+    expect(spy.mock.calls[1][0].value).toBe('baz')
+
+    form.setConfig('initialValues', { foo: 'bax' })
+
+    // new initial value, and dirty value overwritten
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].initial).toBe('bax')
+    expect(spy.mock.calls[2][0].value).toBe('bax')
   })
 
   it('should update mutators on setConfig("mutators", mutators)', () => {
@@ -210,5 +217,120 @@ describe('FinalForm.setConfig', () => {
     expect(() => {
       form.setConfig('whatever', false)
     }).toThrowError('Unrecognised option whatever')
+  })
+
+  it('should respect keepDirtyOnReinitialize on reinitalize', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      keepDirtyOnReinitialize: true,
+      initialValues: {
+        foo: 'bar'
+      }
+    })
+    const spy = jest.fn()
+    form.registerField('foo', spy, { initial: true, value: true })
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].initial).toBe('bar')
+    expect(spy.mock.calls[0][0].value).toBe('bar')
+
+    form.reset()
+
+    // same initial value, duh
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    spy.mock.calls[0][0].change('baz')
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].initial).toBe('bar')
+    expect(spy.mock.calls[1][0].value).toBe('baz')
+
+    form.setConfig('initialValues', { foo: 'bax' })
+
+    // new initial value, but same old dirty value
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].initial).toBe('bax')
+    expect(spy.mock.calls[2][0].value).toBe('baz')
+  })
+
+  it('should respect keepDirtyOnReinitialize on reinitalize, even if no initial values', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      keepDirtyOnReinitialize: true
+    })
+    const spy = jest.fn()
+    form.registerField('foo', spy, { initial: true, value: true })
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].initial).toBeUndefined()
+    expect(spy.mock.calls[0][0].value).toBeUndefined()
+
+    spy.mock.calls[0][0].change('baz')
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].initial).toBeUndefined()
+    expect(spy.mock.calls[1][0].value).toBe('baz')
+
+    form.setConfig('initialValues', { foo: 'bax' })
+
+    // new initial value, but same old dirty value
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].initial).toBe('bax')
+    expect(spy.mock.calls[2][0].value).toBe('baz')
+  })
+
+  it('should update keepDirtyOnReinitialize on setConfig("keepDirtyOnReinitialize", value)', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      initialValues: {
+        foo: 'bar'
+      }
+    })
+    const spy = jest.fn()
+    form.registerField('foo', spy, { initial: true, value: true })
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].initial).toBe('bar')
+    expect(spy.mock.calls[0][0].value).toBe('bar')
+
+    form.reset()
+
+    // same initial value, duh
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    spy.mock.calls[0][0].change('baz')
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].initial).toBe('bar')
+    expect(spy.mock.calls[1][0].value).toBe('baz')
+
+    form.setConfig('initialValues', { foo: 'bax' })
+
+    // new initial value, and value overwritten
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].initial).toBe('bax')
+    expect(spy.mock.calls[2][0].value).toBe('bax')
+
+    // flip flag
+    form.setConfig('keepDirtyOnReinitialize', true)
+
+    // no update
+    expect(spy).toHaveBeenCalledTimes(3)
+
+    spy.mock.calls[0][0].change('dog')
+
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].initial).toBe('bax')
+    expect(spy.mock.calls[3][0].value).toBe('dog')
+
+    form.setConfig('initialValues', { foo: 'cat' })
+
+    // new initial value, but same old dirty value
+    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy.mock.calls[4][0].initial).toBe('cat')
+    expect(spy.mock.calls[4][0].value).toBe('dog')
   })
 })

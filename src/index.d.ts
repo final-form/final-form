@@ -151,6 +151,15 @@ export interface InternalFormState {
   values: object
 }
 
+type ConfigKey =
+  | 'debug'
+  | 'initialValues'
+  | 'keepDirtyOnReinitialize'
+  | 'mutators'
+  | 'onSubmit'
+  | 'validate'
+  | 'validateOnBlur'
+
 export interface FormApi {
   batch: (fn: () => void) => void
   blur: (name: string) => void
@@ -162,7 +171,7 @@ export interface FormApi {
   getRegisteredFields: () => string[]
   getState: () => FormState
   mutators: { [key: string]: Function }
-  setConfig: (name: string, value: any) => void
+  setConfig: (name: ConfigKey, value: any) => void
   submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
@@ -203,6 +212,7 @@ export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
 export interface Config {
   debug?: DebugFunction
   initialValues?: object
+  keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator }
   onSubmit: (
     values: object,
@@ -223,3 +233,4 @@ export const FORM_ERROR: string
 export function getIn(state: object, complexKey: string): any
 export function setIn(state: object, key: string, value: any): object
 export const version: string
+export const configOptions: string[]
