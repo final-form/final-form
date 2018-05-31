@@ -1,7 +1,7 @@
 {
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {
         "loose": true,
         "targets": {
@@ -9,7 +9,7 @@
         }
       }
     ],
-    "stage-2"
+    ["@babel/preset-stage-2", { "decoratorsLegacy": true }]
   ],
   "plugins": ["transform-flow-strip-types"]
 }
