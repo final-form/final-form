@@ -154,7 +154,7 @@ export type InternalFormState = {
   values: Object
 }
 
-type ConfigKey =
+export type ConfigKey =
   | 'debug'
   | 'initialValues'
   | 'keepDirtyOnReinitialize'

@@ -1,21 +1,21 @@
 {
   "name": "final-form",
-  "version": "4.7.0",
-  "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
+  "version": "4.7.1",
+  "description":
+    "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
   "module": "dist/final-form.es.js",
   "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "start": "nps",
     "test": "nps test",
     "precommit": "lint-staged && npm start validate",
     "prepublish": "lint-staged && npm start validate"
   },
-  "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
+  "author":
+    "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
     "lint-staged": "^7.1.2",
     "nps": "^5.9.0",
     "nps-utils": "^1.5.0",
-    "prettier": "^1.13.3",
+    "prettier": "^1.11.0",
     "prettier-eslint-cli": "^4.7.1",
     "rollup": "^0.59.4",
     "rollup-plugin-babel": "^4.0.0-beta.4",
@@ -63,10 +63,7 @@
     "typescript": "^2.8.4"
   },
   "lint-staged": {
-    "*.{js*,ts*,json,md,css}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{js*,ts*,json,md,css}": ["prettier --write", "git add"]
   },
   "bundlesize": [
     {

@@ -10,6 +10,7 @@ import shallowEqual from './shallowEqual'
 import type {
   ChangeValue,
   Config,
+  ConfigKey,
   FieldConfig,
   FieldState,
   FieldSubscriber,
@@ -27,7 +28,7 @@ import type {
   Unsubscribe
 } from './types'
 import { FORM_ERROR, ARRAY_ERROR } from './constants'
-export const configOptions = [
+export const configOptions: ConfigKey[] = [
   'debug',
   'initialValues',
   'keepDirtyOnReinitialize',
@@ -36,7 +37,7 @@ export const configOptions = [
   'validate',
   'validateOnBlur'
 ]
-export const version = '4.6.1'
+export const version = '4.7.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
 
