@@ -2,7 +2,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import babel from 'rollup-plugin-babel'
 import flow from 'rollup-plugin-flow'
 import commonjs from 'rollup-plugin-commonjs'
-import uglify from 'rollup-plugin-uglify'
+import { uglify } from 'rollup-plugin-uglify'
 import replace from 'rollup-plugin-replace'
 
 const minify = process.env.MINIFY
@@ -51,15 +51,14 @@ export default {
       babelrc: false,
       presets: [
         [
-          'env',
+          '@babel/preset-env',
           {
             modules: false,
             loose: true
           }
         ],
-        'stage-2'
-      ],
-      plugins: ['external-helpers']
+        ['@babel/preset-stage-2', { decoratorsLegacy: true }]
+      ]
     }),
     umd
       ? replace({
