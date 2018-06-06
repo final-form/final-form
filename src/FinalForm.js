@@ -411,6 +411,29 @@ const createForm = (config: Config): FormApi => {
       const fieldState = publishFieldState(formState, field)
       const { lastFieldState } = field
       if (!shallowEqual(fieldState, lastFieldState)) {
+        // **************************************************************
+        // Curious about why a field is getting notified? Uncomment this.
+        // **************************************************************
+        // const diffKeys = Object.keys(fieldState).filter(
+        //   key => fieldState[key] !== (lastFieldState && lastFieldState[key])
+        // )
+        // console.debug(
+        //   'notifying',
+        //   name,
+        //   '\nField State\n',
+        //   diffKeys.reduce(
+        //     (result, key) => ({ ...result, [key]: fieldState[key] }),
+        //     {}
+        //   ),
+        //   '\nLast Field State\n',
+        //   diffKeys.reduce(
+        //     (result, key) => ({
+        //       ...result,
+        //       [key]: lastFieldState && lastFieldState[key]
+        //     }),
+        //     {}
+        //   )
+        // )
         field.lastFieldState = fieldState
         notify(
           fieldSubscribers[name],
