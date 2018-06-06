@@ -123,6 +123,7 @@ form.submit() // only submits if all validation passes
 * [Types](#types)
   * [`Config`](#config)
     * [`debug?: DebugFunction`](#debug-debugfunction)
+    * [`destroyOnUnregister?: boolean`](#destroyonunregister-boolean)
     * [`keepDirtyOnReinitialize?: boolean`](#keepdirtyonreinitialize-boolean)
     * [`initialValues?: Object`](#initialvalues-object)
     * [`mutators?: { [string]: Mutator }`](#mutators--string-mutator-)
@@ -402,6 +403,10 @@ The current used version of 🏁 Final Form.
 ### `Config`
 
 #### `debug?: DebugFunction`
+
+#### `destroyOnUnregister?: boolean`
+
+If `true`, the value of a field will be destroyed when that field is unregistered. Defaults to `false`. Can be useful when creating dynamic forms where only form values displayed need be submitted.
 
 #### `keepDirtyOnReinitialize?: boolean`
 
