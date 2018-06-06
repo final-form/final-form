@@ -728,10 +728,10 @@ const createForm = (config: Config): FormApi => {
           delete state.fields[name]
           state.formState.errors =
             setIn(state.formState.errors, name, undefined) || {}
-        }
-        if (destroyOnUnregister) {
-          state.formState.values =
-            setIn(state.formState.values, name, undefined) || {}
+          if (destroyOnUnregister) {
+            state.formState.values =
+              setIn(state.formState.values, name, undefined) || {}
+          }
         }
         runValidation(undefined, () => {
           notifyFieldListeners()
