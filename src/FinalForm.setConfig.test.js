@@ -333,4 +333,56 @@ describe('FinalForm.setConfig', () => {
     expect(spy.mock.calls[4][0].initial).toBe('cat')
     expect(spy.mock.calls[4][0].value).toBe('dog')
   })
+
+  it('should update destroyOnUnregister on setConfig("destroyOnUnregister", value)', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+
+    const spy = jest.fn()
+    form.subscribe(spy, { values: true })
+    const foo = jest.fn()
+    const foz = jest.fn()
+    const unregisterFoo = form.registerField('foo', foo, { value: true })
+    const unregisterFoz = form.registerField('foz', foz, { value: true })
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].values).toEqual({})
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].value).toBeUndefined()
+    expect(foz).toHaveBeenCalledTimes(1)
+    expect(foz.mock.calls[0][0].value).toBeUndefined()
+
+    form.change('foo', 'bar')
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].value).toBe('bar')
+    expect(foz).toHaveBeenCalledTimes(1)
+
+    form.change('foz', 'baz')
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].values).toEqual({ foo: 'bar', foz: 'baz' })
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foz).toHaveBeenCalledTimes(2)
+    expect(foz.mock.calls[1][0].value).toBe('baz')
+
+    unregisterFoo()
+
+    // No one notified
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foz).toHaveBeenCalledTimes(2)
+
+    form.setConfig('destroyOnUnregister', true)
+
+    unregisterFoz()
+
+    // foz deleted
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].values).toEqual({ foo: 'bar' })
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foz).toHaveBeenCalledTimes(2) // but field not notified
+  })
 })

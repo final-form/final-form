@@ -628,4 +628,68 @@ describe('Field.subscribing', () => {
     expect(field.mock.calls[2][0].pristine).toBe(true)
     expect(field.mock.calls[2][0].dirty).toBe(false)
   })
+
+  it('should not destroy field value on unregister by default', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { values: true })
+    const field = jest.fn()
+    const unregister = form.registerField('foo', field, { value: true })
+
+    // no values yet
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].values).toEqual({})
+    expect(field).toHaveBeenCalledTimes(1)
+    expect(field.mock.calls[0][0].value).toBeUndefined()
+
+    // change value
+    form.change('foo', 'bar')
+
+    // value changed
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+    expect(field).toHaveBeenCalledTimes(2)
+    expect(field.mock.calls[1][0].value).toBe('bar')
+
+    // unregister should not remove value
+    unregister()
+
+    // no need to notify form or field
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(field).toHaveBeenCalledTimes(2)
+  })
+
+  it('should destroy field value on unregister when destroyOnUnregister is true', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      destroyOnUnregister: true
+    })
+    const spy = jest.fn()
+    form.subscribe(spy, { values: true })
+    const field = jest.fn()
+    const unregister = form.registerField('foo', field, { value: true })
+
+    // no values yet
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].values).toEqual({})
+    expect(field).toHaveBeenCalledTimes(1)
+    expect(field.mock.calls[0][0].value).toBeUndefined()
+
+    // change value
+    form.change('foo', 'bar')
+
+    // value changed
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+    expect(field).toHaveBeenCalledTimes(2)
+    expect(field.mock.calls[1][0].value).toBe('bar')
+
+    // unregister should not remove value
+    unregister()
+
+    // form notified of change of values
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].values).toEqual({})
+    expect(field).toHaveBeenCalledTimes(2)
+  })
 })

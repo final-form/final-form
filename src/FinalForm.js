@@ -147,6 +147,7 @@ const createForm = (config: Config): FormApi => {
   }
   let {
     debug,
+    destroyOnUnregister,
     keepDirtyOnReinitialize,
     initialValues,
     mutators,
@@ -197,6 +198,7 @@ const createForm = (config: Config): FormApi => {
 
   // bind state to mutators
   const getMutatorApi = key => (...args) => {
+    // istanbul ignore next
     if (mutators) {
       // ^^ causes branch coverage warning, but needed to appease the Flow gods
       const mutatableState = {
@@ -470,6 +472,7 @@ const createForm = (config: Config): FormApi => {
       !fieldKeys.every(key =>
         fields[key].isEqual(
           getIn(formState.values, key),
+          // istanbul ignore next
           getIn(formState.lastSubmittedValues || {}, key) // || {} is for flow, but causes branch coverage complaint
         )
       )
@@ -726,6 +729,10 @@ const createForm = (config: Config): FormApi => {
           state.formState.errors =
             setIn(state.formState.errors, name, undefined) || {}
         }
+        if (destroyOnUnregister) {
+          state.formState.values =
+            setIn(state.formState.values, name, undefined) || {}
+        }
         runValidation(undefined, () => {
           notifyFieldListeners()
           notifyFormListeners()
@@ -757,6 +764,9 @@ const createForm = (config: Config): FormApi => {
       switch (name) {
         case 'debug':
           debug = value
+          break
+        case 'destroyOnUnregister':
+          destroyOnUnregister = value
           break
         case 'initialValues':
           api.initialize(value)

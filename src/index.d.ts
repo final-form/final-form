@@ -153,6 +153,7 @@ export interface InternalFormState {
 
 type ConfigKey =
   | 'debug'
+  | 'destroyOnUnregister'
   | 'initialValues'
   | 'keepDirtyOnReinitialize'
   | 'mutators'
@@ -211,6 +212,7 @@ export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
 
 export interface Config {
   debug?: DebugFunction
+  destroyOnUnregister?: boolean
   initialValues?: object
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator }
