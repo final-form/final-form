@@ -37,7 +37,7 @@ export const configOptions: ConfigKey[] = [
   'validate',
   'validateOnBlur'
 ]
-export const version = '4.8.0'
+export const version = '4.8.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
 
