@@ -189,11 +189,9 @@ const createForm = (config: Config): FormApi => {
   }
 
   const changeValue: ChangeValue = (state, name, mutate) => {
-    if (state.fields[name]) {
-      const before = getIn(state.formState.values, name)
-      const after = mutate(before)
-      state.formState.values = setIn(state.formState.values, name, after) || {}
-    }
+    const before = getIn(state.formState.values, name)
+    const after = mutate(before)
+    state.formState.values = setIn(state.formState.values, name, after) || {}
   }
 
   // bind state to mutators
@@ -581,8 +579,8 @@ const createForm = (config: Config): FormApi => {
     },
 
     change: (name: string, value: ?any) => {
-      const { fields, formState } = state
-      if (fields[name] && getIn(formState.values, name) !== value) {
+      const { formState } = state
+      if (getIn(formState.values, name) !== value) {
         changeValue(state, name, () => value)
         if (validateOnBlur) {
           notifyFieldListeners()

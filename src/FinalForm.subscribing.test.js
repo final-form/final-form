@@ -74,6 +74,30 @@ describe('FinalForm.subscribing', () => {
     expect(fieldSpy.mock.calls[2][0].value).toBe('baz')
   })
 
+  it('should allow form.change() to change any value, not just registered fields', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+
+    const formSpy = jest.fn()
+    form.subscribe(formSpy, { values: true })
+
+    // called with initial state
+    expect(formSpy).toHaveBeenCalledTimes(1)
+    expect(formSpy.mock.calls[0][0].values.foo).toBeUndefined()
+
+    // update field value
+    form.change('foo', 'bar')
+
+    // form subscriber notified
+    expect(formSpy).toHaveBeenCalledTimes(2)
+    expect(formSpy.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+
+    // update field again, just for good measure
+    form.change('foo', 'baz')
+
+    expect(formSpy).toHaveBeenCalledTimes(3)
+    expect(formSpy.mock.calls[2][0].values).toEqual({ foo: 'baz' })
+  })
+
   it('should not overwrite lastFormState every time a form subscriber is added', () => {
     // this is mostly for code coverage
     const form = createForm({ onSubmit: onSubmitMock })

@@ -44,7 +44,7 @@ describe('FinalForm.mutators', () => {
     expect(formListener.mock.calls[3][0].values.foo).toBeUndefined()
   })
 
-  it('should not allow changeValue to modify a non-registered field', () => {
+  it('should allow changeValue to modify a non-registered field', () => {
     const upper = jest.fn(([name], state, { changeValue }) => {
       changeValue(state, name, value => value && value.toUpperCase())
     })
@@ -63,10 +63,18 @@ describe('FinalForm.mutators', () => {
     form.change('foo', 'bar')
 
     expect(formListener).toHaveBeenCalledTimes(2)
-    expect(formListener.mock.calls[1][0].values.foo).toBe('bar')
+    expect(formListener.mock.calls[1][0].values).toEqual({ foo: 'bar' })
 
     form.mutators.upper('nonexistent.field')
 
-    expect(formListener).toHaveBeenCalledTimes(2)
+    expect(formListener).toHaveBeenCalledTimes(3)
+    expect(formListener.mock.calls[2][0].values).toEqual({
+      foo: 'bar',
+      nonexistant: undefined
+    })
+    expect(Object.keys(formListener.mock.calls[2][0].values)).toEqual([
+      'foo',
+      'nonexistent'
+    ])
   })
 })
