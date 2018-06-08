@@ -66,7 +66,9 @@ export type StateFilter<T> = (
 ) => ?T
 
 const hasAnyError = (errors: Object): boolean => {
-  return Object.entries(errors).some(([key, value]) => {
+  return Object.keys(errors).some(key => {
+    const value = errors[key]
+
     if (value && typeof value === 'object') {
       return hasAnyError(value)
     }
