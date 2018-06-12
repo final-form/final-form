@@ -20,9 +20,11 @@ export interface FormSubscription {
   submitFailed?: boolean
   submitting?: boolean
   submitSucceeded?: boolean
+  touched?: boolean
   valid?: boolean
   validating?: boolean
   values?: boolean
+  visited?: boolean
 }
 
 export interface FormState {
@@ -42,9 +44,11 @@ export interface FormState {
   submitFailed: boolean
   submitSucceeded: boolean
   submitting: boolean
+  touched?: { [key: string]: boolean }
   valid: boolean
   validating: boolean
   values: AnyObject
+  visited?: { [key: string]: boolean }
 }
 
 export type FormSubscriber = Subscriber<FormState>
@@ -53,7 +57,7 @@ export interface FieldState {
   active?: boolean
   blur: () => void
   change: (value: any) => void
-  data?: object
+  data?: AnyObject
   dirty?: boolean
   dirtySinceLastSubmit?: boolean
   error?: any
@@ -108,22 +112,19 @@ export type RegisterField = (
   name: string,
   subscriber: FieldSubscriber,
   subscription: FieldSubscription,
-  config: FieldConfig
+  config?: FieldConfig
 ) => Unsubscribe
 
 export interface InternalFieldState {
   active: boolean
   blur: () => void
   change: (value: any) => void
-  data: object
-  error?: any
+  data: AnyObject
   focus: () => void
   isEqual: IsEqual
   lastFieldState?: FieldState
   length?: any
   name: string
-  submitError?: any
-  pristine: boolean
   touched: boolean
   validateFields?: string[]
   validators: {
@@ -171,15 +172,17 @@ export interface FormApi {
   getFieldState: (field: string) => FieldState | undefined
   getRegisteredFields: () => string[]
   getState: () => FormState
-  mutators: { [key: string]: Function }
+  mutators: { [key: string]: (...args: any[]) => any }
+  pauseValidation: () => void
+  registerField: RegisterField
+  reset: (initialValues?: object) => void
+  resumeValidation: () => void
   setConfig: (name: ConfigKey, value: any) => void
   submit: () => Promise<object | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
   ) => Unsubscribe
-  registerField: RegisterField
-  reset: (initialValues?: object) => void
 }
 
 export type DebugFunction = (
@@ -208,7 +211,7 @@ export interface Tools {
   shallowEqual: IsEqual
 }
 
-export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
+export type Mutator = (args: any, state: MutableState, tools: Tools) => any
 
 export interface Config {
   debug?: DebugFunction
