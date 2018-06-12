@@ -174,7 +174,7 @@ export type FormApi = {
   getFieldState: (field: string) => ?FieldState,
   getRegisteredFields: () => string[],
   getState: () => FormState,
-  mutators: { [string]: Function },
+  mutators: { [string]: (...args: any[]) => any },
   pauseValidation: () => void,
   registerField: RegisterField,
   reset: (initialValues?: Object) => void,
