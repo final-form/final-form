@@ -34,4 +34,10 @@ describe('FinalForm.creation', () => {
     expect(form.getState().pristine).toBe(true)
     expect(form.getState().dirty).toBe(false)
   })
+
+  it('should allow a change to an not-yet-registered field when validation is present', () => {
+    const form = createForm({ onSubmit: onSubmitMock, validate: () => {} })
+    form.registerField('whatever', () => {}, { value: true })
+    form.change('foo', 'bar')
+  })
 })

@@ -313,12 +313,15 @@ const createForm = (config: Config): FormApi => {
     // pare down field keys to actually validate
     let limitedFieldLevelValidation = false
     if (fieldChanged) {
-      const { validateFields } = fields[fieldChanged]
-      if (validateFields) {
-        limitedFieldLevelValidation = true
-        fieldKeys = validateFields.length
-          ? validateFields.concat(fieldChanged)
-          : [fieldChanged]
+      const changedField = fields[fieldChanged]
+      if (changedField) {
+        const { validateFields } = changedField
+        if (validateFields) {
+          limitedFieldLevelValidation = true
+          fieldKeys = validateFields.length
+            ? validateFields.concat(fieldChanged)
+            : [fieldChanged]
+        }
       }
     }
 
