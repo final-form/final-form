@@ -746,6 +746,7 @@ const createForm = (config: Config): FormApi => {
     reset: (initialValues = state.formState.initialValues) => {
       state.formState.submitFailed = false
       state.formState.submitSucceeded = false
+      delete state.formState.submitError
       delete state.formState.submitErrors
       delete state.formState.lastSubmittedValues
       api.initialize(initialValues || {})
