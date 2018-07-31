@@ -274,7 +274,7 @@ const createForm = (config: Config): FormApi => {
         if (errorOrPromise && isPromise(errorOrPromise)) {
           const asyncValidationPromiseKey = nextAsyncValidationKey++
           const promise = errorOrPromise
-            .then(setError)
+            .then(setError) // errors must be resolved, not rejected
             .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
           promises.push(promise)
           asyncValidationPromises[asyncValidationPromiseKey] = promise
@@ -394,13 +394,14 @@ const createForm = (config: Config): FormApi => {
         callback()
       }
 
-      Promise.all(promises).then(() => {
+      const afterPromises = () => {
         state.formState.validating--
         processErrors()
         if (callback) {
           callback()
         }
-      })
+      }
+      Promise.all(promises).then(afterPromises, afterPromises)
     } else if (callback) {
       callback()
     }
@@ -830,7 +831,7 @@ const createForm = (config: Config): FormApi => {
             result.push(asyncValidationPromises[Number(key)])
             return result
           }, [])
-        ).then(() => api.submit())
+        ).then(api.submit, api.submit)
         return
       }
 
@@ -878,7 +879,7 @@ const createForm = (config: Config): FormApi => {
         if (result && isPromise(result)) {
           // onSubmit is async with a Promise
           notifyFormListeners() // let everyone know we are submitting
-          return result.then(complete)
+          return result.then(complete, complete)
         } else {
           // onSubmit is sync
           complete(result)

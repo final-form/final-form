@@ -1012,4 +1012,115 @@ describe('Field.validation', () => {
     expect(foo.mock.calls[1][0].error).toBeUndefined()
     expect(foo.mock.calls[1][0].invalid).toBe(false)
   })
+
+  it('should have validating true until the promise resolves', async () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { validating: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].validating).toBe(false)
+
+    const foo = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { error: true, invalid: true },
+      {
+        getValidator: () => async value => {
+          await sleep(2)
+          return value ? undefined : 'Required'
+        }
+      }
+    )
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[0][0].validating).toBe(false)
+    expect(spy.mock.calls[1][0].validating).toBe(true)
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBeUndefined()
+    expect(foo.mock.calls[0][0].invalid).toBe(false)
+
+    await sleep(3)
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].validating).toBe(false)
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].error).toBe('Required')
+    expect(foo.mock.calls[1][0].invalid).toBe(true)
+
+    form.change('foo', 'hi')
+
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].validating).toBe(true)
+    expect(foo).toHaveBeenCalledTimes(3)
+    // Why? Because with async field-level validation, it gets set to valid
+    // while the validator is running. This is probably not optimal, but
+    // rarely causes problems in practice.
+    expect(foo.mock.calls[2][0].error).toBeUndefined()
+    expect(foo.mock.calls[2][0].invalid).toBe(false)
+
+    await sleep(3)
+
+    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy.mock.calls[4][0].validating).toBe(false)
+    expect(foo).toHaveBeenCalledTimes(3)
+    expect(foo.mock.calls[2][0].error).toBeUndefined()
+    expect(foo.mock.calls[2][0].invalid).toBe(false)
+  })
+
+  it('should have validating true until the promise rejects', async () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, { validating: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].validating).toBe(false)
+
+    const foo = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { error: true, invalid: true },
+      {
+        getValidator: () => value =>
+          new Promise((resolve, reject) => {
+            sleep(2).then(() => {
+              if (value) {
+                resolve(undefined)
+              } else {
+                reject('Required')
+              }
+            })
+          })
+      }
+    )
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[0][0].validating).toBe(false)
+    expect(spy.mock.calls[1][0].validating).toBe(true)
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBeUndefined()
+    expect(foo.mock.calls[0][0].invalid).toBe(false)
+
+    await sleep(3)
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].validating).toBe(false)
+    expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
+
+    form.change('foo', 'hi')
+
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].validating).toBe(true)
+    expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
+
+    await sleep(3)
+
+    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy.mock.calls[4][0].validating).toBe(false)
+    expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
+  })
 })

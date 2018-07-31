@@ -590,4 +590,64 @@ describe('FinalForm.submission', () => {
     form.submit()
     expect(onSubmit).not.toHaveBeenCalled()
   })
+
+  it('should set submitting to true during until promise is resolved, and then set it back to false', async () => {
+    const onSubmit = jest.fn(
+      () =>
+        new Promise(resolve => {
+          sleep(5).then(resolve)
+        })
+    )
+    const form = createForm({ onSubmit })
+    const spy = jest.fn()
+    form.subscribe(spy, { submitting: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
+
+    form.registerField('username', () => {}, {})
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    form.submit()
+    expect(onSubmit).toHaveBeenCalled()
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0]).toEqual({ submitting: true })
+
+    await sleep(6)
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0]).toEqual({ submitting: false })
+  })
+
+  it('should set submitting to true during until promise is rejected, and then set it back to false', () => {
+    try {
+      const onSubmit = () =>
+        new Promise((resolve, reject) => {
+          sleep(5).then(() => {
+            debugger
+            reject('No submit for you!')
+          })
+        })
+      const form = createForm({ onSubmit })
+      const spy = jest.fn()
+      form.subscribe(spy, { submitting: true })
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
+
+      form.registerField('username', () => {}, {})
+
+      form.submit()
+      expect(spy).toHaveBeenCalledTimes(2)
+      expect(spy.mock.calls[1][0]).toEqual({ submitting: true })
+
+      return sleep(6).then(() => {
+        expect(spy).toHaveBeenCalledTimes(3)
+        expect(spy.mock.calls[2][0]).toEqual({ submitting: false })
+      })
+    } catch (error) {
+      console.error('here', error)
+    }
+  })
 })
