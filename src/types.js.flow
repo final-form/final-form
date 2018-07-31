@@ -6,6 +6,7 @@ export type IsEqual = (a: any, b: any) => boolean
 export type FormSubscription = {
   active?: boolean,
   dirty?: boolean,
+  dirtyFields?: boolean,
   dirtySinceLastSubmit?: boolean,
   error?: boolean,
   errors?: boolean,
@@ -30,6 +31,7 @@ export type FormState = {
   // all values are optional because they must be subscribed to
   active?: string,
   dirty?: boolean,
+  dirtyFields?: { [string]: boolean },
   dirtySinceLastSubmit?: boolean,
   error?: any,
   errors?: Object,

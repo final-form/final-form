@@ -465,21 +465,29 @@ const createForm = (config: Config): FormApi => {
     const fieldKeys = Object.keys(fields)
 
     // calculate dirty/pristine
-    formState.pristine = fieldKeys.every(key =>
-      fields[key].isEqual(
+    let foundDirty = false
+    const dirtyFields = fieldKeys.reduce((result, key) => {
+      const dirty = !fields[key].isEqual(
         getIn(formState.values, key),
         getIn(formState.initialValues || {}, key)
       )
-    )
+      if (dirty) {
+        foundDirty = true
+        result[key] = true
+      }
+      return result
+    }, {})
+    formState.pristine = !foundDirty
     formState.dirtySinceLastSubmit = !!(
       formState.lastSubmittedValues &&
-      !fieldKeys.every(key =>
-        fields[key].isEqual(
+      !fieldKeys.every(key => {
+        // istanbul ignore next
+        const nonNullLastSubmittedValues = formState.lastSubmittedValues || {} // || {} is for flow, but causes branch coverage complaint
+        return fields[key].isEqual(
           getIn(formState.values, key),
-          // istanbul ignore next
-          getIn(formState.lastSubmittedValues || {}, key) // || {} is for flow, but causes branch coverage complaint
+          getIn(nonNullLastSubmittedValues, key)
         )
-      )
+      })
     )
 
     formState.valid =
@@ -496,6 +504,10 @@ const createForm = (config: Config): FormApi => {
       },
       { touched: {}, visited: {} }
     )
+    nextFormState.dirtyFields =
+      lastFormState && shallowEqual(lastFormState.dirtyFields, dirtyFields)
+        ? lastFormState.dirtyFields
+        : dirtyFields
     nextFormState.touched =
       lastFormState && shallowEqual(lastFormState.touched, touched)
         ? lastFormState.touched

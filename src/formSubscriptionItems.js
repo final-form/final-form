@@ -2,6 +2,7 @@
 export default [
   'active',
   'dirty',
+  'dirtyFields',
   'dirtySinceLastSubmit',
   'error',
   'errors',
