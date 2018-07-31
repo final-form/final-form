@@ -1,21 +1,21 @@
 {
   "name": "final-form",
   "version": "4.8.3",
-  "description":
-    "🏁 Framework agnostic, high performance, subscription-based form state management",
+  "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
   "module": "dist/final-form.es.js",
   "typings": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "nps",
     "test": "nps test",
     "precommit": "lint-staged && npm start validate",
     "prepublish": "lint-staged && npm start validate"
   },
-  "author":
-    "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
+  "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -27,8 +27,17 @@
   "homepage": "https://github.com/final-form/final-form#readme",
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",
+    "@babel/plugin-proposal-class-properties": "7.0.0-beta.54",
+    "@babel/plugin-proposal-decorators": "7.0.0-beta.54",
+    "@babel/plugin-proposal-export-namespace-from": "7.0.0-beta.54",
+    "@babel/plugin-proposal-function-sent": "7.0.0-beta.54",
+    "@babel/plugin-proposal-json-strings": "7.0.0-beta.54",
+    "@babel/plugin-proposal-numeric-separator": "7.0.0-beta.54",
+    "@babel/plugin-proposal-throw-expressions": "7.0.0-beta.54",
+    "@babel/plugin-syntax-dynamic-import": "7.0.0-beta.54",
+    "@babel/plugin-syntax-import-meta": "7.0.0-beta.54",
     "@babel/preset-env": "^7.0.0-beta.49",
-    "@babel/preset-stage-2": "^7.0.0-beta.49",
+    "@babel/preset-flow": "7.0.0-beta.54",
     "@types/node": "^10.5.4",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^8.2.3",
@@ -63,7 +72,10 @@
     "typescript": "^3.0.1"
   },
   "lint-staged": {
-    "*.{js*,ts*,json,md,css}": ["prettier --write", "git add"]
+    "*.{js*,ts*,json,md,css}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "bundlesize": [
     {

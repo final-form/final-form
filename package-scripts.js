@@ -8,9 +8,11 @@ const crossEnv = npsUtils.crossEnv
 module.exports = {
   scripts: {
     test: {
-      default: crossEnv('NODE_ENV=test jest --coverage'),
-      update: crossEnv('NODE_ENV=test jest --coverage --updateSnapshot'),
-      watch: crossEnv('NODE_ENV=test jest --watch'),
+      default: crossEnv('NODE_ENV=test jest --env=node --coverage'),
+      update: crossEnv(
+        'NODE_ENV=test jest --env=node --coverage --updateSnapshot'
+      ),
+      watch: crossEnv('NODE_ENV=test jest --env=node --watch'),
       codeCov: crossEnv(
         'cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js'
       ),
