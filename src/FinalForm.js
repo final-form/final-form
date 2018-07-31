@@ -525,7 +525,7 @@ const createForm = (config: Config): FormApi => {
     debug &&
     process.env.NODE_ENV !== 'production' &&
     debug(
-      convertToExternalFormState(state.formState),
+      calculateNextFormState(),
       Object.keys(state.fields).reduce((result, key: string) => {
         result[key] = state.fields[key]
         return result
@@ -632,7 +632,7 @@ const createForm = (config: Config): FormApi => {
 
     getRegisteredFields: () => Object.keys(state.fields),
 
-    getState: () => convertToExternalFormState(state.formState),
+    getState: () => calculateNextFormState(),
 
     initialize: (values: Object) => {
       const { fields, formState } = state
