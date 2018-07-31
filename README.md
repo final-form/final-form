@@ -14,7 +14,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**4.2k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.3k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -195,6 +195,8 @@ form.submit() // only submits if all validation passes
   * [`FormState`](#formstate)
     * [`active?: string`](#active-string)
     * [`dirty?: boolean`](#dirty-boolean-2)
+    * [`dirtyFields?: { [string]: boolean }`](#dirtyfields--string-boolean-)
+    * [`dirtySinceLastSubmit?: boolean`](#dirtysincelastsubmit-boolean-2)
     * [`error?: any`](#error-any-1)
     * [`errors?: Object`](#errors-object)
     * [`hasSubmitErrors?: boolean`](#hassubmiterrors-boolean)
@@ -207,16 +209,17 @@ form.submit() // only submits if all validation passes
     * [`submitFailed?: boolean`](#submitfailed-boolean-2)
     * [`submitSucceeded?: boolean`](#submitsucceeded-boolean-2)
     * [`submitting?: boolean`](#submitting-boolean)
-    * [`touched: { [string]: boolean }`](#touched--string-boolean-)
+    * [`touched?: { [string]: boolean }`](#touched--string-boolean-)
     * [`valid?: boolean`](#valid-boolean-2)
     * [`validating?: boolean`](#validating-boolean)
     * [`values?: Object`](#values-object)
-    * [`visited: { [string]: boolean }`](#visited--string-boolean-)
+    * [`visited?: { [string]: boolean }`](#visited--string-boolean-)
   * [`FormSubscriber: (state: FormState) => void`](#formsubscriber-state-formstate--void)
   * [`FormSubscription: { [string]: boolean }`](#formsubscription--string-boolean-)
     * [`active?: boolean`](#active-boolean-2)
     * [`dirty?: boolean`](#dirty-boolean-3)
-    * [`dirtySinceLastSubmit?: boolean`](#dirtysincelastsubmit-boolean-2)
+    * [`dirtyFields?: boolean`](#dirtyfields-boolean)
+    * [`dirtySinceLastSubmit?: boolean`](#dirtysincelastsubmit-boolean-3)
     * [`error?: boolean`](#error-boolean-1)
     * [`errors?: boolean`](#errors-boolean)
     * [`hasSubmitErrors?: boolean`](#hassubmiterrors-boolean-1)
@@ -764,6 +767,15 @@ The name of the currently active field. `undefined` if none are active.
 `true` if the form values are different from the values it was initialized with.
 `false` otherwise. Comparison is done with shallow-equals.
 
+#### `dirtyFields?: { [string]: boolean }`
+
+An object full of booleans, with a value of `true` for each `dirty` field. _Pristine fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirty` value for that field will be available under `dirty['addresses.shipping.street']`.
+
+#### `dirtySinceLastSubmit?: boolean`
+
+`true` if the form values are different from the values it was last submitted with.
+`false` otherwise. Comparison is done with shallow-equals.
+
 #### `error?: any`
 
 The whole-form error returned by a validation function under the `FORM_ERROR`
@@ -822,7 +834,7 @@ errors. `false` otherwise.
 `true` if the form is currently being submitted asynchronously. `false`
 otherwise.
 
-#### `touched: { [string]: boolean }`
+#### `touched?: { [string]: boolean }`
 
 An object full of booleans, with a boolean value for each field name denoting whether that field is `touched` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `touched` value for that field will be available under `touched['addresses.shipping.street']`.
 
@@ -841,7 +853,7 @@ otherwise.
 
 The current values of the form.
 
-#### `visited: { [string]: boolean }`
+#### `visited?: { [string]: boolean }`
 
 An object full of booleans, with a boolean value for each field name denoting whether that field is `visited` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `visited` value for that field will be available under `visited['addresses.shipping.street']`.
 
@@ -859,7 +871,12 @@ value in `FormState`.
 #### `dirty?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `dirty`
-value in `FormState`. This value is the opposite to the `pristine` value (`dirty = !pristine`).
+value in `FormState`.
+
+#### `dirtyFields?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the `dirtyFields`
+value in `FormState`.
 
 #### `dirtySinceLastSubmit?: boolean`
 
