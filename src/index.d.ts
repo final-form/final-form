@@ -99,7 +99,11 @@ export type FieldSubscriber = Subscriber<FieldState>
 
 export type Unsubscribe = () => void
 
-type FieldValidator = (value: any, allValues: object) => any | Promise<any>
+type FieldValidator = (
+  value: any,
+  allValues: object,
+  meta?: FieldState
+) => any | Promise<any>
 type GetFieldValidator = () => FieldValidator
 
 export interface FieldConfig {

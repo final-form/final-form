@@ -270,8 +270,11 @@ const createForm = (config: Config): FormApi => {
         const errorOrPromise = validator(
           getIn(state.formState.values, field.name),
           state.formState.values,
-          publishFieldState(state.formState, state.fields[field.name])
+          validator.length === 3
+            ? publishFieldState(state.formState, state.fields[field.name])
+            : undefined
         )
+
         if (errorOrPromise && isPromise(errorOrPromise)) {
           const asyncValidationPromiseKey = nextAsyncValidationKey++
           const promise = errorOrPromise
