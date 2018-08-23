@@ -1,3 +1,4 @@
+export type Subscription = { [key: string]: boolean }
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 export interface AnyObject {
@@ -96,6 +97,12 @@ export interface FieldSubscription {
 }
 
 export type FieldSubscriber = Subscriber<FieldState>
+export type Subscribers<T extends Object> = {
+  index: number
+  entries: {
+    [key: number]: { subscriber: Subscriber<T>; subscription: Subscription }
+  }
+}
 
 export type Unsubscribe = () => void
 
@@ -191,10 +198,12 @@ export type DebugFunction = (
 ) => void
 
 export interface MutableState {
-  formState: InternalFormState
+  fieldSubscribers: { [key: string]: Subscribers<FieldState> }
   fields: {
     [key: string]: InternalFieldState
   }
+  formState: InternalFormState
+  lastFormState?: FormState
 }
 
 export type GetIn = (state: object, complexKey: string) => any
@@ -204,9 +213,15 @@ export type ChangeValue = (
   name: string,
   mutate: (value: any) => any
 ) => void
+export type RenameField = (
+  state: MutableState,
+  from: string,
+  to: string
+) => void
 export interface Tools {
   changeValue: ChangeValue
   getIn: GetIn
+  renameField: RenameField
   setIn: SetIn
   shallowEqual: IsEqual
 }

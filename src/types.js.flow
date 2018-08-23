@@ -97,6 +97,12 @@ export type FieldSubscription = {
 }
 
 export type FieldSubscriber = Subscriber<FieldState>
+export type Subscribers<T: Object> = {
+  index: number,
+  entries: {
+    [number]: { subscriber: Subscriber<T>, subscription: Subscription }
+  }
+}
 
 export type Unsubscribe = () => void
 
@@ -195,10 +201,12 @@ export type DebugFunction = (
 ) => void
 
 export type MutableState = {
-  formState: InternalFormState,
+  fieldSubscribers: { [string]: Subscribers<FieldState> },
   fields: {
     [string]: InternalFieldState
-  }
+  },
+  formState: InternalFormState,
+  lastFormState?: FormState
 }
 
 export type GetIn = (state: Object, complexKey: string) => any
@@ -208,9 +216,15 @@ export type ChangeValue = (
   name: string,
   mutate: (value: any) => any
 ) => void
+export type RenameField = (
+  state: MutableState,
+  from: string,
+  to: string
+) => void
 export type Tools = {
   changeValue: ChangeValue,
   getIn: GetIn,
+  renameField: RenameField,
   setIn: SetIn,
   shallowEqual: IsEqual
 }

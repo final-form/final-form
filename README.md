@@ -92,9 +92,7 @@ form.submit() // only submits if all validation passes
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Examples](#examples)
@@ -270,11 +268,14 @@ form.submit() // only submits if all validation passes
   - [`MutableState`](#mutablestate)
     - [`formState: InternalFormState`](#formstate-internalformstate)
     - [`fields: { [string]: InternalFieldState }`](#fields--string-internalfieldstate-)
+    - [`fieldSubscribers: { [string]: Subscribers<FieldState> }`](#fieldsubscribers--string-subscribersfieldstate-)
+    - [`lastFormState: ?InternalFormState`](#lastformstate-internalformstate)
   - [`Mutator: (args: any[], state: MutableState, tools: Tools) => any`](#mutator-args-any-state-mutablestate-tools-tools--any)
   - [`RegisterField: (name: string, subscriber: FieldSubscriber, subscription: FieldSubscription, config?: FieldConfig) => Unsubscribe`](#registerfield-name-string-subscriber-fieldsubscriber-subscription-fieldsubscription-config-fieldconfig--unsubscribe)
   - [`Tools`](#tools)
     - [`Tools.changeValue: (state: MutableState, name: string, mutate: (value: any) => any) => void`](#toolschangevalue-state-mutablestate-name-string-mutate-value-any--any--void)
     - [`Tools.getIn: (state: Object, complexKey: string) => any`](#toolsgetin-state-object-complexkey-string--any)
+    - [`Tools.renameField: (state: MutableState, from: string, to: string) => any) => void`](#toolsrenamefield-state-mutablestate-from-string-to-string--any--void)
     - [`Tools.setIn: (state: Object, key: string, value: any) => Object`](#toolssetin-state-object-key-string-value-any--object)
     - [`Tools.shallowEqual: (a: any, b: any) => boolean`](#toolsshallowequal-a-any-b-any--boolean)
   - [`Unsubscribe : () => void`](#unsubscribe----void)
@@ -1112,6 +1113,14 @@ The [`InternalFormState`](#internalformstate).
 
 An object of [`InternalFieldState`](#internalfieldstate)s.
 
+#### `fieldSubscribers: { [string]: Subscribers<FieldState> }`
+
+An object of field subscribers.
+
+#### `lastFormState: ?InternalFormState`
+
+The last form state sent to form subscribers.
+
 ### `Mutator: (args: any[], state: MutableState, tools: Tools) => any`
 
 A mutator function that takes some arguments, the internal form
@@ -1138,6 +1147,10 @@ takes the old value and returns the new value.
 
 A utility function to get any arbitrarily deep value from an object using
 dot-and-bracket syntax (e.g. `some.deep.values[3].whatever`).
+
+#### `Tools.renameField: (state: MutableState, from: string, to: string) => any) => void`
+
+A utility function to rename a field, copying over its value and field subscribers. _Advanced usage only_.
 
 #### `Tools.setIn: (state: Object, key: string, value: any) => Object`
 

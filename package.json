@@ -77,6 +77,9 @@
       "git add"
     ]
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "bundlesize": [
     {
       "path": "dist/final-form.umd.min.js",
