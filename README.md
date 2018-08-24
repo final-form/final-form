@@ -246,7 +246,7 @@ form.submit() // only submits if all validation passes
     - [`name: string`](#name-string-1)
     - [`touched: boolean`](#touched-boolean)
     - [`validateFields: ?(string[])`](#validatefields-string)
-    - [`validators: { [number]: (value: ?any, allValues: Object) => ?any | Promise<?any> } }`](#validators--number-value-any-allvalues-object--any--promiseany--)
+    - [`validators: { [number]: (value: ?any, allValues: Object, meta: FieldState) => ?any | Promise<?any> } }`](#validators--number-value-any-allvalues-object-meta-fieldstate--any--promiseany--)
     - [`valid: boolean`](#valid-boolean)
     - [`visited: boolean`](#visited-boolean)
   - [`InternalFormState`](#internalformstate)
@@ -1014,7 +1014,7 @@ for knowing when to display error messages.
 
 Fields to validate when this field value changes.
 
-#### `validators: { [number]: (value: ?any, allValues: Object) => ?any | Promise<?any> } }`
+#### `validators: { [number]: (value: ?any, allValues: Object, meta: FieldState) => ?any | Promise<?any> } }`
 
 Field-level validators for each field that is registered.
 
