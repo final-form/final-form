@@ -77,4 +77,62 @@ describe('FinalForm.mutators', () => {
       'nonexistent'
     ])
   })
+
+  it('should allow renameField to rename a registered field', () => {
+    const rename = jest.fn(([from, to], state, { renameField }) => {
+      renameField(state, from, to)
+    })
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      mutators: { rename }
+    })
+    const formListener = jest.fn()
+    form.subscribe(formListener, { values: true })
+    form.registerField('foo', () => {}, { value: true })
+
+    expect(formListener).toHaveBeenCalledTimes(1)
+    expect(formListener.mock.calls[0][0].values).toEqual({})
+
+    form.change('foo', 'bar')
+
+    expect(formListener).toHaveBeenCalledTimes(2)
+    expect(formListener.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+
+    form.mutators.rename('foo', 'fooRenamed')
+
+    expect(formListener).toHaveBeenCalledTimes(3)
+    expect(formListener.mock.calls[2][0].values).toEqual({
+      fooRenamed: 'bar'
+    })
+    expect(Object.keys(formListener.mock.calls[2][0].values)).toEqual([
+      'fooRenamed'
+    ])
+  })
+
+  it('should do nothing when renameField called with nonexistent field', () => {
+    const rename = jest.fn(([from, to], state, { renameField }) => {
+      renameField(state, from, to)
+    })
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      mutators: { rename }
+    })
+    const formListener = jest.fn()
+    form.subscribe(formListener, { values: true })
+    form.registerField('foo', () => {}, { value: true })
+
+    expect(formListener).toHaveBeenCalledTimes(1)
+    expect(formListener.mock.calls[0][0].values).toEqual({})
+
+    form.change('foo', 'bar')
+
+    expect(formListener).toHaveBeenCalledTimes(2)
+    expect(formListener.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+
+    form.mutators.rename('nonexistent', 'fooRenamed')
+
+    expect(formListener).toHaveBeenCalledTimes(2)
+  })
 })

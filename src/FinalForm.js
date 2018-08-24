@@ -23,7 +23,9 @@ import type {
   InternalFormState,
   IsEqual,
   MutableState,
+  RenameField,
   Subscriber,
+  Subscribers,
   Subscription,
   Unsubscribe
 } from './types'
@@ -40,13 +42,6 @@ export const configOptions: ConfigKey[] = [
 export const version = '4.8.1'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
-
-type Subscribers<T: Object> = {
-  index: number,
-  entries: {
-    [number]: { subscriber: Subscriber<T>, subscription: Subscription }
-  }
-}
 
 type InternalState = {
   subscribers: Subscribers<FormState>,
@@ -195,24 +190,52 @@ const createForm = (config: Config): FormApi => {
     const after = mutate(before)
     state.formState.values = setIn(state.formState.values, name, after) || {}
   }
+  const renameField: RenameField = (state, from, to) => {
+    if (state.fields[from]) {
+      state.fields = {
+        ...state.fields,
+        [to]: {
+          ...state.fields[from],
+          name: to,
+          lastFieldState: undefined
+        }
+      }
+      delete state.fields[from]
+      state.fieldSubscribers = {
+        ...state.fieldSubscribers,
+        [to]: state.fieldSubscribers[from]
+      }
+      delete state.fieldSubscribers[from]
+      const value = getIn(state.formState.values, from)
+      state.formState.values =
+        setIn(state.formState.values, from, undefined) || {}
+      state.formState.values = setIn(state.formState.values, to, value)
+      delete state.lastFormState
+    }
+  }
 
   // bind state to mutators
   const getMutatorApi = key => (...args) => {
     // istanbul ignore next
     if (mutators) {
       // ^^ causes branch coverage warning, but needed to appease the Flow gods
-      const mutatableState = {
+      const mutatableState: MutableState = {
         formState: state.formState,
-        fields: state.fields
+        fields: state.fields,
+        fieldSubscribers: state.fieldSubscribers,
+        lastFormState: state.lastFormState
       }
       const returnValue = mutators[key](args, mutatableState, {
         changeValue,
         getIn,
+        renameField,
         setIn,
         shallowEqual
       })
       state.formState = mutatableState.formState
       state.fields = mutatableState.fields
+      state.fieldSubscribers = mutatableState.fieldSubscribers
+      state.lastFormState = mutatableState.lastFormState
       runValidation(undefined, () => {
         notifyFieldListeners()
         notifyFormListeners()
@@ -221,13 +244,12 @@ const createForm = (config: Config): FormApi => {
     }
   }
 
-  const mutatorsApi =
-    (mutators &&
-      Object.keys(mutators).reduce((result, key) => {
+  const mutatorsApi = mutators
+    ? Object.keys(mutators).reduce((result, key) => {
         result[key] = getMutatorApi(key)
         return result
-      }, {})) ||
-    {}
+      }, {})
+    : {}
 
   const runRecordLevelValidation = (
     setErrors: (errors: Object) => void
