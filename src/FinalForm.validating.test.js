@@ -462,6 +462,65 @@ describe('Field.validation', () => {
     expect(spy).toHaveBeenCalledTimes(3)
   })
 
+  it('should provide field state to field-level validator', async () => {
+    const delay = 10
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.registerField(
+      'username',
+      spy,
+      { error: true },
+      {
+        getValidator: () => async (value, allErrors, fieldState) => {
+          const error = value === 'erikras' ? 'Username taken' : undefined
+          expect(fieldState).toBeDefined()
+          await sleep(delay)
+          return error
+        }
+      }
+    )
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].error).toBeUndefined()
+
+    const { change } = spy.mock.calls[0][0]
+
+    await sleep(delay * 2)
+
+    // error hasn't changed
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    change('bob')
+
+    await sleep(delay * 2)
+
+    // error hasn't changed
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    change('erikras')
+
+    // still hasn't updated because validation has not yet returned
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    // wait for validation to return
+    await sleep(delay * 2)
+
+    // we have an error now!
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].error).toBe('Username taken')
+
+    change('another')
+
+    // sync validation ran and cleared the error
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].error).toBeUndefined()
+
+    // wait for validation to return
+    await sleep(delay * 2)
+
+    // not called after async validation finished because it was already und
+    expect(spy).toHaveBeenCalledTimes(3)
+  })
+
   it('should not fall over if a field has been unregistered during async validation', async () => {
     const delay = 10
     const form = createForm({ onSubmit: onSubmitMock })
