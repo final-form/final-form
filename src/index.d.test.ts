@@ -9,6 +9,7 @@ let formState = form.getState()
 
 console.log(formState.active as string, formState.active as undefined)
 console.log(formState.dirty as boolean)
+console.log(formState.dirtyFields as AnyObject, formState.dirtyFields)
 console.log(formState.dirtySinceLastSubmit as boolean)
 console.log(formState.error.foo, formState.error as string, formState.error as boolean)
 console.log(formState.errors as AnyObject, formState.errors.foo)
