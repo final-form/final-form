@@ -77,7 +77,7 @@ export default {
         '@babel/plugin-proposal-throw-expressions'
       ]
     }),
-    umd
+    umd || es
       ? replace({
           'process.env.NODE_ENV': JSON.stringify(
             minify ? 'production' : 'development'
