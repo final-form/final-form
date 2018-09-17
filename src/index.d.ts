@@ -8,6 +8,7 @@ export interface AnyObject {
 export interface FormSubscription {
   active?: boolean
   dirty?: boolean
+  dirtyFields?: boolean
   dirtySinceLastSubmit?: boolean
   error?: boolean
   errors?: boolean
@@ -32,6 +33,7 @@ export interface FormState {
   // by default: all values are subscribed. if subscription is specified, some values may be undefined
   active: undefined | string
   dirty: boolean
+  dirtyFields: { [key: string]: boolean }
   dirtySinceLastSubmit: boolean
   error: any
   errors: AnyObject
