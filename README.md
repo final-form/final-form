@@ -553,7 +553,7 @@ The name of the field.
 #### `pristine?: boolean`
 
 `true` if the current value is `===` to the initial value, `false` if the values
-are `!===`.
+are `!==`.
 
 #### `submitError?: any`
 
