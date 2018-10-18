@@ -901,23 +901,21 @@ const createForm = (config: Config): FormApi => {
       formState.submitFailed = false
       formState.submitSucceeded = false
       formState.lastSubmittedValues = { ...formState.values }
-      if (onSubmit.length === 3) {
-        // onSubmit is expecting a callback, first try synchronously
-        onSubmit(formState.values, api, complete)
-        if (!completeCalled) {
+
+      // onSubmit is either sync, callback or async with a Promise
+      const result = onSubmit(formState.values, api, complete)
+
+      if (!completeCalled) {
+        if (result && isPromise(result)) {
+          // onSubmit is async with a Promise
+          notifyFormListeners() // let everyone know we are submitting
+          return result.then(complete, complete)
+        } else if (onSubmit.length >= 3) {
           // must be async, so we should return a Promise
           notifyFormListeners() // let everyone know we are submitting
           return new Promise(resolve => {
             resolvePromise = resolve
           })
-        }
-      } else {
-        // onSubmit is either sync or async with a Promise
-        const result = onSubmit(formState.values, api)
-        if (result && isPromise(result)) {
-          // onSubmit is async with a Promise
-          notifyFormListeners() // let everyone know we are submitting
-          return result.then(complete, complete)
         } else {
           // onSubmit is sync
           complete(result)
