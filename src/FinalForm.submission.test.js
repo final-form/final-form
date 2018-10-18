@@ -621,33 +621,52 @@ describe('FinalForm.submission', () => {
   })
 
   it('should set submitting to true during until promise is rejected, and then set it back to false', () => {
-    try {
-      const onSubmit = () =>
-        new Promise((resolve, reject) => {
-          sleep(5).then(() => {
-            debugger
-            reject('No submit for you!')
-          })
+    const onSubmit = () =>
+      new Promise((resolve, reject) => {
+        sleep(5).then(() => {
+          reject('No submit for you!')
         })
-      const form = createForm({ onSubmit })
-      const spy = jest.fn()
-      form.subscribe(spy, { submitting: true })
-      expect(spy).toHaveBeenCalled()
-      expect(spy).toHaveBeenCalledTimes(1)
-      expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
-
-      form.registerField('username', () => {}, {})
-
-      form.submit()
-      expect(spy).toHaveBeenCalledTimes(2)
-      expect(spy.mock.calls[1][0]).toEqual({ submitting: true })
-
-      return sleep(6).then(() => {
-        expect(spy).toHaveBeenCalledTimes(3)
-        expect(spy.mock.calls[2][0]).toEqual({ submitting: false })
       })
-    } catch (error) {
-      console.error('here', error)
+    const form = createForm({ onSubmit })
+    const spy = jest.fn()
+    form.subscribe(spy, { submitting: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
+
+    form.registerField('username', () => {}, {})
+
+    form.submit().catch(error => expect(error).toBe('No submit for you!'))
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0]).toEqual({ submitting: true })
+
+    return sleep(6).then(() => {
+      expect(spy).toHaveBeenCalledTimes(3)
+      expect(spy.mock.calls[2][0]).toEqual({ submitting: false })
+    })
+  })
+
+  it('should rethrow error on async submit', async () => {
+    const spy = jest.fn()
+    const onSubmit = async () => {
+      await sleep(5)
+      throw new Error('No submit for you!')
     }
+    const form = createForm({ onSubmit })
+    form.subscribe(spy, { submitting: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
+
+    form.registerField('username', () => {}, {})
+
+    form
+      .submit()
+      .catch(error => expect(error.message).toBe('No submit for you!'))
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0]).toEqual({ submitting: true })
+    await sleep(10)
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0]).toEqual({ submitting: false })
   })
 })

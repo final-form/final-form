@@ -909,7 +909,10 @@ const createForm = (config: Config): FormApi => {
         if (result && isPromise(result)) {
           // onSubmit is async with a Promise
           notifyFormListeners() // let everyone know we are submitting
-          return result.then(complete, complete)
+          return result.then(complete, error => {
+            complete()
+            throw error
+          })
         } else if (onSubmit.length >= 3) {
           // must be async, so we should return a Promise
           notifyFormListeners() // let everyone know we are submitting
