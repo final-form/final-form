@@ -36,7 +36,7 @@ console.log(
   formState.submitError as string,
   formState.submitError as object,
   formState.submitError as undefined
-)
+);
 console.log(formState.submitErrors as AnyObject, formState.submitErrors.foo)
 console.log(formState.submitFailed as boolean)
 console.log(formState.submitSucceeded as boolean)
