@@ -234,14 +234,14 @@ export interface Tools {
 
 export type Mutator = (args: any, state: MutableState, tools: Tools) => any
 
-export interface Config {
+export interface Config<FormData = object> {
   debug?: DebugFunction
   destroyOnUnregister?: boolean
   initialValues?: object
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator }
   onSubmit: (
-    values: object,
+    values: FormData,
     form: FormApi,
     callback?: (errors?: object) => void
   ) => object | Promise<object | undefined> | undefined | void
@@ -251,7 +251,7 @@ export interface Config {
 
 export type Decorator = (form: FormApi) => Unsubscribe
 
-export function createForm(config: Config): FormApi
+export function createForm<FormData>(config: Config<FormData>): FormApi
 export const fieldSubscriptionItems: string[]
 export const formSubscriptionItems: string[]
 export const ARRAY_ERROR: string
