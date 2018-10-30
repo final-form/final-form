@@ -73,6 +73,7 @@ export interface FieldState {
   submitError?: any
   submitFailed?: boolean
   submitSucceeded?: boolean
+  submitting?: boolean
   touched?: boolean
   valid?: boolean
   value?: any
@@ -92,6 +93,7 @@ export interface FieldSubscription {
   submitError?: boolean
   submitFailed?: boolean
   submitSucceeded?: boolean
+  submitting?: boolean
   touched?: boolean
   valid?: boolean
   value?: boolean

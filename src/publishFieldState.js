@@ -18,6 +18,7 @@ const publishFieldState = (
     submitErrors,
     submitFailed,
     submitSucceeded,
+    submitting,
     values
   } = formState
   const { active, blur, change, data, focus, name, touched, visited } = field
@@ -51,6 +52,7 @@ const publishFieldState = (
     submitError,
     submitFailed,
     submitSucceeded,
+    submitting,
     touched,
     valid,
     value,
