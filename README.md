@@ -132,7 +132,7 @@ form.submit() // only submits if all validation passes
   - [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
   - [`FieldConfig`](#fieldconfig)
     - [`isEqual?: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
-    - [`getValidator?: () => (value: ?any, allValues: Object) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object--any--promiseany)
+    - [`getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object--any--promiseany)
     - [`validateFields?: string[]`](#validatefields-string)
   - [`FieldState`](#fieldstate)
     - [`active?: boolean`](#active-boolean)
@@ -485,7 +485,7 @@ the form. e.g.
 
 A function to determine if two values are equal. Defaults to `===`.
 
-#### `getValidator?: () => (value: ?any, allValues: Object) => ?any | ?Promise<any>`
+#### `getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`
 
 A callback that will return a field-level validation function to validate a single field value. The validation function should return an error if the value is not valid, or `undefined` if the value is valid.
 
