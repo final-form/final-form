@@ -46,6 +46,8 @@ const setInRecursor = (
           return undefined
         }
       }
+      const { [key]: _removed, ...final } = current
+      return final
     }
     // set result in key
     return {
