@@ -8,13 +8,13 @@
 [![codecov.io](https://codecov.io/gh/final-form/final-form/branch/master/graph/badge.svg)](https://codecov.io/gh/final-form/final-form)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-✅ **Zero** dependencies
+✅ **Zero** dependencies [\*](#zero-dependencies)
 
 ✅ Framework agnostic
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**4.4k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.6k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -37,6 +37,10 @@ or
 ```bash
 yarn add final-form
 ```
+
+## Zero Dependencies
+
+Technically there is a dependency on `@babel/runtime`, but [this actually makes your final bundle size _smaller_ by sharing common babel code between libraries](https://babeljs.io/docs/en/babel-runtime#why).
 
 ## Getting Started
 
