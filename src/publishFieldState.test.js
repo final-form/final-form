@@ -10,6 +10,7 @@ const check = (error, initial, value, submitError) => {
   const name = 'foo'
   const submitFailed = {}
   const submitSucceeded = {}
+  const submitting = {}
   const result = publishFieldState(
     {
       initialValues: {
@@ -23,6 +24,7 @@ const check = (error, initial, value, submitError) => {
       },
       submitFailed,
       submitSucceeded,
+      submitting,
       values: {
         foo: value
       }
@@ -53,6 +55,7 @@ const check = (error, initial, value, submitError) => {
   expect(result.submitError).toBe(submitError)
   expect(result.submitFailed).toBe(submitFailed)
   expect(result.submitSucceeded).toBe(submitSucceeded)
+  expect(result.submitting).toBe(submitting)
   expect(result.valid).toBe(!error && !submitError)
   expect(result.invalid).toBe(!!(error || submitError))
 }

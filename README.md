@@ -151,6 +151,7 @@ form.submit() // only submits if all validation passes
     - [`submitError?: any`](#submiterror-any)
     - [`submitFailed?: boolean`](#submitfailed-boolean)
     - [`submitSucceeded?: boolean`](#submitsucceeded-boolean)
+    - [`submitting?: boolean`](#submitting-boolean)
     - [`touched?: boolean`](#touched-boolean)
     - [`valid?: boolean`](#valid-boolean)
     - [`value?: any`](#value-any)
@@ -169,6 +170,7 @@ form.submit() // only submits if all validation passes
     - [`submitError?: boolean`](#submiterror-boolean)
     - [`submitFailed?: boolean`](#submitfailed-boolean-1)
     - [`submitSucceeded?: boolean`](#submitsucceeded-boolean-1)
+    - [`submitting?: boolean`](#submitting-boolean-1)
     - [`touched?: boolean`](#touched-boolean-1)
     - [`valid?: boolean`](#valid-boolean-1)
     - [`value?: boolean`](#value-boolean)
@@ -206,7 +208,7 @@ form.submit() // only submits if all validation passes
     - [`submitErrors?: Object`](#submiterrors-object)
     - [`submitFailed?: boolean`](#submitfailed-boolean-2)
     - [`submitSucceeded?: boolean`](#submitsucceeded-boolean-2)
-    - [`submitting?: boolean`](#submitting-boolean)
+    - [`submitting?: boolean`](#submitting-boolean-2)
     - [`touched?: { [string]: boolean }`](#touched--string-boolean-)
     - [`valid?: boolean`](#valid-boolean-2)
     - [`validating?: boolean`](#validating-boolean)
@@ -230,7 +232,7 @@ form.submit() // only submits if all validation passes
     - [`submitErrors?: boolean`](#submiterrors-boolean)
     - [`submitFailed?: boolean`](#submitfailed-boolean-3)
     - [`submitSucceeded?: boolean`](#submitsucceeded-boolean-3)
-    - [`submitting?: boolean`](#submitting-boolean-1)
+    - [`submitting?: boolean`](#submitting-boolean-3)
     - [`touched?: boolean`](#touched-boolean-2)
     - [`valid?: boolean`](#valid-boolean-3)
     - [`validating?: boolean`](#validating-boolean-1)
@@ -261,7 +263,7 @@ form.submit() // only submits if all validation passes
     - [`submitErrors?: Object`](#submiterrors-object-1)
     - [`submitFailed: boolean`](#submitfailed-boolean)
     - [`submitSucceeded: boolean`](#submitsucceeded-boolean)
-    - [`submitting: boolean`](#submitting-boolean)
+    - [`submitting: boolean`](#submitting-boolean-4)
     - [`valid: boolean`](#valid-boolean-1)
     - [`validating: number`](#validating-number)
     - [`values: Object`](#values-object)
@@ -567,6 +569,11 @@ The submission error for this field.
 
 `true` if the form has been successfully submitted. `false` otherwise.
 
+#### `submitting?: boolean`
+
+`true` if the form is currently being submitted asynchronously. `false`
+otherwise.
+
 #### `touched?: boolean`
 
 `true` if this field has ever gained and lost focus. `false` otherwise. Useful
@@ -647,6 +654,11 @@ When `true` the `FieldSubscriber` will be notified of changes to the
 
 When `true` the `FieldSubscriber` will be notified of changes to the
 `submitSucceeded` value in `FieldState`.
+
+#### `submitting?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the
+`submitting` value in `FieldState`.
 
 #### `touched?: boolean`
 
