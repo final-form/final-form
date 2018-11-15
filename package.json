@@ -36,6 +36,7 @@
     "@babel/plugin-proposal-throw-expressions": "7.0.0",
     "@babel/plugin-syntax-dynamic-import": "7.0.0",
     "@babel/plugin-syntax-import-meta": "7.0.0",
+    "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "7.0.0",
     "@types/node": "^10.12.0",
@@ -92,5 +93,8 @@
       "path": "dist/final-form.cjs.js",
       "maxSize": "8kB"
     }
-  ]
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.1.2"
+  }
 }
