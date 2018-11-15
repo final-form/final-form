@@ -693,6 +693,13 @@ const createForm = (config: Config): FormApi => {
       validationPaused = true
     },
 
+    runValidation: (name) => {
+      runValidation(name, () => {
+        notifyFieldListeners()
+        notifyFormListeners()
+      })
+    },
+
     registerField: (
       name: string,
       subscriber: FieldSubscriber,
