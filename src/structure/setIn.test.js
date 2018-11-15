@@ -151,6 +151,17 @@ describe('structure.setIn', () => {
     expect(output.dog).toBeUndefined()
   })
 
+  it('should remove property when setting its value to undefined', () => {
+    const a = {}
+    const b = {}
+    const input = { a, b, dog: {} }
+    const output = setIn(input, 'dog', undefined)
+    expect(input).not.toBe(output)
+    expect(output.a).toBe(a)
+    expect(output.b).toBe(b)
+    expect(output).not.toHaveProperty('dog')
+  })
+
   it('should not delete structure when setting undefined and other keys exist', () => {
     const a = {}
     const b = {}

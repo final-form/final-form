@@ -69,13 +69,9 @@ describe('FinalForm.mutators', () => {
 
     expect(formListener).toHaveBeenCalledTimes(3)
     expect(formListener.mock.calls[2][0].values).toEqual({
-      foo: 'bar',
-      nonexistant: undefined
+      foo: 'bar'
     })
-    expect(Object.keys(formListener.mock.calls[2][0].values)).toEqual([
-      'foo',
-      'nonexistent'
-    ])
+    expect(Object.keys(formListener.mock.calls[2][0].values)).toEqual(['foo'])
   })
 
   it('should allow renameField to rename a registered field', () => {
