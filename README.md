@@ -2,6 +2,8 @@
 
 ![Final Form](banner.png)
 
+[![Backers on Open Collective](https://opencollective.com/final-form/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/final-form/sponsors/badge.svg)](#sponsors)
 [![NPM Version](https://img.shields.io/npm/v/final-form.svg?style=flat)](https://www.npmjs.com/package/final-form)
 [![NPM Downloads](https://img.shields.io/npm/dm/final-form.svg?style=flat)](https://npm-stat.com/charts.html?package=final-form)
 [![Build Status](https://travis-ci.org/final-form/final-form.svg?branch=master)](https://travis-ci.org/final-form/final-form)
