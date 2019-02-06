@@ -88,11 +88,11 @@
     },
     {
       "path": "dist/final-form.es.js",
-      "maxSize": "8.1kB"
+      "maxSize": "8.2kB"
     },
     {
       "path": "dist/final-form.cjs.js",
-      "maxSize": "8.1kB"
+      "maxSize": "8.2kB"
     }
   ],
   "dependencies": {

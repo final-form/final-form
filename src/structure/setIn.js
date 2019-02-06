@@ -8,7 +8,8 @@ const setInRecursor = (
   current: State,
   index: number,
   path: string[],
-  value: any
+  value: any,
+  destroyArrays: boolean
 ): State => {
   if (index >= path.length) {
     // end of recursion
@@ -21,7 +22,13 @@ const setInRecursor = (
     // object set
     if (current === undefined || current === null) {
       // recurse
-      const result = setInRecursor(undefined, index + 1, path, value)
+      const result = setInRecursor(
+        undefined,
+        index + 1,
+        path,
+        value,
+        destroyArrays
+      )
 
       // delete or create an object
       return result === undefined ? undefined : { [key]: result }
@@ -30,7 +37,13 @@ const setInRecursor = (
       throw new Error('Cannot set a non-numeric property on an array')
     }
     // current exists, so make a copy of all its values, and add/update the new one
-    const result = setInRecursor(current[key], index + 1, path, value)
+    const result = setInRecursor(
+      current[key],
+      index + 1,
+      path,
+      value,
+      destroyArrays
+    )
     const numKeys = Object.keys(current).length
     if (result === undefined) {
       if (current[key] === undefined && numKeys === 0) {
@@ -39,7 +52,7 @@ const setInRecursor = (
       }
       if (current[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
-        if (!isNaN(path[index - 1])) {
+        if (!isNaN(path[index - 1]) && !destroyArrays) {
           // we are in an array, so return an empty object
           return {}
         } else {
@@ -59,7 +72,13 @@ const setInRecursor = (
   const numericKey = Number(key)
   if (current === undefined || current === null) {
     // recurse
-    const result = setInRecursor(undefined, index + 1, path, value)
+    const result = setInRecursor(
+      undefined,
+      index + 1,
+      path,
+      value,
+      destroyArrays
+    )
 
     // if nothing returned, delete it
     if (result === undefined) {
@@ -76,15 +95,33 @@ const setInRecursor = (
   }
   // recurse
   const existingValue = current[numericKey]
-  const result = setInRecursor(existingValue, index + 1, path, value)
+  const result = setInRecursor(
+    existingValue,
+    index + 1,
+    path,
+    value,
+    destroyArrays
+  )
 
   // current exists, so make a copy of all its values, and add/update the new one
   const array = [...current]
-  array[numericKey] = result
+  if (destroyArrays && result === undefined) {
+    array.splice(numericKey, 1)
+    if (array.length === 0) {
+      return undefined
+    }
+  } else {
+    array[numericKey] = result
+  }
   return array
 }
 
-const setIn: SetIn = (state: Object, key: string, value: any): Object => {
+const setIn: SetIn = (
+  state: Object,
+  key: string,
+  value: any,
+  destroyArrays?: boolean = false
+): Object => {
   if (state === undefined || state === null) {
     throw new Error(`Cannot call setIn() with ${String(state)} state`)
   }
@@ -93,7 +130,13 @@ const setIn: SetIn = (state: Object, key: string, value: any): Object => {
   }
   // Recursive function needs to accept and return State, but public API should
   // only deal with Objects
-  return ((setInRecursor(state, 0, toPath(key), value): any): Object)
+  return ((setInRecursor(
+    state,
+    0,
+    toPath(key),
+    value,
+    destroyArrays
+  ): any): Object)
 }
 
 export default setIn
