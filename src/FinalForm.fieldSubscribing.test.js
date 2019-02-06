@@ -55,7 +55,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to active', () => {
-    const { foo: { blur, focus, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { blur, focus, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { active: true }
@@ -90,7 +92,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to dirty', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { dirty: true }
@@ -120,7 +124,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to error with whole-record validation', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { error: true }
@@ -160,7 +166,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to error with field-level validation', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { error: true }
@@ -193,7 +201,10 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to initial', () => {
-    const { form, foo: { spy } } = prepareFieldSubscribers(
+    const {
+      form,
+      foo: { spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { initial: true }
@@ -223,7 +234,10 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow reseting even if never initialized', () => {
-    const { form, foo: { spy } } = prepareFieldSubscribers(
+    const {
+      form,
+      foo: { spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { initial: true }
@@ -249,7 +263,10 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow reseting with specific initial new values', () => {
-    const { form, foo: { spy } } = prepareFieldSubscribers(
+    const {
+      form,
+      foo: { spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { initial: true }
@@ -275,7 +292,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to invalid with whole-record validation', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { invalid: true }
@@ -315,7 +334,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to invalid with field-level validation', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { invalid: true }
@@ -348,7 +369,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to length', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { length: true }
@@ -372,7 +395,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to pristine', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { pristine: true }
@@ -402,7 +427,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to touched', () => {
-    const { foo: { blur, focus, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { blur, focus, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { touched: true }
@@ -433,7 +460,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow field to be marked touched even if it was not active', () => {
-    const { foo: { blur, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { blur, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { touched: true }
@@ -452,7 +481,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to valid with whole-record validation', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { valid: true }
@@ -492,7 +523,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to valid with field-level validation', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { valid: true }
@@ -525,7 +558,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to value', () => {
-    const { foo: { change, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { change, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { value: true }
@@ -555,7 +590,9 @@ describe('Field.subscribing', () => {
   })
 
   it('should allow subscribing to visited', () => {
-    const { foo: { blur, focus, spy } } = prepareFieldSubscribers(
+    const {
+      foo: { blur, focus, spy }
+    } = prepareFieldSubscribers(
       {},
       {
         foo: { visited: true }
@@ -691,5 +728,52 @@ describe('Field.subscribing', () => {
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy.mock.calls[2][0].values).toEqual({})
     expect(field).toHaveBeenCalledTimes(2)
+  })
+
+  it('should destroy array field values on unregister when destroyOnUnregister is true', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      destroyOnUnregister: true
+    })
+    const spy = jest.fn()
+    form.subscribe(spy, { values: true })
+    const cat = jest.fn()
+    const dog = jest.fn()
+    const unregisterCat = form.registerField('foo[0].cat', cat, { value: true })
+    const unregisterDog = form.registerField('foo[0].dog', dog, { value: true })
+
+    // no values yet
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].values).toEqual({})
+    expect(cat).toHaveBeenCalledTimes(1)
+    expect(cat.mock.calls[0][0].value).toBeUndefined()
+    expect(dog).toHaveBeenCalledTimes(1)
+    expect(dog.mock.calls[0][0].value).toBeUndefined()
+
+    // change values
+    form.change('foo[0].cat', 'Garfield')
+    form.change('foo[0].dog', 'Odie')
+
+    // value changed
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[1][0].values).toEqual({ foo: [{ cat: 'Garfield' }] })
+    expect(spy.mock.calls[2][0].values).toEqual({
+      foo: [{ cat: 'Garfield', dog: 'Odie' }]
+    })
+    expect(cat).toHaveBeenCalledTimes(2)
+    expect(cat.mock.calls[1][0].value).toBe('Garfield')
+    expect(dog).toHaveBeenCalledTimes(2)
+    expect(dog.mock.calls[1][0].value).toBe('Odie')
+
+    // unregister should not remove value
+    unregisterCat()
+    unregisterDog()
+
+    // form notified of change of values
+    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy.mock.calls[3][0].values).toEqual({ foo: [{ dog: 'Odie' }] })
+    expect(spy.mock.calls[4][0].values).toEqual({})
+    expect(cat).toHaveBeenCalledTimes(2)
+    expect(dog).toHaveBeenCalledTimes(2)
   })
 })

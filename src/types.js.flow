@@ -213,7 +213,12 @@ export type MutableState = {
 }
 
 export type GetIn = (state: Object, complexKey: string) => any
-export type SetIn = (state: Object, key: string, value: any) => Object
+export type SetIn = (
+  state: Object,
+  key: string,
+  value: any,
+  destroyArrays?: boolean
+) => Object
 export type ChangeValue = (
   state: MutableState,
   name: string,

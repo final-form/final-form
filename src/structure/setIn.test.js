@@ -180,18 +180,41 @@ describe('structure.setIn', () => {
     expect(output.a).toBe(a)
   })
 
-  it('should not delete array structure when setting undefined', () => {
+  it('should not delete array structure when setting undefined (and destroyArrays is false)', () => {
     const a = {}
     const b = {}
     const input = { a, b, dog: [{ rat: 'foo' }] }
-    const output = setIn(input, 'dog[0].rat', undefined)
+    const output = setIn(input, 'dog[0].rat', undefined, false)
     expect(input).not.toBe(output)
     expect(output.a).toBe(a)
     expect(output.b).toBe(b)
-    expect(output.dog).not.toBeUndefined()
+    expect(output.dog).toBeDefined()
     expect(Array.isArray(output.dog)).toBe(true)
     expect(output.dog.length).toBe(1)
     expect(output.dog[0]).toEqual({})
+  })
+
+  it('should delete array structure when setting undefined (and destroyArrays is true)', () => {
+    const a = {}
+    const b = {}
+    const input = { a, b, dog: [{ rat: 'foo' }] }
+    const output = setIn(input, 'dog[0].rat', undefined, true)
+    expect(input).not.toBe(output)
+    expect(output.a).toBe(a)
+    expect(output.b).toBe(b)
+    expect(output.dog).toBeUndefined()
+  })
+
+  it('should not delete array structure when setting undefined to one value of many (and destroyArrays is true)', () => {
+    const a = {}
+    const b = {}
+    const input = { a, b, dog: [{ rat: 'foo' }, { rat: 'bar' }] }
+    const output = setIn(input, 'dog[0].rat', undefined, true)
+    expect(input).not.toBe(output)
+    expect(output.a).toBe(a)
+    expect(output.b).toBe(b)
+    expect(output.dog).toBeDefined()
+    expect(output.dog).toEqual([{ rat: 'bar' }])
   })
 
   it('should not delete array structure when setting undefined and other items exist', () => {

@@ -772,7 +772,7 @@ const createForm = (config: Config): FormApi => {
             setIn(state.formState.errors, name, undefined) || {}
           if (destroyOnUnregister) {
             state.formState.values =
-              setIn(state.formState.values, name, undefined) || {}
+              setIn(state.formState.values, name, undefined, true) || {}
           }
         }
         runValidation(undefined, () => {
