@@ -909,6 +909,7 @@ const createForm = (config: Config): FormApi => {
         if (result && isPromise(result)) {
           // onSubmit is async with a Promise
           notifyFormListeners() // let everyone know we are submitting
+          notifyFieldListeners() // notify fields also
           return result.then(complete, error => {
             complete()
             throw error
@@ -916,6 +917,7 @@ const createForm = (config: Config): FormApi => {
         } else if (onSubmit.length >= 3) {
           // must be async, so we should return a Promise
           notifyFormListeners() // let everyone know we are submitting
+          notifyFieldListeners() // notify fields also
           return new Promise(resolve => {
             resolvePromise = resolve
           })
