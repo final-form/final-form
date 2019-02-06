@@ -88,7 +88,7 @@ const setInRecursor = (
     // create an array
     const array = []
     array[numericKey] = result
-    return array
+    return (array: Array<*>)
   }
   if (!Array.isArray(current)) {
     throw new Error('Cannot set a numeric property on an object')
