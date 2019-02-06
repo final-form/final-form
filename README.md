@@ -110,6 +110,7 @@ form.submit() // only submits if all validation passes
 - [Libraries](#libraries)
   - [🏁 React Final Form](#-react-final-form)
   - [Vue Final Form](#vue-final-form)
+  - [Web Components Bindings](#web-components-bindings)
   - [Define Form and React Define Form](#define-form-and-react-define-form)
   - [🏁 Final Form Focus 🧐](#-final-form-focus-)
   - [🏁 React Final Form HTML5 Validation](#-react-final-form-html5-validation)
@@ -138,7 +139,7 @@ form.submit() // only submits if all validation passes
   - [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
   - [`FieldConfig`](#fieldconfig)
     - [`isEqual?: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
-    - [`getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object--any--promiseany)
+    - [`getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object-meta-fieldstate--any--promiseany)
     - [`validateFields?: string[]`](#validatefields-string)
   - [`FieldState`](#fieldstate)
     - [`active?: boolean`](#active-boolean)
@@ -269,7 +270,7 @@ form.submit() // only submits if all validation passes
     - [`submitErrors?: Object`](#submiterrors-object-1)
     - [`submitFailed: boolean`](#submitfailed-boolean)
     - [`submitSucceeded: boolean`](#submitsucceeded-boolean)
-    - [`submitting: boolean`](#submitting-boolean-4)
+    - [`submitting: boolean`](#submitting-boolean)
     - [`valid: boolean`](#valid-boolean-1)
     - [`validating: number`](#validating-number)
     - [`values: Object`](#values-object)
@@ -330,6 +331,10 @@ A form state management system for React that uses 🏁 Final Form under the hoo
 ### [Vue Final Form](https://github.com/egoist/vue-finalform)
 
 A form state management system for Vue that uses 🏁 Final Form under the hood.
+
+### [Web Components Bindings](https://github.com/corpusculejs/corpuscule/tree/master/packages/form)
+
+CorpusculeJS provides a way to manage form state with 🏁 Final Form using Web Components.
 
 ### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
 
