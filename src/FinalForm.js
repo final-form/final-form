@@ -660,8 +660,9 @@ const createForm = (config: Config): FormApi => {
 
     getState: () => calculateNextFormState(),
 
-    initialize: (values: Object) => {
+    initialize: (data: Object | ((values: Object) => Object)) => {
       const { fields, formState } = state
+      const values = typeof data === 'function' ? data(formState.values) : data
       if (!keepDirtyOnReinitialize) {
         formState.values = values
       }
