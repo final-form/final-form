@@ -180,7 +180,7 @@ export type FormApi = {
   blur: (name: string) => void,
   change: (name: string, value: ?any) => void,
   focus: (name: string) => void,
-  initialize: (values: Object) => void,
+  initialize: (data: Object | (values: Object) => Object) => void,
   isValidationPaused: () => boolean,
   getFieldState: (field: string) => ?FieldState,
   getRegisteredFields: () => string[],
