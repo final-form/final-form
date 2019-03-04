@@ -190,7 +190,7 @@ form.submit() // only submits if all validation passes
     - [`getFieldState: (field: string) => ?FieldState`](#getfieldstate-field-string--fieldstate)
     - [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     - [`getState: () => FormState`](#getstate---formstate)
-    - [`initialize: (values: Object) => void`](#initialize-values-object--void)
+    - [`initialize: (data: Object | ((values: Object) => Object)) => void`](#initialize-values-object--void)
     - [`isValidationPaused: () => boolean`](#isvalidationpaused---boolean)
     - [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
     - [`pauseValidation: () => void`](#pausevalidation---void)
@@ -729,7 +729,7 @@ Returns a list of all the currently registered fields.
 
 A way to request the current state of the form without subscribing.
 
-#### `initialize: (values: Object) => void`
+#### `initialize: (data: Object | ((values: Object) => Object)) => void`
 
 Initializes the form to the values provided. All the values will be set to these
 values, and `dirty` and `pristine` will be calculated by performing a
