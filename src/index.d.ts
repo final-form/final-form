@@ -118,8 +118,10 @@ type FieldValidator = (
 type GetFieldValidator = () => FieldValidator
 
 export interface FieldConfig {
-  isEqual?: IsEqual
+  defaultValue?: any
   getValidator?: GetFieldValidator
+  initialValue?: any
+  isEqual?: IsEqual
   validateFields?: string[]
 }
 

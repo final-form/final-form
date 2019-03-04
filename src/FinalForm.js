@@ -713,16 +713,12 @@ const createForm = (config: Config): FormApi => {
 
       if (!state.fields[name]) {
         // create initial field state
-        const initial = state.formState.initialValues
-          ? getIn(state.formState.initialValues, name)
-          : undefined
         state.fields[name] = {
           active: false,
           blur: () => api.blur(name),
           change: value => api.change(name, value),
           data: {},
           focus: () => api.focus(name),
-          initial,
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
           name,
@@ -733,8 +729,29 @@ const createForm = (config: Config): FormApi => {
           visited: false
         }
       }
-      if (fieldConfig && fieldConfig.getValidator) {
-        state.fields[name].validators[index] = fieldConfig.getValidator
+      if (fieldConfig) {
+        if (fieldConfig.getValidator) {
+          state.fields[name].validators[index] = fieldConfig.getValidator
+        }
+        if (fieldConfig.initialValue !== undefined) {
+          state.formState.initialValues = setIn(
+            state.formState.initialValues || {},
+            name,
+            fieldConfig.initialValue
+          )
+          state.formState.values = setIn(
+            state.formState.values,
+            name,
+            fieldConfig.initialValue
+          )
+        }
+        if (fieldConfig.defaultValue !== undefined) {
+          state.formState.values = setIn(
+            state.formState.values,
+            name,
+            fieldConfig.defaultValue
+          )
+        }
       }
 
       let sentFirstNotification = false
