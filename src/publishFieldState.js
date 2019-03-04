@@ -21,7 +21,17 @@ const publishFieldState = (
     submitting,
     values
   } = formState
-  const { active, blur, change, data, focus, name, touched, visited } = field
+  const {
+    active,
+    blur,
+    change,
+    data,
+    focus,
+    modified,
+    name,
+    touched,
+    visited
+  } = field
   const value = getIn(values, name)
   let error = getIn(errors, name)
   if (error && error[ARRAY_ERROR]) {
@@ -47,6 +57,7 @@ const publishFieldState = (
     initial,
     invalid: !valid,
     length: Array.isArray(value) ? value.length : undefined,
+    modified,
     name,
     pristine,
     submitError,

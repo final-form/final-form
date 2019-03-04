@@ -16,6 +16,7 @@ export interface FormSubscription {
   hasValidationErrors?: boolean
   initialValues?: boolean
   invalid?: boolean
+  modified?: boolean
   pristine?: boolean
   submitError?: boolean
   submitErrors?: boolean
@@ -41,6 +42,7 @@ export interface FormState {
   hasValidationErrors: boolean
   initialValues: AnyObject
   invalid: boolean
+  modified?: { [key: string]: boolean }
   pristine: boolean
   submitError: any
   submitErrors: AnyObject
@@ -68,6 +70,7 @@ export interface FieldState {
   initial?: any
   invalid?: boolean
   length?: number
+  modified?: boolean
   name: string
   pristine?: boolean
   submitError?: any
@@ -89,6 +92,7 @@ export interface FieldSubscription {
   initial?: boolean
   invalid?: boolean
   length?: boolean
+  modified?: boolean
   pristine?: boolean
   submitError?: boolean
   submitFailed?: boolean
@@ -139,6 +143,7 @@ export interface InternalFieldState {
   isEqual: IsEqual
   lastFieldState?: FieldState
   length?: any
+  modified: boolean
   name: string
   touched: boolean
   validateFields?: string[]

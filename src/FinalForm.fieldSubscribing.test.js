@@ -426,6 +426,51 @@ describe('Field.subscribing', () => {
     expect(spy.mock.calls[2][0].pristine).toBe(true)
   })
 
+  it('should allow subscribing to modified', () => {
+    const {
+      foo: { blur, change, focus, spy }
+    } = prepareFieldSubscribers(
+      {},
+      {
+        foo: { modified: true }
+      }
+    )
+
+    // should initialize to not modified
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].modified).toBe(false)
+
+    focus()
+
+    // field is visited, but not yet modified
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    blur()
+
+    // field is touched, but not yet modified
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    focus()
+
+    // field is active, but not yet modified
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    change('dog')
+
+    // field is now modified!
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].modified).toBe(true)
+
+    // no amount of focusing and bluring and changing will change the touched flag
+    focus()
+    change('rabbit')
+    blur()
+    focus()
+    change('horse')
+    blur()
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
   it('should allow subscribing to touched', () => {
     const {
       foo: { blur, focus, spy }
