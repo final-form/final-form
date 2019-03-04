@@ -248,6 +248,38 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].pristine).toBe(true)
   })
 
+  it('should allow subscribing to modified', () => {
+    const { spy, blur, change, focus } = prepareFormSubscriber('foo', {
+      modified: true
+    })
+
+    // called twice, once with initial {} and again when field is registered
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[0][0].modified).toEqual({})
+    expect(spy.mock.calls[1][0].modified).toEqual({ foo: false })
+
+    focus('bar')
+
+    // not touched yet
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    blur('bar')
+
+    // not touched yet
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    focus('bar')
+
+    // not touched yet
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    change('bar', 'cow')
+
+    // foo is now touched
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].modified).toEqual({ foo: true })
+  })
+
   it('should allow subscribing to touched', () => {
     const { spy, blur, focus } = prepareFormSubscriber('foo', {
       touched: true

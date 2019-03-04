@@ -8,6 +8,7 @@ export default [
   'initial',
   'invalid',
   'length',
+  'modified',
   'pristine',
   'submitError',
   'submitFailed',

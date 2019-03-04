@@ -10,6 +10,7 @@ export default [
   'hasValidationErrors',
   'initialValues',
   'invalid',
+  'modified',
   'pristine',
   'submitting',
   'submitError',

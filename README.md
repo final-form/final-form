@@ -573,6 +573,11 @@ otherwise.
 
 The length of the array if the value is an array. `undefined` otherwise.
 
+#### `modified?: boolean`
+
+`true` if this field's value has ever been changed. `false` otherwise.
+Once `true`, it will remain `true` for the lifetime of the field, or until the form is reset.
+
 #### `name: string`
 
 The name of the field.
@@ -658,6 +663,11 @@ value in `FieldState`.
 #### `length?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `length`
+value in `FieldState`.
+
+#### `modified?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the `modified`
 value in `FieldState`.
 
 #### `pristine?: boolean`
@@ -843,6 +853,10 @@ initialized.
 `false` otherwise. Note that a form can be invalid even if the errors do not
 belong to any currently registered fields.
 
+#### `modified?: { [string]: boolean }`
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `modified` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `modified` value for that field will be available under `modified['addresses.shipping.street']`.
+
 #### `pristine?: boolean`
 
 `true` if the form values are the same as the initial values. `false` otherwise.
@@ -950,6 +964,11 @@ When `true` the `FormSubscriber` will be notified of changes to the
 When `true` the `FormSubscriber` will be notified of changes to the `invalid`
 value in `FormState`.
 
+#### `modified?: boolean`
+
+When `true` the `FormSubscriber` will be notified of changes to the `modified`
+value in `FormState`.
+
 #### `pristine?: boolean`
 
 When `true` the `FormSubscriber` will be notified of changes to the `pristine`
@@ -1037,6 +1056,11 @@ A function to focus the field (mark it as active).
 
 A function to determine if two values are equal. Used to calculate
 `pristine`/`dirty`.
+
+#### `modified: boolean`
+
+`true` if this field's value has ever changed. `false` otherwise. Useful
+for knowing when to display error messages. Once `true`, it will remain `true` for the lifetime of the field, or until the form is reset.
 
 #### `name: string`
 

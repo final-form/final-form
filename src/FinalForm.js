@@ -522,18 +522,23 @@ const createForm = (config: Config): FormApi => {
       !hasAnyError(formState.errors) &&
       !(formState.submitErrors && hasAnyError(formState.submitErrors))
     const nextFormState = convertToExternalFormState(formState)
-    const { touched, visited } = fieldKeys.reduce(
+    const { modified, touched, visited } = fieldKeys.reduce(
       (result, key) => {
+        result.modified[key] = fields[key].modified
         result.touched[key] = fields[key].touched
         result.visited[key] = fields[key].visited
         return result
       },
-      { touched: {}, visited: {} }
+      { modified: {}, touched: {}, visited: {} }
     )
     nextFormState.dirtyFields =
       lastFormState && shallowEqual(lastFormState.dirtyFields, dirtyFields)
         ? lastFormState.dirtyFields
         : dirtyFields
+    nextFormState.modified =
+      lastFormState && shallowEqual(lastFormState.modified, modified)
+        ? lastFormState.modified
+        : modified
     nextFormState.touched =
       lastFormState && shallowEqual(lastFormState.touched, touched)
         ? lastFormState.touched
@@ -623,9 +628,17 @@ const createForm = (config: Config): FormApi => {
     },
 
     change: (name: string, value: ?any) => {
-      const { formState } = state
+      const { fields, formState } = state
       if (getIn(formState.values, name) !== value) {
         changeValue(state, name, () => value)
+        const previous = fields[name]
+        if (previous) {
+          // only track modified for registered fields
+          fields[name] = {
+            ...previous,
+            modified: true
+          }
+        }
         if (validateOnBlur) {
           notifyFieldListeners()
           notifyFormListeners()
@@ -668,6 +681,7 @@ const createForm = (config: Config): FormApi => {
       }
       Object.keys(fields).forEach(key => {
         const field = fields[key]
+        field.modified = false
         field.touched = false
         field.visited = false
         if (keepDirtyOnReinitialize) {
@@ -721,6 +735,7 @@ const createForm = (config: Config): FormApi => {
           focus: () => api.focus(name),
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
+          modified: false,
           name,
           touched: false,
           valid: true,
