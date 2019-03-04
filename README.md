@@ -16,7 +16,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**4.6k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.7k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 
@@ -138,8 +138,10 @@ form.submit() // only submits if all validation passes
   - [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
   - [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
   - [`FieldConfig`](#fieldconfig)
-    - [`isEqual?: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
+    - [`defaultValue?: any`](#defaultvalue-any)
     - [`getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object-meta-fieldstate--any--promiseany)
+    - [`initialValue?: any`](#initialvalue-any)
+    - [`isEqual?: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
     - [`validateFields?: string[]`](#validatefields-string)
   - [`FieldState`](#fieldstate)
     - [`active?: boolean`](#active-boolean)
@@ -190,7 +192,7 @@ form.submit() // only submits if all validation passes
     - [`getFieldState: (field: string) => ?FieldState`](#getfieldstate-field-string--fieldstate)
     - [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
     - [`getState: () => FormState`](#getstate---formstate)
-    - [`initialize: (data: Object | ((values: Object) => Object)) => void`](#initialize-values-object--void)
+    - [`initialize: (data: Object | ((values: Object) => Object)) => void`](#initialize-data-object--values-object--object--void)
     - [`isValidationPaused: () => boolean`](#isvalidationpaused---boolean)
     - [`mutators: ?{ [string]: Function }`](#mutators--string-function-)
     - [`pauseValidation: () => void`](#pausevalidation---void)
@@ -494,13 +496,25 @@ the form. e.g.
 
 ### `FieldConfig`
 
-#### `isEqual?: (a: any, b: any) => boolean`
+#### `defaultValue?: any`
 
-A function to determine if two values are equal. Defaults to `===`.
+⚠️ You probably want `initialValue`! ⚠️
+
+The value of the field upon creation. _**This value is only needed if you want your field be `dirty` upon creation (i.e. for its value to be different from its initial value).**_
 
 #### `getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`
 
 A callback that will return a field-level validation function to validate a single field value. The validation function should return an error if the value is not valid, or `undefined` if the value is valid.
+
+#### `initialValue?: any`
+
+The initial value for the field. This value will be used to calculate `dirty` and `pristine` by comparing it to the current value of the field. If you want field to be `dirty` upon creation, you can set one value with `initialValue` and set the value of the field with `defaultValue`.
+
+The value given here will override any `initialValues` given to the entire form.
+
+#### `isEqual?: (a: any, b: any) => boolean`
+
+A function to determine if two values are equal. Defaults to `===`.
 
 #### `validateFields?: string[]`
 

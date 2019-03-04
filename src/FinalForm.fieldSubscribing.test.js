@@ -233,6 +233,39 @@ describe('Field.subscribing', () => {
     expect(spy.mock.calls[1][0].initial).toBe('baz')
   })
 
+  it('should allow initialization via a callback function', () => {
+    const {
+      form,
+      foo: { spy }
+    } = prepareFieldSubscribers(
+      {},
+      {
+        foo: { initial: true }
+      },
+      {},
+      {
+        initialValues: {
+          foo: 'bar'
+        }
+      }
+    )
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].initial).toBe('bar')
+
+    form.reset()
+
+    // same initial value, duh
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    form.initialize(values => ({ foo: values.foo + 'buzz' }))
+
+    // new initial value
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].initial).toBe('barbuzz')
+  })
+
   it('should allow reseting even if never initialized', () => {
     const {
       form,

@@ -40,4 +40,74 @@ describe('FinalForm.creation', () => {
     form.registerField('whatever', () => {}, { value: true })
     form.change('foo', 'bar')
   })
+
+  it('should allow initial values to come from field when registered', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn()
+    const cat = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { pristine: true, initial: true, value: true },
+      { initialValue: 'bar' }
+    )
+    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
+    expect(form.getState().values).toEqual({ foo: 'bar' })
+    form.registerField(
+      'cat',
+      cat,
+      { pristine: true, initial: true, value: true },
+      { initialValue: 42 }
+    )
+    expect(form.getState().initialValues).toEqual({ foo: 'bar', cat: 42 })
+    expect(form.getState().values).toEqual({ foo: 'bar', cat: 42 })
+
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0]).toMatchObject({
+      value: 'bar',
+      initial: 'bar',
+      pristine: true
+    })
+    expect(cat).toHaveBeenCalledTimes(1)
+    expect(cat.mock.calls[0][0]).toMatchObject({
+      value: 42,
+      initial: 42,
+      pristine: true
+    })
+  })
+
+  it('should allow default value to come from field when registered', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn()
+    const cat = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { pristine: true, initial: true, value: true },
+      { initialValue: 'bar', defaultValue: 'fubar' }
+    )
+    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
+    expect(form.getState().values).toEqual({ foo: 'fubar' })
+    form.registerField(
+      'cat',
+      cat,
+      { pristine: true, initial: true, value: true },
+      { defaultValue: 42 }
+    )
+    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
+    expect(form.getState().values).toEqual({ foo: 'fubar', cat: 42 })
+
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0]).toMatchObject({
+      value: 'fubar',
+      initial: 'bar',
+      pristine: false
+    })
+    expect(cat).toHaveBeenCalledTimes(1)
+    expect(cat.mock.calls[0][0]).toMatchObject({
+      value: 42,
+      initial: undefined,
+      pristine: false
+    })
+  })
 })
