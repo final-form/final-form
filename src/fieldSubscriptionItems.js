@@ -17,5 +17,6 @@ export default [
   'touched',
   'valid',
   'value',
-  'visited'
+  'visited',
+  'formName'
 ]

@@ -19,7 +19,8 @@ const publishFieldState = (
     submitFailed,
     submitSucceeded,
     submitting,
-    values
+    values,
+    formName
   } = formState
   const {
     active,
@@ -67,7 +68,8 @@ const publishFieldState = (
     touched,
     valid,
     value,
-    visited
+    visited,
+    formName
   }
 }
 

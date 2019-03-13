@@ -37,7 +37,8 @@ export const configOptions: ConfigKey[] = [
   'mutators',
   'onSubmit',
   'validate',
-  'validateOnBlur'
+  'validateOnBlur',
+  'formName'
 ]
 export const version = '4.8.1'
 
@@ -87,7 +88,8 @@ const convertToExternalFormState = ({
   submitErrors,
   valid,
   validating,
-  values
+  values,
+  name: formName
 }: InternalFormState): FormState => ({
   active,
   dirty: !pristine,
@@ -109,7 +111,8 @@ const convertToExternalFormState = ({
   submitErrors,
   valid,
   validating: validating > 0,
-  values
+  values,
+  formName
 })
 
 function notifySubscriber<T: Object>(
@@ -150,7 +153,8 @@ const createForm = (config: Config): FormApi => {
     mutators,
     onSubmit,
     validate,
-    validateOnBlur
+    validateOnBlur,
+    name: formName
   } = config
   if (!onSubmit) {
     throw new Error('No onSubmit function specified')
@@ -171,7 +175,8 @@ const createForm = (config: Config): FormApi => {
       submitSucceeded: false,
       valid: true,
       validating: 0,
-      values: initialValues ? { ...initialValues } : {}
+      values: initialValues ? { ...initialValues } : {},
+      formName
     },
     lastFormState: undefined
   }
@@ -664,6 +669,8 @@ const createForm = (config: Config): FormApi => {
 
     mutators: mutatorsApi,
 
+    getFormName: () => state.formState.formName,
+
     getFieldState: name => {
       const field = state.fields[name]
       return field && field.lastFieldState
@@ -741,7 +748,8 @@ const createForm = (config: Config): FormApi => {
           valid: true,
           validateFields: fieldConfig && fieldConfig.validateFields,
           validators: {},
-          visited: false
+          visited: false,
+          formName: state.formState.name ? state.formState.name : ''
         }
       }
       if (fieldConfig) {
@@ -879,6 +887,9 @@ const createForm = (config: Config): FormApi => {
           break
         case 'validateOnBlur':
           validateOnBlur = value
+          break
+        case 'formName':
+          api.getFormName()
           break
         default:
           throw new Error('Unrecognised option ' + name)

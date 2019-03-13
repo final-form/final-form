@@ -28,6 +28,7 @@ export interface FormSubscription {
   validating?: boolean
   values?: boolean
   visited?: boolean
+  formName?: string
 }
 
 export interface FormState {
@@ -54,6 +55,7 @@ export interface FormState {
   validating: boolean
   values: AnyObject
   visited?: { [key: string]: boolean }
+  formName?: string
 }
 
 export type FormSubscriber = Subscriber<FormState>
@@ -81,6 +83,7 @@ export interface FieldState {
   valid?: boolean
   value?: any
   visited?: boolean
+  formName?: string
 }
 
 export interface FieldSubscription {
@@ -102,6 +105,7 @@ export interface FieldSubscription {
   valid?: boolean
   value?: boolean
   visited?: boolean
+  formName?: string
 }
 
 export type FieldSubscriber = Subscriber<FieldState>
@@ -154,6 +158,7 @@ export interface InternalFieldState {
   }
   valid: boolean
   visited: boolean
+  formName?: string
 }
 
 export interface InternalFormState {
@@ -172,6 +177,7 @@ export interface InternalFormState {
   valid: boolean
   validating: number
   values: object
+  name?: string
 }
 
 type ConfigKey =
@@ -183,6 +189,7 @@ type ConfigKey =
   | 'onSubmit'
   | 'validate'
   | 'validateOnBlur'
+  | 'formName'
 
 export interface FormApi {
   batch: (fn: () => void) => void
@@ -205,6 +212,7 @@ export interface FormApi {
     subscriber: FormSubscriber,
     subscription: FormSubscription
   ) => Unsubscribe
+  getFormName: () => string
 }
 
 export type DebugFunction = (
@@ -256,6 +264,7 @@ export interface Config<FormData = object> {
   ) => object | Promise<object | undefined> | undefined | void
   validate?: (values: object) => object | Promise<object>
   validateOnBlur?: boolean
+  name?: string
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe

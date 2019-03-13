@@ -87,7 +87,7 @@
   "bundlesize": [
     {
       "path": "dist/final-form.umd.min.js",
-      "maxSize": "4.8kB"
+      "maxSize": "4.9kB"
     },
     {
       "path": "dist/final-form.es.js",
@@ -99,6 +99,7 @@
     }
   ],
   "dependencies": {
-    "@babel/runtime": "^7.3.1"
+    "@babel/runtime": "^7.3.1",
+    "settings": "^0.1.1"
   }
 }

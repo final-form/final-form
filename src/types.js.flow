@@ -169,7 +169,9 @@ export type InternalFormState = {
   submitting: boolean,
   valid: boolean,
   validating: number,
-  values: Object
+  values: Object,
+  name?: string,
+  formName?: string
 }
 
 export type ConfigKey =
@@ -181,6 +183,8 @@ export type ConfigKey =
   | 'onSubmit'
   | 'validate'
   | 'validateOnBlur'
+  | 'name'
+  | 'formName'
 
 export type FormApi = {
   batch: (fn: () => void) => void,
@@ -202,7 +206,8 @@ export type FormApi = {
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
-  ) => Unsubscribe
+  ) => Unsubscribe,
+  getFormName: () => ?string
 }
 
 export type DebugFunction = (
@@ -251,6 +256,7 @@ export type Config = {
   destroyOnUnregister?: boolean,
   initialValues?: Object,
   keepDirtyOnReinitialize?: boolean,
+  name?: string,
   mutators?: { [string]: Mutator },
   onSubmit: (
     values: Object,
@@ -258,7 +264,8 @@ export type Config = {
     callback: ?(errors: ?Object) => ?Object
   ) => ?Object | Promise<?Object> | void,
   validate?: (values: Object) => Object | Promise<Object>,
-  validateOnBlur?: boolean
+  validateOnBlur?: boolean,
+  name?: string
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe
