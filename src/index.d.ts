@@ -265,6 +265,7 @@ export interface Config<FormData = object> {
   validate?: (values: object) => object | Promise<object>
   validateOnBlur?: boolean
   name?: string
+  formName?: string
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe
