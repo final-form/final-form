@@ -110,4 +110,10 @@ describe('FinalForm.creation', () => {
       pristine: false
     })
   })
+
+  it('should create a form with name ', () => {
+    const name = 'carefullyThoughtOutFormName'
+    const form = createForm({ onSubmit: onSubmitMock, name })
+    expect(form.getFormName()).toBe('carefullyThoughtOutFormName')
+  })
 })
