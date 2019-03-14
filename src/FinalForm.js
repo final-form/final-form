@@ -888,9 +888,6 @@ const createForm = (config: Config): FormApi => {
         case 'validateOnBlur':
           validateOnBlur = value
           break
-        case 'formName':
-          api.getFormName()
-          break
         default:
           throw new Error('Unrecognised option ' + name)
       }
