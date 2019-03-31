@@ -265,8 +265,7 @@ export type Config = {
   ) => ?Object | Promise<?Object> | void,
   validate?: (values: Object) => Object | Promise<Object>,
   validateOnBlur?: boolean,
-  name?: string,
-  formName?: string
+  name?: string
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe

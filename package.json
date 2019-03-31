@@ -99,7 +99,6 @@
     }
   ],
   "dependencies": {
-    "@babel/runtime": "^7.3.1",
-    "settings": "^0.1.1"
+    "@babel/runtime": "^7.3.1"
   }
 }

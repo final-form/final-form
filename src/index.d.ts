@@ -28,7 +28,7 @@ export interface FormSubscription {
   validating?: boolean
   values?: boolean
   visited?: boolean
-  formName?: string
+  formName?: boolean
 }
 
 export interface FormState {
@@ -105,7 +105,7 @@ export interface FieldSubscription {
   valid?: boolean
   value?: boolean
   visited?: boolean
-  formName?: string
+  formName?: boolean
 }
 
 export type FieldSubscriber = Subscriber<FieldState>
@@ -265,7 +265,6 @@ export interface Config<FormData = object> {
   validate?: (values: object) => object | Promise<object>
   validateOnBlur?: boolean
   name?: string
-  formName?: string
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe
