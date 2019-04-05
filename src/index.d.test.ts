@@ -19,6 +19,18 @@ form = createForm<FormData>({
   }
 })
 
+// submit
+let submitPromise = createForm<FormData>({ onSubmit }).submit()
+
+if (submitPromise) {
+  submitPromise.then(formData => {
+    if (formData) {
+      console.log(formData.foo as string)
+      console.log(formData.bar as number)
+    }
+  })
+}
+
 console.log(formState.active as string, formState.active as undefined)
 console.log(formState.dirty as boolean)
 console.log(formState.dirtyFields as AnyObject, formState.dirtyFields)

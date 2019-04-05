@@ -184,7 +184,7 @@ type ConfigKey =
   | 'validate'
   | 'validateOnBlur'
 
-export interface FormApi {
+export interface FormApi<FormData = object> {
   batch: (fn: () => void) => void
   blur: (name: string) => void
   change: (name: string, value?: any) => void
@@ -200,7 +200,7 @@ export interface FormApi {
   reset: (initialValues?: object) => void
   resumeValidation: () => void
   setConfig: (name: ConfigKey, value: any) => void
-  submit: () => Promise<object | undefined> | undefined
+  submit: () => Promise<FormData | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
@@ -260,7 +260,9 @@ export interface Config<FormData = object> {
 
 export type Decorator = (form: FormApi) => Unsubscribe
 
-export function createForm<FormData>(config: Config<FormData>): FormApi
+export function createForm<FormData>(
+  config: Config<FormData>
+): FormApi<FormData>
 export const fieldSubscriptionItems: string[]
 export const formSubscriptionItems: string[]
 export const ARRAY_ERROR: string
