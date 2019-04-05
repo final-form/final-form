@@ -20,7 +20,7 @@ form = createForm<FormData>({
 })
 
 // initialValues
-form = createForm<FormData>({
+createForm<FormData>({
   initialValues: { foo: 'baz', bar: 0 },
   onSubmit(formData) {
     console.log(formData.foo as string)
