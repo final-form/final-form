@@ -12,7 +12,7 @@ type FormData = {
   bar: number
 }
 
-form = createForm<FormData>({
+createForm<FormData>({
   onSubmit(formData) {
     console.log(formData.foo as string)
     console.log(formData.bar as number)
@@ -56,6 +56,13 @@ if (submitPromise) {
     }
   })
 }
+
+// initialize
+createForm<FormData>({ onSubmit }).initialize({ foo: 'baz', bar: 11 })
+createForm<FormData>({ onSubmit }).initialize(formData => ({
+  ...formData,
+  bar: 12
+}))
 
 console.log(formState.active as string, formState.active as undefined)
 console.log(formState.dirty as boolean)

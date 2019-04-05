@@ -191,7 +191,7 @@ export interface FormApi<FormData = object> {
   blur: (name: string) => void
   change: (name: string, value?: any) => void
   focus: (name: string) => void
-  initialize: (data: Object | ((values: Object) => Object)) => void
+  initialize: (data: FormData | ((values: FormData) => FormData)) => void
   isValidationPaused: () => boolean
   getFieldState: (field: string) => FieldState | undefined
   getRegisteredFields: () => string[]
