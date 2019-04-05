@@ -260,7 +260,9 @@ export interface Config<FormData = object> {
     | Promise<SubmissionErrors | undefined>
     | undefined
     | void
-  validate?: (values: FormData) => ValidationErrors | Promise<ValidationErrors>
+  validate?: (
+    values: FormData
+  ) => ValidationErrors | Promise<ValidationErrors> | undefined
   validateOnBlur?: boolean
 }
 

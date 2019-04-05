@@ -38,6 +38,13 @@ createForm<FormData>({
   }
 })
 
+createForm<FormData>({
+  onSubmit,
+  validate() {
+    return undefined
+  }
+})
+
 // submit
 let submitPromise = createForm<FormData>({ onSubmit }).submit()
 
