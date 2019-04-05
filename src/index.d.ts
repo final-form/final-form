@@ -4,6 +4,7 @@ export type IsEqual = (a: any, b: any) => boolean
 export interface AnyObject {
   [key: string]: any
 }
+export interface ValidationErrors extends AnyObject {}
 
 export interface FormSubscription {
   active?: boolean
@@ -37,7 +38,7 @@ export interface FormState {
   dirtyFields: { [key: string]: boolean }
   dirtySinceLastSubmit: boolean
   error: any
-  errors: AnyObject
+  errors: ValidationErrors
   hasSubmitErrors: boolean
   hasValidationErrors: boolean
   initialValues: AnyObject
@@ -160,7 +161,7 @@ export interface InternalFormState {
   active?: string
   dirtySinceLastSubmit: boolean
   error?: any
-  errors: object
+  errors: ValidationErrors
   initialValues?: object
   lastSubmittedValues?: object
   pristine: boolean
@@ -254,7 +255,7 @@ export interface Config<FormData = object> {
     form: FormApi,
     callback?: (errors?: object) => void
   ) => object | Promise<object | undefined> | undefined | void
-  validate?: (values: FormData) => object | Promise<object>
+  validate?: (values: FormData) => ValidationErrors | Promise<ValidationErrors>
   validateOnBlur?: boolean
 }
 
