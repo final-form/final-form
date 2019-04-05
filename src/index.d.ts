@@ -174,15 +174,7 @@ export interface InternalFormState {
   values: object
 }
 
-type ConfigKey =
-  | 'debug'
-  | 'destroyOnUnregister'
-  | 'initialValues'
-  | 'keepDirtyOnReinitialize'
-  | 'mutators'
-  | 'onSubmit'
-  | 'validate'
-  | 'validateOnBlur'
+type ConfigKey = keyof Config
 
 export interface FormApi {
   batch: (fn: () => void) => void
