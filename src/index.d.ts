@@ -246,7 +246,7 @@ export type Mutator = (args: any, state: MutableState, tools: Tools) => any
 export interface Config<FormData = object> {
   debug?: DebugFunction
   destroyOnUnregister?: boolean
-  initialValues?: object
+  initialValues?: FormData
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator }
   onSubmit: (
