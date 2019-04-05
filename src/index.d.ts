@@ -254,7 +254,7 @@ export interface Config<FormData = object> {
     form: FormApi,
     callback?: (errors?: object) => void
   ) => object | Promise<object | undefined> | undefined | void
-  validate?: (values: object) => object | Promise<object>
+  validate?: (values: FormData) => object | Promise<object>
   validateOnBlur?: boolean
 }
 

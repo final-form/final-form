@@ -28,6 +28,16 @@ createForm<FormData>({
   }
 })
 
+// validate
+createForm<FormData>({
+  onSubmit,
+  validate(formData) {
+    console.log(formData.foo as string)
+    console.log(formData.bar as number)
+    return formData
+  }
+})
+
 // submit
 let submitPromise = createForm<FormData>({ onSubmit }).submit()
 
