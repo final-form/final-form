@@ -5,6 +5,7 @@ export interface AnyObject {
   [key: string]: any
 }
 export interface ValidationErrors extends AnyObject {}
+export interface SubmissionErrors extends AnyObject {}
 
 export interface FormSubscription {
   active?: boolean
@@ -253,8 +254,12 @@ export interface Config<FormData = object> {
   onSubmit: (
     values: FormData,
     form: FormApi,
-    callback?: (errors?: object) => void
-  ) => object | Promise<object | undefined> | undefined | void
+    callback?: (errors?: SubmissionErrors) => void
+  ) =>
+    | SubmissionErrors
+    | Promise<SubmissionErrors | undefined>
+    | undefined
+    | void
   validate?: (values: FormData) => ValidationErrors | Promise<ValidationErrors>
   validateOnBlur?: boolean
 }
