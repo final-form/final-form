@@ -44,8 +44,8 @@ const setInRecursor = (
       value,
       destroyArrays
     )
-    const numKeys = Object.keys(current).length
     if (result === undefined) {
+      const numKeys = Object.keys(current).length
       if (current[key] === undefined && numKeys === 0) {
         // object was already empty
         return undefined
