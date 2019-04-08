@@ -887,6 +887,11 @@ const createForm = (config: Config): FormApi => {
 
     submit: () => {
       const { formState } = state
+
+      if (formState.submitting) {
+        return
+      }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched()
         state.formState.submitFailed = true
