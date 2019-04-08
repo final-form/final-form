@@ -12,12 +12,57 @@ type FormData = {
   bar: number
 }
 
-form = createForm<FormData>({
+createForm<FormData>({
   onSubmit(formData) {
-    console.log(formData.foo as string);
-    console.log(formData.bar as number);
-  },
+    console.log(formData.foo as string)
+    console.log(formData.bar as number)
+  }
 })
+
+// initialValues
+createForm<FormData>({
+  initialValues: { foo: 'baz', bar: 0 },
+  onSubmit(formData) {
+    console.log(formData.foo as string)
+    console.log(formData.bar as number)
+  }
+})
+
+// validate
+createForm<FormData>({
+  onSubmit,
+  validate(formData) {
+    console.log(formData.foo as string)
+    console.log(formData.bar as number)
+    return formData
+  }
+})
+
+createForm<FormData>({
+  onSubmit,
+  validate() {
+    return undefined
+  }
+})
+
+// submit
+let submitPromise = createForm<FormData>({ onSubmit }).submit()
+
+if (submitPromise) {
+  submitPromise.then(formData => {
+    if (formData) {
+      console.log(formData.foo as string)
+      console.log(formData.bar as number)
+    }
+  })
+}
+
+// initialize
+createForm<FormData>({ onSubmit }).initialize({ foo: 'baz', bar: 11 })
+createForm<FormData>({ onSubmit }).initialize(formData => ({
+  ...formData,
+  bar: 12
+}))
 
 console.log(formState.active as string, formState.active as undefined)
 console.log(formState.dirty as boolean)
@@ -27,7 +72,7 @@ console.log(
   formState.error.foo,
   formState.error as string,
   formState.error as boolean
-);
+)
 console.log(formState.errors as AnyObject, formState.errors.foo)
 console.log(formState.initialValues as AnyObject, formState.initialValues.foo)
 console.log(formState.invalid as boolean)
@@ -36,7 +81,7 @@ console.log(
   formState.submitError as string,
   formState.submitError as object,
   formState.submitError as undefined
-);
+)
 console.log(formState.submitErrors as AnyObject, formState.submitErrors.foo)
 console.log(formState.submitFailed as boolean)
 console.log(formState.submitSucceeded as boolean)
@@ -64,7 +109,7 @@ form.subscribe(
     // noop
   },
   { pristine: true }
-);
+)
 
 // mutators
 const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
