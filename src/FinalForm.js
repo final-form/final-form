@@ -133,8 +133,11 @@ function notify<T: Object>(
   filter: StateFilter<T>
 ): void {
   Object.keys(entries).forEach(key => {
-    const { subscription, subscriber } = entries[Number(key)]
-    notifySubscriber(subscriber, subscription, state, lastState, filter)
+    const entry = entries[Number(key)]
+    if (entry) {
+      const { subscription, subscriber } = entry
+      notifySubscriber(subscriber, subscription, state, lastState, filter)
+    }
   })
 }
 
