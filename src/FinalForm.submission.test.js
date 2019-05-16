@@ -792,8 +792,9 @@ describe('FinalForm.submission', () => {
     expect(onSubmit).not.toHaveBeenCalled()
 
     expect(spy).toHaveBeenCalledTimes(1)
+  })
 
-    it('should not call onSubmit while already submitting', async () => {
+  it('should not call onSubmit while already submitting', async () => {
     let resolve
     const onSubmit = jest.fn(() => {
       return new Promise(_resolve => {
