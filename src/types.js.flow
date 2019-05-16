@@ -120,6 +120,8 @@ export type FieldValidator = (
 export type GetFieldValidator = () => ?FieldValidator
 
 export type FieldConfig = {
+  afterSubmit?: () => void,
+  beforeSubmit?: () => void | false,
   defaultValue?: any,
   getValidator?: GetFieldValidator,
   initialValue?: any,
@@ -136,6 +138,8 @@ export type RegisterField = (
 
 export type InternalFieldState = {
   active: boolean,
+  afterSubmit?: () => void,
+  beforeSubmit?: () => void | false,
   blur: () => void,
   change: (value: any) => void,
   data: Object,

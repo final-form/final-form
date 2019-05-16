@@ -138,6 +138,8 @@ form.submit() // only submits if all validation passes
   - [`DebugFunction: (state: FormState, fieldStates: { [string]: FieldState }) => void`](#debugfunction-state-formstate-fieldstates--string-fieldstate---void)
   - [`Decorator: (form: FormApi) => Unsubscribe`](#decorator-form-formapi--unsubscribe)
   - [`FieldConfig`](#fieldconfig)
+    - [`afterSubmit?: () => void`](#aftersubmit---void)
+    - [`beforeSubmit?: () => void | false`](#beforesubmit---void--false)
     - [`defaultValue?: any`](#defaultvalue-any)
     - [`getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object-meta-fieldstate--any--promiseany)
     - [`initialValue?: any`](#initialvalue-any)
@@ -155,6 +157,7 @@ form.submit() // only submits if all validation passes
     - [`initial?: any`](#initial-any)
     - [`invalid?: boolean`](#invalid-boolean)
     - [`length?: number`](#length-number)
+    - [`modified?: boolean`](#modified-boolean)
     - [`name: string`](#name-string)
     - [`pristine?: boolean`](#pristine-boolean)
     - [`submitError?: any`](#submiterror-any)
@@ -175,6 +178,7 @@ form.submit() // only submits if all validation passes
     - [`initial?: boolean`](#initial-boolean)
     - [`invalid?: boolean`](#invalid-boolean-1)
     - [`length?: boolean`](#length-boolean)
+    - [`modified?: boolean`](#modified-boolean-1)
     - [`pristine?: boolean`](#pristine-boolean-1)
     - [`submitError?: boolean`](#submiterror-boolean)
     - [`submitFailed?: boolean`](#submitfailed-boolean-1)
@@ -212,6 +216,7 @@ form.submit() // only submits if all validation passes
     - [`hasValidationErrors?: boolean`](#hasvalidationerrors-boolean)
     - [`initialValues?: Object`](#initialvalues-object-1)
     - [`invalid?: boolean`](#invalid-boolean-2)
+    - [`modified?: { [string]: boolean }`](#modified--string-boolean-)
     - [`pristine?: boolean`](#pristine-boolean-2)
     - [`submitError?: any`](#submiterror-any-1)
     - [`submitErrors?: Object`](#submiterrors-object)
@@ -235,6 +240,7 @@ form.submit() // only submits if all validation passes
     - [`hasValidationErrors?: boolean`](#hasvalidationerrors-boolean-1)
     - [`initialValues?: boolean`](#initialvalues-boolean)
     - [`invalid?: boolean`](#invalid-boolean-3)
+    - [`modified?: boolean`](#modified-boolean-2)
     - [`pristine?: boolean`](#pristine-boolean-3)
     - [`setConfig: (name: string, value: any) => void`](#setconfig-name-string-value-any--void)
     - [`submitError?: boolean`](#submiterror-boolean-1)
@@ -254,6 +260,7 @@ form.submit() // only submits if all validation passes
     - [`data: Object`](#data-object)
     - [`focus: () => void`](#focus---void-1)
     - [`isEqual: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
+    - [`modified: boolean`](#modified-boolean)
     - [`name: string`](#name-string-1)
     - [`touched: boolean`](#touched-boolean)
     - [`validateFields: ?(string[])`](#validatefields-string)
@@ -495,6 +502,14 @@ the form. e.g.
 [🏁 Final Form Calculate](https://github.com/final-form/final-form-calculate).
 
 ### `FieldConfig`
+
+#### `afterSubmit?: () => void`
+
+A callback to notify fields after submission has completed successfully.
+
+#### `beforeSubmit?: () => void | false`
+
+A function to call just before calling `onSubmit`. If `beforeSubmit` returns `false`, the submission will be aborted. If one of your fields returns `false` on `beforeSubmit`, other fields may not have their `beforeSubmit` called, as the submission is aborted on the first one that returns `false`.
 
 #### `defaultValue?: any`
 
