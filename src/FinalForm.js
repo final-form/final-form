@@ -592,6 +592,18 @@ const createForm = (config: Config): FormApi => {
     }
   }
 
+  const beforeSubmit = (): ?string =>
+    Object.keys(state.fields).find(
+      name =>
+        state.fields[name].beforeSubmit &&
+        state.fields[name].beforeSubmit() === false
+    )
+
+  const afterSubmit = (): void =>
+    Object.keys(state.fields).forEach(
+      name => state.fields[name].afterSubmit && state.fields[name].afterSubmit()
+    )
+
   // generate initial errors
   runValidation()
 
@@ -729,6 +741,8 @@ const createForm = (config: Config): FormApi => {
         // create initial field state
         state.fields[name] = {
           active: false,
+          afterSubmit: fieldConfig && fieldConfig.afterSubmit,
+          beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
           blur: () => api.blur(name),
           change: value => api.change(name, value),
           data: {},
@@ -905,6 +919,10 @@ const createForm = (config: Config): FormApi => {
         ).then(api.submit, api.submit)
         return
       }
+      const fieldBlockingSubmit = beforeSubmit()
+      if (fieldBlockingSubmit) {
+        return
+      }
 
       let resolvePromise
       let completeCalled = false
@@ -921,6 +939,7 @@ const createForm = (config: Config): FormApi => {
           delete formState.submitError
           formState.submitFailed = false
           formState.submitSucceeded = true
+          afterSubmit()
         }
         notifyFormListeners()
         notifyFieldListeners()

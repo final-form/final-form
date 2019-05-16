@@ -681,4 +681,116 @@ describe('FinalForm.submission', () => {
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy.mock.calls[2][0]).toEqual({ submitting: false })
   })
+
+  it('should call beforeSubmit and afterSubmit on all fields', () => {
+    const spy = jest.fn()
+    const nameBeforeSubmit = jest.fn()
+    const nameAfterSubmit = jest.fn()
+    const passwordBeforeSubmit = jest.fn()
+    const passwordAfterSubmit = jest.fn()
+
+    const onSubmit = () => {
+      expect(nameBeforeSubmit).toHaveBeenCalled()
+      expect(nameBeforeSubmit).toHaveBeenCalledTimes(1)
+      expect(nameAfterSubmit).not.toHaveBeenCalled()
+      expect(passwordBeforeSubmit).toHaveBeenCalled()
+      expect(passwordBeforeSubmit).toHaveBeenCalledTimes(1)
+      expect(passwordAfterSubmit).not.toHaveBeenCalled()
+    }
+    const form = createForm({ onSubmit })
+    form.subscribe(spy, { submitting: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
+
+    form.registerField(
+      'name',
+      () => {},
+      {},
+      {
+        beforeSubmit: nameBeforeSubmit,
+        afterSubmit: nameAfterSubmit
+      }
+    )
+    form.registerField(
+      'password',
+      () => {},
+      {},
+      {
+        beforeSubmit: passwordBeforeSubmit,
+        afterSubmit: passwordAfterSubmit
+      }
+    )
+    expect(nameBeforeSubmit).not.toHaveBeenCalled()
+    expect(nameAfterSubmit).not.toHaveBeenCalled()
+    expect(passwordBeforeSubmit).not.toHaveBeenCalled()
+    expect(passwordAfterSubmit).not.toHaveBeenCalled()
+
+    form.submit()
+
+    expect(nameBeforeSubmit).toHaveBeenCalledTimes(1)
+    expect(nameAfterSubmit).toHaveBeenCalled()
+    expect(nameAfterSubmit).toHaveBeenCalledTimes(1)
+    expect(passwordBeforeSubmit).toHaveBeenCalledTimes(1)
+    expect(passwordAfterSubmit).toHaveBeenCalled()
+    expect(passwordAfterSubmit).toHaveBeenCalledTimes(1)
+
+    // submitting flag doesn't flip for sync submission
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call allow submission cancelation via beforeSubmit', () => {
+    const spy = jest.fn()
+    const nameBeforeSubmit = jest.fn()
+    const passwordBeforeSubmit = jest.fn(() => false)
+    const emailBeforeSubmit = jest.fn()
+    const onSubmit = jest.fn()
+
+    const form = createForm({ onSubmit })
+    form.subscribe(spy, { submitting: true })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({ submitting: false })
+
+    form.registerField(
+      'name',
+      () => {},
+      {},
+      {
+        beforeSubmit: nameBeforeSubmit
+      }
+    )
+    form.registerField(
+      'password',
+      () => {},
+      {},
+      {
+        beforeSubmit: passwordBeforeSubmit
+      }
+    )
+    form.registerField(
+      'email',
+      () => {},
+      {},
+      {
+        beforeSubmit: emailBeforeSubmit
+      }
+    )
+    expect(nameBeforeSubmit).not.toHaveBeenCalled()
+    expect(passwordBeforeSubmit).not.toHaveBeenCalled()
+    expect(emailBeforeSubmit).not.toHaveBeenCalled()
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    form.submit()
+
+    expect(nameBeforeSubmit).toHaveBeenCalled()
+    expect(passwordBeforeSubmit).toHaveBeenCalled()
+
+    // it short-circuited because password returned false,
+    // so it didn't even need to call email's before submit
+    expect(emailBeforeSubmit).not.toHaveBeenCalled()
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
 })

@@ -122,6 +122,8 @@ type FieldValidator = (
 type GetFieldValidator = () => FieldValidator
 
 export interface FieldConfig {
+  afterSubmit?: () => void
+  beforeSubmit?: () => void | false
   defaultValue?: any
   getValidator?: GetFieldValidator
   initialValue?: any
