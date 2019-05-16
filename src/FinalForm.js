@@ -134,6 +134,7 @@ function notify<T: Object>(
 ): void {
   Object.keys(entries).forEach(key => {
     const entry = entries[Number(key)]
+    // istanbul ignore next
     if (entry) {
       const { subscription, subscriber } = entry
       notifySubscriber(subscriber, subscription, state, lastState, filter)

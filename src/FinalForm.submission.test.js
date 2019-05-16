@@ -739,6 +739,37 @@ describe('FinalForm.submission', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('should allow updates in beforeSubmit', () => {
+    const spy = jest.fn()
+    let beforeSubmit
+
+    const onSubmit = values => {
+      expect(beforeSubmit).toHaveBeenCalled()
+      expect(beforeSubmit).toHaveBeenCalledTimes(1)
+      expect(values.name).toBe('ERIKRAS')
+    }
+    const form = createForm({ onSubmit })
+    beforeSubmit = jest.fn(() => {
+      form.change('name', 'ERIKRAS')
+    })
+
+    const name = jest.fn()
+    form.registerField('name', name, { value: true }, { beforeSubmit })
+    expect(beforeSubmit).not.toHaveBeenCalled()
+    expect(name).toHaveBeenCalled()
+    expect(name).toHaveBeenCalledTimes(1)
+    expect(name.mock.calls[0][0].value).toBeUndefined()
+    name.mock.calls[0][0].change('erikras')
+
+    expect(name).toHaveBeenCalledTimes(2)
+    expect(name.mock.calls[1][0].value).toBe('erikras')
+
+    form.submit()
+
+    expect(name).toHaveBeenCalledTimes(3)
+    expect(name.mock.calls[2][0].value).toBe('ERIKRAS')
+  })
+
   it('should call allow submission cancelation via beforeSubmit', () => {
     const spy = jest.fn()
     const nameBeforeSubmit = jest.fn()
