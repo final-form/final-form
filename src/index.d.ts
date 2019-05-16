@@ -4,6 +4,8 @@ export type IsEqual = (a: any, b: any) => boolean
 export interface AnyObject {
   [key: string]: any
 }
+export interface ValidationErrors extends AnyObject {}
+export interface SubmissionErrors extends AnyObject {}
 
 export interface FormSubscription {
   active?: boolean
@@ -37,7 +39,7 @@ export interface FormState {
   dirtyFields: { [key: string]: boolean }
   dirtySinceLastSubmit: boolean
   error: any
-  errors: AnyObject
+  errors: ValidationErrors
   hasSubmitErrors: boolean
   hasValidationErrors: boolean
   initialValues: AnyObject
@@ -162,7 +164,7 @@ export interface InternalFormState {
   active?: string
   dirtySinceLastSubmit: boolean
   error?: any
-  errors: object
+  errors: ValidationErrors
   initialValues?: object
   lastSubmittedValues?: object
   pristine: boolean
@@ -176,22 +178,14 @@ export interface InternalFormState {
   values: object
 }
 
-type ConfigKey =
-  | 'debug'
-  | 'destroyOnUnregister'
-  | 'initialValues'
-  | 'keepDirtyOnReinitialize'
-  | 'mutators'
-  | 'onSubmit'
-  | 'validate'
-  | 'validateOnBlur'
+type ConfigKey = keyof Config
 
-export interface FormApi {
+export interface FormApi<FormData = object> {
   batch: (fn: () => void) => void
   blur: (name: string) => void
   change: (name: string, value?: any) => void
   focus: (name: string) => void
-  initialize: (data: Object | ((values: Object) => Object)) => void
+  initialize: (data: FormData | ((values: FormData) => FormData)) => void
   isValidationPaused: () => boolean
   getFieldState: (field: string) => FieldState | undefined
   getRegisteredFields: () => string[]
@@ -202,7 +196,7 @@ export interface FormApi {
   reset: (initialValues?: object) => void
   resumeValidation: () => void
   setConfig: (name: ConfigKey, value: any) => void
-  submit: () => Promise<object | undefined> | undefined
+  submit: () => Promise<FormData | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber,
     subscription: FormSubscription
@@ -248,21 +242,29 @@ export type Mutator = (args: any, state: MutableState, tools: Tools) => any
 export interface Config<FormData = object> {
   debug?: DebugFunction
   destroyOnUnregister?: boolean
-  initialValues?: object
+  initialValues?: FormData
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator }
   onSubmit: (
     values: FormData,
     form: FormApi,
-    callback?: (errors?: object) => void
-  ) => object | Promise<object | undefined> | undefined | void
-  validate?: (values: object) => object | Promise<object>
+    callback?: (errors?: SubmissionErrors) => void
+  ) =>
+    | SubmissionErrors
+    | Promise<SubmissionErrors | undefined>
+    | undefined
+    | void
+  validate?: (
+    values: FormData
+  ) => ValidationErrors | Promise<ValidationErrors> | undefined
   validateOnBlur?: boolean
 }
 
 export type Decorator = (form: FormApi) => Unsubscribe
 
-export function createForm<FormData>(config: Config<FormData>): FormApi
+export function createForm<FormData>(
+  config: Config<FormData>
+): FormApi<FormData>
 export const fieldSubscriptionItems: string[]
 export const formSubscriptionItems: string[]
 export const ARRAY_ERROR: string

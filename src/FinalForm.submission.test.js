@@ -792,5 +792,30 @@ describe('FinalForm.submission', () => {
     expect(onSubmit).not.toHaveBeenCalled()
 
     expect(spy).toHaveBeenCalledTimes(1)
+
+    it('should not call onSubmit while already submitting', async () => {
+    let resolve
+    const onSubmit = jest.fn(() => {
+      return new Promise(_resolve => {
+        resolve = _resolve
+      })
+    })
+
+    const form = createForm({ onSubmit })
+
+    const submissionPromise = form.submit()
+
+    expect(onSubmit).toHaveBeenCalled()
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+
+    form.submit()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+
+    resolve()
+    await submissionPromise
+
+    form.submit()
+    expect(onSubmit).toHaveBeenCalledTimes(2)
   })
 })
