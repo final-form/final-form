@@ -6,7 +6,7 @@ const toPath = (key: string): string[] => {
   if (typeof key !== 'string') {
     throw new Error('toPath() expects a string')
   }
-  return key.split(/[.[\]]+/).filter(Boolean)
+  return key.match(/[^[\].]+/g) || []
 }
 
 export default toPath
