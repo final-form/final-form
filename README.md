@@ -102,6 +102,7 @@ form.submit() // only submits if all validation passes
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Examples](#examples)
+  - [Vanilla JS Example](#vanilla-js-example)
   - [Simple React Example](#simple-react-example)
 - [Official Mutators](#official-mutators)
   - [🏁 Final Form Arrays](#-final-form-arrays)
@@ -304,6 +305,10 @@ form.submit() // only submits if all validation passes
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Examples
+
+### [Vanilla JS Example](https://jsfiddle.net/erikras/cfeh67mk/)
+
+You don't need any javascript framework to use 🏁 Final Form's powerful subscription-based form state management. You can attach it directly to the DOM inputs.
 
 ### [Simple React Example](https://codesandbox.io/s/q78r2oqq96)
 
