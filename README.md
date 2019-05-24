@@ -112,6 +112,7 @@ form.submit() // only submits if all validation passes
   - [🏁 React Final Form](#-react-final-form)
   - [Vue Final Form](#vue-final-form)
   - [Web Components Bindings](#web-components-bindings)
+  - [Frontier Forms](#frontier-forms)
   - [Define Form and React Define Form](#define-form-and-react-define-form)
   - [🏁 Final Form Focus 🧐](#-final-form-focus-)
   - [🏁 React Final Form HTML5 Validation](#-react-final-form-html5-validation)
@@ -350,6 +351,10 @@ A form state management system for Vue that uses 🏁 Final Form under the hood.
 ### [Web Components Bindings](https://github.com/corpusculejs/corpuscule/tree/master/packages/form)
 
 CorpusculeJS provides a way to manage form state with 🏁 Final Form using Web Components.
+
+### [Frontier Forms](https://frontier-forms.dev)
+
+Opinionated way to create forms in React. Data-driven forms that let you focus on what matters: your application. Provide a `GraphQL` mutation and `<Frontier/>` will do the rest for you.
 
 ### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
 
