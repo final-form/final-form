@@ -116,6 +116,7 @@ form.submit() // only submits if all validation passes
   - [🏁 Final Form Focus 🧐](#-final-form-focus-)
   - [🏁 React Final Form HTML5 Validation](#-react-final-form-html5-validation)
   - [🏁 React Final Form Listeners](#-react-final-form-listeners)
+  - [🏁 Final Form Submit Listener 🧐](#-final-form-submit-listener-)
 - [Field Names](#field-names)
 - [API](#api)
   - [`createForm: (config: Config) => FormApi`](#createform-config-config--formapi)
@@ -365,6 +366,10 @@ A swap-in replacement for 🏁 React Final Form's `<Field>` component to provide
 ### [🏁 React Final Form Listeners](https://github.com/final-form/react-final-form-listeners)
 
 A collection of useful components for listening to fields in a 🏁 React Final Form.
+
+### [🏁 Final Form Submit Listener 🧐](https://github.com/final-form/final-form-submit-listener)
+
+A "decorator" that will listen for events around attempted, successful, or failed submissions and fire callbacks you provide.
 
 ## Field Names
 
