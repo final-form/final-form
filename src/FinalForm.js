@@ -474,12 +474,10 @@ const createForm = (config: Config): FormApi => {
         //   )
         // )
         field.lastFieldState = fieldState
-        notify(
-          fieldSubscribers[field.name],
-          fieldState,
-          lastFieldState,
-          filterFieldState
-        )
+        const fieldSubscriber = fieldSubscribers[name]
+        if (fieldSubscriber) {
+          notify(fieldSubscriber, fieldState, lastFieldState, filterFieldState)
+        }
       }
     })
   }
