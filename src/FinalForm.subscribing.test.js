@@ -929,4 +929,30 @@ describe('FinalForm.subscribing', () => {
     expect(subscriber2.mock.calls[1][0].values).toEqual({ foo: 1 })
     expect(subscriber2.mock.calls[2][0].values).toEqual({ foo: 2 })
   })
+
+  it('should not mind if a field gets unregistered by a field notification', () => {
+    let unregisterBar
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn(({ value }) => {
+      if (value === 42) {
+        unregisterBar()
+      }
+    })
+    const bar = jest.fn()
+    form.registerField('foo', foo, { value: true })
+    unregisterBar = form.registerField('bar', bar, { value: true })
+
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(bar).toHaveBeenCalled()
+    expect(bar).toHaveBeenCalledTimes(1)
+
+    form.change('bar', 7)
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(bar).toHaveBeenCalledTimes(2)
+
+    form.change('foo', 42)
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(bar).toHaveBeenCalledTimes(2)
+  })
 })

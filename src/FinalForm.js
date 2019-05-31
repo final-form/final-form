@@ -329,10 +329,11 @@ const createForm = (config: Config): FormApi => {
     }
 
     const { fields, formState } = state
-    let fieldKeys = Object.keys(fields)
+    const safeFields = { ...fields }
+    let fieldKeys = Object.keys(safeFields)
     if (
       !validate &&
-      !fieldKeys.some(key => getValidators(fields[key]).length)
+      !fieldKeys.some(key => getValidators(safeFields[key]).length)
     ) {
       if (callback) {
         callback()
@@ -343,7 +344,7 @@ const createForm = (config: Config): FormApi => {
     // pare down field keys to actually validate
     let limitedFieldLevelValidation = false
     if (fieldChanged) {
-      const changedField = fields[fieldChanged]
+      const changedField = safeFields[fieldChanged]
       if (changedField) {
         const { validateFields } = changedField
         if (validateFields) {
@@ -364,7 +365,7 @@ const createForm = (config: Config): FormApi => {
       ...fieldKeys.reduce(
         (result, name) =>
           result.concat(
-            runFieldLevelValidation(fields[name], (error: ?any) => {
+            runFieldLevelValidation(safeFields[name], (error: ?any) => {
               fieldLevelErrors[name] = error
             })
           ),
@@ -384,7 +385,8 @@ const createForm = (config: Config): FormApi => {
             // field-level errors take precedent over record-level errors
             const recordLevelError = getIn(recordLevelErrors, name)
             const errorFromParent = getIn(merged, name)
-            const hasFieldLevelValidation = getValidators(fields[name]).length
+            const hasFieldLevelValidation = getValidators(safeFields[name])
+              .length
             const fieldLevelError = fieldLevelErrors[name]
             fn(
               name,
@@ -442,8 +444,9 @@ const createForm = (config: Config): FormApi => {
       return
     }
     const { fields, fieldSubscribers, formState } = state
-    Object.keys(fields).forEach(name => {
-      const field = fields[name]
+    const safeFields = { ...fields }
+    Object.keys(safeFields).forEach(name => {
+      const field = safeFields[name]
       const fieldState = publishFieldState(formState, field)
       const { lastFieldState } = field
       if (!shallowEqual(fieldState, lastFieldState)) {
@@ -455,7 +458,7 @@ const createForm = (config: Config): FormApi => {
         // )
         // console.debug(
         //   'notifying',
-        //   name,
+        //   field.name,
         //   '\nField State\n',
         //   diffKeys.reduce(
         //     (result, key) => ({ ...result, [key]: fieldState[key] }),
@@ -472,7 +475,7 @@ const createForm = (config: Config): FormApi => {
         // )
         field.lastFieldState = fieldState
         notify(
-          fieldSubscribers[name],
+          fieldSubscribers[field.name],
           fieldState,
           lastFieldState,
           filterFieldState
@@ -492,12 +495,13 @@ const createForm = (config: Config): FormApi => {
 
   const calculateNextFormState = (): FormState => {
     const { fields, formState, lastFormState } = state
-    const fieldKeys = Object.keys(fields)
+    const safeFields = { ...fields }
+    const safeFieldKeys = Object.keys(safeFields)
 
     // calculate dirty/pristine
     let foundDirty = false
-    const dirtyFields = fieldKeys.reduce((result, key) => {
-      const dirty = !fields[key].isEqual(
+    const dirtyFields = safeFieldKeys.reduce((result, key) => {
+      const dirty = !safeFields[key].isEqual(
         getIn(formState.values, key),
         getIn(formState.initialValues || {}, key)
       )
@@ -510,10 +514,10 @@ const createForm = (config: Config): FormApi => {
     formState.pristine = !foundDirty
     formState.dirtySinceLastSubmit = !!(
       formState.lastSubmittedValues &&
-      !fieldKeys.every(key => {
+      !safeFieldKeys.every(key => {
         // istanbul ignore next
         const nonNullLastSubmittedValues = formState.lastSubmittedValues || {} // || {} is for flow, but causes branch coverage complaint
-        return fields[key].isEqual(
+        return safeFields[key].isEqual(
           getIn(formState.values, key),
           getIn(nonNullLastSubmittedValues, key)
         )
@@ -526,11 +530,11 @@ const createForm = (config: Config): FormApi => {
       !hasAnyError(formState.errors) &&
       !(formState.submitErrors && hasAnyError(formState.submitErrors))
     const nextFormState = convertToExternalFormState(formState)
-    const { modified, touched, visited } = fieldKeys.reduce(
+    const { modified, touched, visited } = safeFieldKeys.reduce(
       (result, key) => {
-        result.modified[key] = fields[key].modified
-        result.touched[key] = fields[key].touched
-        result.visited[key] = fields[key].visited
+        result.modified[key] = safeFields[key].modified
+        result.touched[key] = safeFields[key].touched
+        result.visited[key] = safeFields[key].visited
         return result
       },
       { modified: {}, touched: {}, visited: {} }
@@ -691,17 +695,18 @@ const createForm = (config: Config): FormApi => {
 
     initialize: (data: Object | ((values: Object) => Object)) => {
       const { fields, formState } = state
+      const safeFields = { ...fields }
       const values = typeof data === 'function' ? data(formState.values) : data
       if (!keepDirtyOnReinitialize) {
         formState.values = values
       }
-      Object.keys(fields).forEach(key => {
-        const field = fields[key]
+      Object.keys(safeFields).forEach(key => {
+        const field = safeFields[key]
         field.modified = false
         field.touched = false
         field.visited = false
         if (keepDirtyOnReinitialize) {
-          const pristine = fields[key].isEqual(
+          const pristine = field.isEqual(
             getIn(formState.values, key),
             getIn(formState.initialValues || {}, key)
           )
