@@ -740,7 +740,6 @@ describe('FinalForm.submission', () => {
   })
 
   it('should allow updates in beforeSubmit', () => {
-    const spy = jest.fn()
     let beforeSubmit
 
     const onSubmit = values => {
