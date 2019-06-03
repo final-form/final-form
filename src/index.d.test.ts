@@ -125,3 +125,29 @@ form = createForm({
 // Get form.mutators cast to Mutators
 const mutators: Mutators = form.mutators as Mutators
 mutators.setValue('firstName', 'Kevin')
+
+// Typed FormApi
+{
+  type FormData = { foo: string }
+  const typedFormApi = createForm<FormData>({ onSubmit })
+  typedFormApi.blur('foo')
+  typedFormApi.change('foo', '')
+  typedFormApi.change('foo')
+  typedFormApi.focus('foo')
+  typedFormApi.getFieldState('foo')
+  typedFormApi.getRegisteredFields()[0] === 'foo'
+  typedFormApi.reset()
+  typedFormApi.reset({ foo: '' })
+}
+// Untyped FormApi
+{
+  const untypedFormApi = createForm({ onSubmit })
+  untypedFormApi.blur('bar')
+  untypedFormApi.change('bar', '')
+  untypedFormApi.change('bar')
+  untypedFormApi.focus('bar')
+  untypedFormApi.getFieldState('bar')
+  untypedFormApi.getRegisteredFields()[0] === 'bar'
+  untypedFormApi.reset()
+  untypedFormApi.reset({ bar: '' })
+}

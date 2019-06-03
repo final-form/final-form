@@ -180,20 +180,20 @@ export interface InternalFormState {
 
 type ConfigKey = keyof Config
 
-export interface FormApi<FormData = object> {
+export interface FormApi<FormData extends object = any> {
   batch: (fn: () => void) => void
-  blur: (name: string) => void
-  change: (name: string, value?: any) => void
-  focus: (name: string) => void
+  blur: (name: keyof FormData) => void
+  change: (name: keyof FormData, value?: FormData[keyof FormData]) => void
+  focus: (name: keyof FormData) => void
   initialize: (data: FormData | ((values: FormData) => FormData)) => void
   isValidationPaused: () => boolean
-  getFieldState: (field: string) => FieldState | undefined
-  getRegisteredFields: () => string[]
+  getFieldState: (field: keyof FormData) => FieldState | undefined
+  getRegisteredFields: () => Array<keyof FormData>
   getState: () => FormState
   mutators: { [key: string]: (...args: any[]) => any }
   pauseValidation: () => void
   registerField: RegisterField
-  reset: (initialValues?: object) => void
+  reset: (initialValues?: Partial<FormData>) => void
   resumeValidation: () => void
   setConfig: (name: ConfigKey, value: any) => void
   submit: () => Promise<FormData | undefined> | undefined
@@ -239,7 +239,7 @@ export interface Tools {
 
 export type Mutator = (args: any, state: MutableState, tools: Tools) => any
 
-export interface Config<FormData = object> {
+export interface Config<FormData extends object = any> {
   debug?: DebugFunction
   destroyOnUnregister?: boolean
   initialValues?: FormData
@@ -262,9 +262,10 @@ export interface Config<FormData = object> {
 
 export type Decorator = (form: FormApi) => Unsubscribe
 
-export function createForm<FormData>(
+export function createForm<FormData extends object = any>(
   config: Config<FormData>
 ): FormApi<FormData>
+
 export const fieldSubscriptionItems: string[]
 export const formSubscriptionItems: string[]
 export const ARRAY_ERROR: string
