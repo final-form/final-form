@@ -1,16 +1,17 @@
 // tslint:disable no-console
+import { AnyObject, Config, createForm, Mutator } from './index'
 
-import { Config, createForm, AnyObject, Mutator } from './index'
+const onSubmit: Config['onSubmit'] = (values, callback) => {
+  console.info('submitted', values)
+}
 
-const onSubmit: Config['onSubmit'] = (values, callback) => {}
-
-type FormValues = {
+interface FormValues {
   foo: string
   bar?: number
 }
 
-let form = createForm<FormValues>({ initialValues: { foo: 'bar' }, onSubmit })
-let formState = form.getState()
+const form = createForm<FormValues>({ initialValues: { foo: 'bar' }, onSubmit })
+const formState = form.getState()
 
 createForm<FormValues>({
   onSubmit(formData) {
@@ -46,7 +47,7 @@ createForm<FormValues>({
 })
 
 // submit
-let submitPromise = createForm<FormValues>({ onSubmit }).submit()
+const submitPromise = createForm<FormValues>({ onSubmit }).submit()
 
 if (submitPromise) {
   submitPromise.then(formData => {
@@ -91,7 +92,7 @@ console.log(formState.valid as boolean)
 console.log(formState.validating as boolean)
 console.log(formState.values as AnyObject, formState.values.foo)
 
-type FormValues2 = {
+interface FormValues2 {
   a: string
   b: boolean
   c: number
@@ -103,13 +104,13 @@ const initialValues: Config<FormValues2>['initialValues'] = {
 }
 
 let form2 = createForm<FormValues2>({ onSubmit, initialValues })
-formState = form.getState()
+const formState2 = form2.getState()
 console.log(formState.pristine as boolean)
 console.log(formState.dirty as boolean)
 
 // subscription
 form2 = createForm<FormValues2>({ onSubmit, initialValues })
-form.subscribe(
+form2.subscribe(
   state => {
     // noop
   },
@@ -121,7 +122,9 @@ const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
   changeValue(state, name, value => newValue)
 }
 
-type Mutators = { setValue: (name: string, value: string) => void }
+type Mutators = {
+  setValue: (name: string, value: string) => void
+}
 form2 = createForm<FormValues2>({
   mutators: { setValue },
   onSubmit
