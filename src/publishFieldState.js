@@ -1,16 +1,16 @@
 // @flow
 import type { InternalFieldState, InternalFormState } from './types'
-import type { FieldState } from './types'
+import type { FieldState, FormValuesShape } from './types'
 import getIn from './structure/getIn'
 import { ARRAY_ERROR } from './constants'
 
 /**
  * Converts internal field state to published field state
  */
-const publishFieldState = (
-  formState: InternalFormState,
+function publishFieldState<FormValues: FormValuesShape>(
+  formState: InternalFormState<FormValues>,
   field: InternalFieldState
-): FieldState => {
+): FieldState {
   const {
     errors,
     initialValues,

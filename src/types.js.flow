@@ -3,6 +3,10 @@ export type Subscription = { [string]: boolean }
 export type Subscriber<V> = (value: V) => void
 export type IsEqual = (a: any, b: any) => boolean
 
+export type FormValuesShape = {
+  [string]: any
+}
+
 export type FormSubscription = {
   active?: boolean,
   dirty?: boolean,
@@ -28,7 +32,7 @@ export type FormSubscription = {
   visited?: boolean
 }
 
-export type FormState = {
+export type FormState<FormValues: FormValuesShape> = {
   // all values are optional because they must be subscribed to
   active?: string,
   dirty?: boolean,
@@ -38,7 +42,7 @@ export type FormState = {
   errors?: Object,
   hasSubmitErrors?: boolean,
   hasValidationErrors?: boolean,
-  initialValues?: Object,
+  initialValues?: FormValues,
   invalid?: boolean,
   modified?: { [string]: boolean },
   pristine?: boolean,
@@ -50,11 +54,13 @@ export type FormState = {
   touched?: { [string]: boolean },
   valid?: boolean,
   validating?: boolean,
-  values?: Object,
+  values?: FormValues,
   visited?: { [string]: boolean }
 }
 
-export type FormSubscriber = Subscriber<FormState>
+export type FormSubscriber<FormValues: FormValuesShape> = Subscriber<
+  FormState<FormValues>
+>
 
 export type FieldState = {
   active?: boolean,
@@ -158,7 +164,7 @@ export type InternalFieldState = {
   visited: boolean
 }
 
-export type InternalFormState = {
+export type InternalFormState<FormValues: FormValuesShape> = {
   active?: string,
   dirtySinceLastSubmit: boolean,
   error?: any,
@@ -173,7 +179,7 @@ export type InternalFormState = {
   submitting: boolean,
   valid: boolean,
   validating: number,
-  values: Object
+  values: FormValues
 }
 
 export type ConfigKey =
@@ -186,7 +192,7 @@ export type ConfigKey =
   | 'validate'
   | 'validateOnBlur'
 
-export type FormApi = {
+export type FormApi<FormValues: FormValuesShape> = {
   batch: (fn: () => void) => void,
   blur: (name: string) => void,
   change: (name: string, value: ?any) => void,
@@ -195,7 +201,7 @@ export type FormApi = {
   isValidationPaused: () => boolean,
   getFieldState: (field: string) => ?FieldState,
   getRegisteredFields: () => string[],
-  getState: () => FormState,
+  getState: () => FormState<FormValues>,
   mutators: { [string]: (...args: any[]) => any },
   pauseValidation: () => void,
   registerField: RegisterField,
@@ -204,23 +210,23 @@ export type FormApi = {
   setConfig: (name: ConfigKey, value: any) => void,
   submit: () => ?Promise<?Object>,
   subscribe: (
-    subscriber: FormSubscriber,
+    subscriber: FormSubscriber<FormValues>,
     subscription: FormSubscription
   ) => Unsubscribe
 }
 
-export type DebugFunction = (
-  state: FormState,
+export type DebugFunction<FormValues: FormValuesShape> = (
+  state: FormState<FormValues>,
   fieldStates: { [string]: FieldState }
 ) => void
 
-export type MutableState = {
+export type MutableState<FormValues: FormValuesShape> = {
   fieldSubscribers: { [string]: Subscribers<FieldState> },
   fields: {
     [string]: InternalFieldState
   },
-  formState: InternalFormState,
-  lastFormState?: FormState
+  formState: InternalFormState<FormValues>,
+  lastFormState?: FormState<FormValues>
 }
 
 export type GetIn = (state: Object, complexKey: string) => any
@@ -230,39 +236,45 @@ export type SetIn = (
   value: any,
   destroyArrays?: boolean
 ) => Object
-export type ChangeValue = (
-  state: MutableState,
+export type ChangeValue<FormValues: FormValuesShape> = (
+  state: MutableState<FormValues>,
   name: string,
   mutate: (value: any) => any
 ) => void
-export type RenameField = (
-  state: MutableState,
+export type RenameField<FormValues: FormValuesShape> = (
+  state: MutableState<FormValues>,
   from: string,
   to: string
 ) => void
-export type Tools = {
-  changeValue: ChangeValue,
+export type Tools<FormValues: FormValuesShape> = {
+  changeValue: ChangeValue<FormValues>,
   getIn: GetIn,
-  renameField: RenameField,
+  renameField: RenameField<FormValues>,
   setIn: SetIn,
   shallowEqual: IsEqual
 }
 
-export type Mutator = (args: any[], state: MutableState, tools: Tools) => any
+export type Mutator<FormValues: FormValuesShape> = (
+  args: any[],
+  state: MutableState<FormValues>,
+  tools: Tools<FormValues>
+) => any
 
-export type Config = {
-  debug?: DebugFunction,
+export type Config<FormValues: FormValuesShape> = {
+  debug?: DebugFunction<FormValues>,
   destroyOnUnregister?: boolean,
   initialValues?: Object,
   keepDirtyOnReinitialize?: boolean,
-  mutators?: { [string]: Mutator },
+  mutators?: { [string]: Mutator<FormValues> },
   onSubmit: (
     values: Object,
-    form: FormApi,
+    form: FormApi<FormValues>,
     callback: ?(errors: ?Object) => ?Object
   ) => ?Object | Promise<?Object> | void,
   validate?: (values: Object) => Object | Promise<Object>,
   validateOnBlur?: boolean
 }
 
-export type Decorator = (form: FormApi) => Unsubscribe
+export type Decorator<FormValues: FormValuesShape> = (
+  form: FormApi<FormValues>
+) => Unsubscribe
