@@ -251,7 +251,7 @@ export interface Config<FormValues = object> {
   mutators?: { [key: string]: Mutator }
   onSubmit: (
     values: FormValues,
-    form: FormApi,
+    form?: FormApi<FormValues>,
     callback?: (errors?: SubmissionErrors) => void
   ) =>
     | SubmissionErrors
@@ -264,7 +264,9 @@ export interface Config<FormValues = object> {
   validateOnBlur?: boolean
 }
 
-export type Decorator = (form: FormApi) => Unsubscribe
+export type Decorator<FormValues = object> = (
+  form: FormApi<FormValues>
+) => Unsubscribe
 
 export function createForm<FormValues>(
   config: Config<FormValues>

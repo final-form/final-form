@@ -1,13 +1,12 @@
 // tslint:disable no-console
 import { AnyObject, Config, createForm, Mutator } from './index'
 
-const onSubmit: Config['onSubmit'] = (values, callback) => {
-  console.info('submitted', values)
-}
-
 interface FormValues {
   foo: string
   bar?: number
+}
+const onSubmit = (values: FormValues) => {
+  console.info('submitted', values)
 }
 
 const form = createForm<FormValues>({ initialValues: { foo: 'bar' }, onSubmit })
@@ -103,13 +102,16 @@ const initialValues: Config<FormValues2>['initialValues'] = {
   c: 1
 }
 
-let form2 = createForm<FormValues2>({ onSubmit, initialValues })
+const onSubmit2 = (values: FormValues2) => {
+  console.info('submitted', values)
+}
+let form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues })
 const formState2 = form2.getState()
 console.log(formState.pristine as boolean)
 console.log(formState.dirty as boolean)
 
 // subscription
-form2 = createForm<FormValues2>({ onSubmit, initialValues })
+form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues })
 form2.subscribe(
   state => {
     // noop
@@ -127,7 +129,7 @@ type Mutators = {
 }
 form2 = createForm<FormValues2>({
   mutators: { setValue },
-  onSubmit
+  onSubmit: onSubmit2
 })
 
 // Get form.mutators cast to Mutators
