@@ -107,8 +107,8 @@ const onSubmit2 = (values: FormValues2) => {
 }
 let form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues })
 const formState2 = form2.getState()
-console.log(formState.pristine as boolean)
-console.log(formState.dirty as boolean)
+console.log(formState2.pristine as boolean)
+console.log(formState2.dirty as boolean)
 
 // subscription
 form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues })
@@ -133,5 +133,5 @@ form2 = createForm<FormValues2>({
 })
 
 // Get form.mutators cast to Mutators
-const mutators: Mutators = form.mutators as Mutators
+const mutators: Mutators = form2.mutators as Mutators
 mutators.setValue('firstName', 'Kevin')
