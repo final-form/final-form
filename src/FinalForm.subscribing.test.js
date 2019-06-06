@@ -936,6 +936,7 @@ describe('FinalForm.subscribing', () => {
     const foo = jest.fn(({ value }) => {
       if (value === 42) {
         unregisterBar()
+        form.reset()
       }
     })
     const bar = jest.fn()
@@ -952,7 +953,7 @@ describe('FinalForm.subscribing', () => {
     expect(bar).toHaveBeenCalledTimes(2)
 
     form.change('foo', 42)
-    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo).toHaveBeenCalledTimes(3)
     expect(bar).toHaveBeenCalledTimes(2)
   })
 })
