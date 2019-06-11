@@ -1,18 +1,18 @@
 // tslint:disable no-console
+import { AnyObject, Config, createForm, Mutator } from './index'
 
-import { Config, createForm, AnyObject, Mutator } from './index'
-
-const onSubmit: Config['onSubmit'] = (values, callback) => {}
-
-let form = createForm({ initialValues: { foo: 'bar' }, onSubmit })
-let formState = form.getState()
-
-type FormData = {
+interface FormValues {
   foo: string
-  bar: number
+  bar?: number
+}
+const onSubmit = (values: FormValues) => {
+  console.info('submitted', values)
 }
 
-createForm<FormData>({
+const form = createForm<FormValues>({ initialValues: { foo: 'bar' }, onSubmit })
+const formState = form.getState()
+
+createForm<FormValues>({
   onSubmit(formData) {
     console.log(formData.foo as string)
     console.log(formData.bar as number)
@@ -20,7 +20,7 @@ createForm<FormData>({
 })
 
 // initialValues
-createForm<FormData>({
+createForm<FormValues>({
   initialValues: { foo: 'baz', bar: 0 },
   onSubmit(formData) {
     console.log(formData.foo as string)
@@ -29,7 +29,7 @@ createForm<FormData>({
 })
 
 // validate
-createForm<FormData>({
+createForm<FormValues>({
   onSubmit,
   validate(formData) {
     console.log(formData.foo as string)
@@ -38,7 +38,7 @@ createForm<FormData>({
   }
 })
 
-createForm<FormData>({
+createForm<FormValues>({
   onSubmit,
   validate() {
     return undefined
@@ -46,7 +46,7 @@ createForm<FormData>({
 })
 
 // submit
-let submitPromise = createForm<FormData>({ onSubmit }).submit()
+const submitPromise = createForm<FormValues>({ onSubmit }).submit()
 
 if (submitPromise) {
   submitPromise.then(formData => {
@@ -58,8 +58,8 @@ if (submitPromise) {
 }
 
 // initialize
-createForm<FormData>({ onSubmit }).initialize({ foo: 'baz', bar: 11 })
-createForm<FormData>({ onSubmit }).initialize(formData => ({
+createForm<FormValues>({ onSubmit }).initialize({ foo: 'baz', bar: 11 })
+createForm<FormValues>({ onSubmit }).initialize(formData => ({
   ...formData,
   bar: 12
 }))
@@ -91,20 +91,28 @@ console.log(formState.valid as boolean)
 console.log(formState.validating as boolean)
 console.log(formState.values as AnyObject, formState.values.foo)
 
-const initialValues: Config['initialValues'] = {
+interface FormValues2 {
+  a: string
+  b: boolean
+  c: number
+}
+const initialValues: Config<FormValues2>['initialValues'] = {
   a: 'a',
   b: true,
   c: 1
 }
 
-form = createForm({ onSubmit, initialValues })
-formState = form.getState()
-console.log(formState.pristine as boolean)
-console.log(formState.dirty as boolean)
+const onSubmit2 = (values: FormValues2) => {
+  console.info('submitted', values)
+}
+let form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues })
+const formState2 = form2.getState()
+console.log(formState2.pristine as boolean)
+console.log(formState2.dirty as boolean)
 
 // subscription
-form = createForm({ onSubmit, initialValues })
-form.subscribe(
+form2 = createForm<FormValues2>({ onSubmit: onSubmit2, initialValues })
+form2.subscribe(
   state => {
     // noop
   },
@@ -116,12 +124,14 @@ const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
   changeValue(state, name, value => newValue)
 }
 
-type Mutators = { setValue: (name: string, value: string) => void }
-form = createForm({
+type Mutators = {
+  setValue: (name: string, value: string) => void
+}
+form2 = createForm<FormValues2>({
   mutators: { setValue },
-  onSubmit
+  onSubmit: onSubmit2
 })
 
 // Get form.mutators cast to Mutators
-const mutators: Mutators = form.mutators as Mutators
+const mutators: Mutators = form2.mutators as Mutators
 mutators.setValue('firstName', 'Kevin')

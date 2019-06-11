@@ -19,6 +19,7 @@ import type {
   FormState,
   FormSubscriber,
   FormSubscription,
+  FormValuesShape,
   InternalFieldState,
   InternalFormState,
   IsEqual,
@@ -43,15 +44,15 @@ export const version = '4.13.0'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
 
-type InternalState = {
-  subscribers: Subscribers<FormState>,
-  lastFormState?: FormState,
+type InternalState<FormValues> = {
+  subscribers: Subscribers<FormState<FormValues>>,
+  lastFormState?: FormState<FormValues>,
   fields: {
     [string]: InternalFieldState
   },
   fieldSubscribers: { [string]: Subscribers<FieldState> },
-  formState: InternalFormState
-} & MutableState
+  formState: InternalFormState<FormValues>
+} & MutableState<FormValues>
 
 export type StateFilter<T> = (
   state: T,
@@ -72,7 +73,7 @@ const hasAnyError = (errors: Object): boolean => {
   })
 }
 
-const convertToExternalFormState = ({
+function convertToExternalFormState<FormValues: FormValuesShape>({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
   active,
   dirtySinceLastSubmit,
@@ -88,29 +89,31 @@ const convertToExternalFormState = ({
   valid,
   validating,
   values
-}: InternalFormState): FormState => ({
-  active,
-  dirty: !pristine,
-  dirtySinceLastSubmit,
-  error,
-  errors,
-  hasSubmitErrors: !!(
-    submitError ||
-    (submitErrors && hasAnyError(submitErrors))
-  ),
-  hasValidationErrors: !!(error || hasAnyError(errors)),
-  invalid: !valid,
-  initialValues,
-  pristine,
-  submitting,
-  submitFailed,
-  submitSucceeded,
-  submitError,
-  submitErrors,
-  valid,
-  validating: validating > 0,
-  values
-})
+}: InternalFormState<FormValues>): FormState<FormValues> {
+  return {
+    active,
+    dirty: !pristine,
+    dirtySinceLastSubmit,
+    error,
+    errors,
+    hasSubmitErrors: !!(
+      submitError ||
+      (submitErrors && hasAnyError(submitErrors))
+    ),
+    hasValidationErrors: !!(error || hasAnyError(errors)),
+    invalid: !valid,
+    initialValues,
+    pristine,
+    submitting,
+    submitFailed,
+    submitSucceeded,
+    submitError,
+    submitErrors,
+    valid,
+    validating: validating > 0,
+    values
+  }
+}
 
 function notifySubscriber<T: Object>(
   subscriber: Subscriber<T>,
@@ -142,7 +145,9 @@ function notify<T: Object>(
   })
 }
 
-const createForm = (config: Config): FormApi => {
+function createForm<FormValues: FormValuesShape>(
+  config: Config<FormValues>
+): FormApi<FormValues> {
   if (!config) {
     throw new Error('No config specified')
   }
@@ -160,7 +165,7 @@ const createForm = (config: Config): FormApi => {
     throw new Error('No onSubmit function specified')
   }
 
-  const state: InternalState = {
+  const state: InternalState<FormValues> = {
     subscribers: { index: 0, entries: {} },
     fieldSubscribers: {},
     fields: {},
@@ -175,7 +180,7 @@ const createForm = (config: Config): FormApi => {
       submitSucceeded: false,
       valid: true,
       validating: 0,
-      values: initialValues ? { ...initialValues } : {}
+      values: initialValues ? { ...initialValues } : (({}: any): FormValues)
     },
     lastFormState: undefined
   }
@@ -189,12 +194,12 @@ const createForm = (config: Config): FormApi => {
     return result
   }
 
-  const changeValue: ChangeValue = (state, name, mutate) => {
+  const changeValue: ChangeValue<FormValues> = (state, name, mutate) => {
     const before = getIn(state.formState.values, name)
     const after = mutate(before)
     state.formState.values = setIn(state.formState.values, name, after) || {}
   }
-  const renameField: RenameField = (state, from, to) => {
+  const renameField: RenameField<FormValues> = (state, from, to) => {
     if (state.fields[from]) {
       state.fields = {
         ...state.fields,
@@ -223,7 +228,7 @@ const createForm = (config: Config): FormApi => {
     // istanbul ignore next
     if (mutators) {
       // ^^ causes branch coverage warning, but needed to appease the Flow gods
-      const mutatableState: MutableState = {
+      const mutatableState: MutableState<FormValues> = {
         formState: state.formState,
         fields: state.fields,
         fieldSubscribers: state.fieldSubscribers,
@@ -491,7 +496,7 @@ const createForm = (config: Config): FormApi => {
   const hasSyncErrors = () =>
     !!(state.formState.error || hasAnyError(state.formState.errors))
 
-  const calculateNextFormState = (): FormState => {
+  const calculateNextFormState = (): FormState<FormValues> => {
     const { fields, formState, lastFormState } = state
     const safeFields = { ...fields }
     const safeFieldKeys = Object.keys(safeFields)
@@ -613,7 +618,7 @@ const createForm = (config: Config): FormApi => {
   // generate initial errors
   runValidation()
 
-  const api: FormApi = {
+  const api: FormApi<FormValues> = {
     batch: (fn: () => void) => {
       inBatch = true
       fn()
@@ -993,7 +998,7 @@ const createForm = (config: Config): FormApi => {
     },
 
     subscribe: (
-      subscriber: FormSubscriber,
+      subscriber: FormSubscriber<FormValues>,
       subscription: FormSubscription
     ): Unsubscribe => {
       if (!subscriber) {

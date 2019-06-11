@@ -1,5 +1,5 @@
 // @flow
-import type { Config, ConfigKey, FormApi } from './types'
+import type { Config, ConfigKey, FormApi, FormValuesShape } from './types'
 
 export type {
   Config,
@@ -11,6 +11,7 @@ export type {
   FormApi,
   FormState,
   FormSubscription,
+  FormValuesShape,
   GetFieldValidator,
   MutableState,
   Mutator,
@@ -19,7 +20,9 @@ export type {
   Unsubscribe
 } from './types'
 
-declare export function createForm(config: Config): FormApi
+declare export function createForm<FormValues: FormValuesShape>(
+  config: Config<FormValues>
+): FormApi<FormValues>
 declare export var fieldSubscriptionItems: string[]
 declare export var formSubscriptionItems: string[]
 declare export var FORM_ERROR: string
