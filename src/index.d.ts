@@ -60,16 +60,16 @@ export interface FormState<FormValues> {
 
 export type FormSubscriber<FormValues> = Subscriber<FormState<FormValues>>
 
-export interface FieldState {
+export interface FieldState<FieldValue = any> {
   active?: boolean
   blur: () => void
-  change: (value: any) => void
+  change: (value: FieldValue) => void
   data?: AnyObject
   dirty?: boolean
   dirtySinceLastSubmit?: boolean
   error?: any
   focus: () => void
-  initial?: any
+  initial?: FieldValue
   invalid?: boolean
   length?: number
   modified?: boolean
@@ -81,7 +81,7 @@ export interface FieldState {
   submitting?: boolean
   touched?: boolean
   valid?: boolean
-  value?: any
+  value?: FieldValue
   visited?: boolean
 }
 
