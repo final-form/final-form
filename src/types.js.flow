@@ -263,11 +263,11 @@ export type Mutator<FormValues: FormValuesShape> = (
 export type Config<FormValues: FormValuesShape> = {
   debug?: DebugFunction<FormValues>,
   destroyOnUnregister?: boolean,
-  initialValues?: Object,
+  initialValues?: FormValues,
   keepDirtyOnReinitialize?: boolean,
   mutators?: { [string]: Mutator<FormValues> },
   onSubmit: (
-    values: Object,
+    values: FormValues,
     form: FormApi<FormValues>,
     callback: ?(errors: ?Object) => ?Object
   ) => ?Object | Promise<?Object> | void,
