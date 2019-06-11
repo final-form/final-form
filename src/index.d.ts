@@ -251,7 +251,7 @@ export interface Config<FormValues = object> {
   mutators?: { [key: string]: Mutator }
   onSubmit: (
     values: FormValues,
-    form?: FormApi<FormValues>,
+    form: FormApi<FormValues>,
     callback?: (errors?: SubmissionErrors) => void
   ) =>
     | SubmissionErrors
