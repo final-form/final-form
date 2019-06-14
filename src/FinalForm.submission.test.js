@@ -868,4 +868,29 @@ describe('FinalForm.submission', () => {
     expect(field.mock.calls[1][0].value).toBe('bar')
     expect(() => form.submit()).toThrow(/Cannot reset\(\) in onSubmit\(\)/)
   })
+
+  it('should allow setTimeout(reset) in onSubmit', async () => {
+    const onSubmit = async (values, form) => {
+      await sleep(2)
+      setTimeout(form.reset)
+    }
+
+    const form = createForm({ onSubmit })
+    const field = jest.fn()
+    form.registerField('foo', field, { submitSucceeded: true, value: true })
+    expect(field).toHaveBeenCalled()
+    expect(field).toHaveBeenCalledTimes(1)
+    expect(field.mock.calls[0][0].submitSucceeded).toBe(false)
+    expect(field.mock.calls[0][0].value).toBeUndefined()
+    field.mock.calls[0][0].change('bar')
+    expect(field).toHaveBeenCalledTimes(2)
+    expect(field.mock.calls[1][0].value).toBe('bar')
+
+    await form.submit()
+    expect(field).toHaveBeenCalledTimes(3)
+    expect(field.mock.calls[2][0].submitSucceeded).toBe(true)
+    await sleep(1)
+    expect(field).toHaveBeenCalledTimes(4)
+    expect(field.mock.calls[3][0].submitSucceeded).toBe(false)
+  })
 })
