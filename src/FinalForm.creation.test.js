@@ -1,8 +1,12 @@
-import createForm from './FinalForm'
+import createForm, { version } from './FinalForm'
 
 const onSubmitMock = (values, callback) => {}
 
 describe('FinalForm.creation', () => {
+  it('should export version', () => {
+    expect(version).toBeDefined()
+  })
+
   it('should throw an error if no config is provided', () => {
     expect(() => createForm()).toThrowError(/No config/)
   })
