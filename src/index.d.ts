@@ -60,7 +60,7 @@ export interface FormState<FormValues> {
 
 export type FormSubscriber<FormValues> = Subscriber<FormState<FormValues>>
 
-export interface FieldState {
+export interface FieldState<FieldValue> {
   active?: boolean
   blur: () => void
   change: (value: any) => void
@@ -81,7 +81,7 @@ export interface FieldState {
   submitting?: boolean
   touched?: boolean
   valid?: boolean
-  value?: any
+  value?: FieldValue
   visited?: boolean
 }
 
@@ -106,7 +106,7 @@ export interface FieldSubscription {
   visited?: boolean
 }
 
-export type FieldSubscriber = Subscriber<FieldState>
+export type FieldSubscriber<FieldValue> = Subscriber<FieldState<FieldValue>>
 export type Subscribers<T extends Object> = {
   index: number
   entries: {
@@ -116,45 +116,45 @@ export type Subscribers<T extends Object> = {
 
 export type Unsubscribe = () => void
 
-type FieldValidator = (
-  value: any,
+type FieldValidator<FieldValue> = (
+  value: FieldValue,
   allValues: object,
-  meta?: FieldState
+  meta?: FieldState<FieldValue>
 ) => any | Promise<any>
-type GetFieldValidator = () => FieldValidator
+type GetFieldValidator<FieldValue> = () => FieldValidator<FieldValue>
 
-export interface FieldConfig {
+export interface FieldConfig<FieldValue> {
   afterSubmit?: () => void
   beforeSubmit?: () => void | false
   defaultValue?: any
-  getValidator?: GetFieldValidator
+  getValidator?: GetFieldValidator<FieldValue>
   initialValue?: any
   isEqual?: IsEqual
   validateFields?: string[]
 }
 
-export type RegisterField = (
+export type RegisterField<FieldValue> = (
   name: string,
-  subscriber: FieldSubscriber,
+  subscriber: FieldSubscriber<FieldValue>,
   subscription: FieldSubscription,
-  config?: FieldConfig
+  config?: FieldConfig<FieldValue>
 ) => Unsubscribe
 
-export interface InternalFieldState {
+export interface InternalFieldState<FieldValue> {
   active: boolean
   blur: () => void
   change: (value: any) => void
   data: AnyObject
   focus: () => void
   isEqual: IsEqual
-  lastFieldState?: FieldState
+  lastFieldState?: FieldState<FieldValue>
   length?: any
   modified: boolean
   name: string
   touched: boolean
   validateFields?: string[]
   validators: {
-    [index: number]: GetFieldValidator
+    [index: number]: GetFieldValidator<FieldValue>
   }
   valid: boolean
   visited: boolean
@@ -187,12 +187,12 @@ export interface FormApi<FormValues = object> {
   focus: (name: string) => void
   initialize: (data: FormValues | ((values: FormValues) => FormValues)) => void
   isValidationPaused: () => boolean
-  getFieldState: (field: string) => FieldState | undefined
+  getFieldState: (field: string) => FieldState<any> | undefined
   getRegisteredFields: () => string[]
   getState: () => FormState<FormValues>
   mutators: { [key: string]: (...args: any[]) => any }
   pauseValidation: () => void
-  registerField: RegisterField
+  registerField: RegisterField<any>
   reset: (initialValues?: object) => void
   resumeValidation: () => void
   setConfig: (name: ConfigKey, value: any) => void
@@ -205,13 +205,13 @@ export interface FormApi<FormValues = object> {
 
 export type DebugFunction<FormValues> = (
   state: FormState<FormValues>,
-  fieldStates: { [key: string]: FieldState }
+  fieldStates: { [key: string]: FieldState<any> }
 ) => void
 
 export interface MutableState<FormValues> {
-  fieldSubscribers: { [key: string]: Subscribers<FieldState> }
+  fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> }
   fields: {
-    [key: string]: InternalFieldState
+    [key: string]: InternalFieldState<any>
   }
   formState: InternalFormState
   lastFormState?: FormState<FormValues>
