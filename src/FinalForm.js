@@ -845,7 +845,7 @@ function createForm<FormValues: FormValuesShape>(
     reset: (initialValues = state.formState.initialValues) => {
       if (state.formState.submitting) {
         throw Error(
-          'Cannot reset() in onSubmit(), use to setTimeout(form.reset)'
+          'Cannot reset() in onSubmit(), use setTimeout(form.reset)'
         )
       }
       state.formState.submitFailed = false
