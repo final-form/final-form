@@ -31,6 +31,8 @@ import type {
   Unsubscribe
 } from './types'
 import { FORM_ERROR, ARRAY_ERROR } from './constants'
+export { version } from '../package.json'
+
 export const configOptions: ConfigKey[] = [
   'debug',
   'initialValues',
@@ -40,7 +42,6 @@ export const configOptions: ConfigKey[] = [
   'validate',
   'validateOnBlur'
 ]
-export const version = '4.15.0'
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
 
