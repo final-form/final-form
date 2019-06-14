@@ -16,7 +16,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**4.7k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
+✅ 💥 [**4.8k gzipped**](https://bundlephobia.com/result?p=final-form) 💥
 
 ---
 

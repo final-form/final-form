@@ -849,4 +849,23 @@ describe('FinalForm.submission', () => {
     form.submit()
     expect(onSubmit).toHaveBeenCalledTimes(2)
   })
+
+  it('should NOT allow reset in onSubmit', async () => {
+    // https://github.com/final-form/final-form/issues/142#issuecomment-402296920
+    const onSubmit = (values, form) => {
+      form.reset()
+    }
+
+    const form = createForm({ onSubmit })
+    const field = jest.fn()
+    form.registerField('foo', field, { submitSucceeded: true, value: true })
+    expect(field).toHaveBeenCalled()
+    expect(field).toHaveBeenCalledTimes(1)
+    expect(field.mock.calls[0][0].submitSucceeded).toBe(false)
+    expect(field.mock.calls[0][0].value).toBeUndefined()
+    field.mock.calls[0][0].change('bar')
+    expect(field).toHaveBeenCalledTimes(2)
+    expect(field.mock.calls[1][0].value).toBe('bar')
+    expect(() => form.submit()).toThrow(/Cannot reset\(\) in onSubmit\(\)/)
+  })
 })
