@@ -292,12 +292,17 @@ function createForm<FormValues: FormValuesShape>(
 
   const runFieldLevelValidation = (
     field: InternalFieldState,
-    setError: (error: ?any) => void
+    setError: (
+      error: ?any,
+      hasAsyncErrors?: boolean,
+      promiseResolved?: boolean
+    ) => void
   ): Promise<*>[] => {
     const promises = []
     const validators = getValidators(field)
     if (validators.length) {
       let error
+      let hasAsyncErrors = false
       validators.forEach(validator => {
         const errorOrPromise = validator(
           getIn(state.formState.values, field.name),
@@ -309,8 +314,12 @@ function createForm<FormValues: FormValuesShape>(
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
           const asyncValidationPromiseKey = nextAsyncValidationKey++
+          hasAsyncErrors = true
           const promise = errorOrPromise
-            .then(setError) // errors must be resolved, not rejected
+            .then(error => {
+              hasAsyncErrors = false
+              setError(error, hasAsyncErrors, true)
+            }) // errors must be resolved, not rejected
             .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
           promises.push(promise)
           asyncValidationPromises[asyncValidationPromiseKey] = promise
@@ -319,7 +328,7 @@ function createForm<FormValues: FormValuesShape>(
           error = errorOrPromise
         }
       })
-      setError(error)
+      setError(error, hasAsyncErrors)
     }
     return promises
   }
@@ -364,6 +373,7 @@ function createForm<FormValues: FormValuesShape>(
 
     let recordLevelErrors: Object = {}
     const fieldLevelErrors = {}
+    const fieldsWithPromisePending = {}
     const promises = [
       ...runRecordLevelValidation(errors => {
         recordLevelErrors = errors || {}
@@ -371,9 +381,33 @@ function createForm<FormValues: FormValuesShape>(
       ...fieldKeys.reduce(
         (result, name) =>
           result.concat(
-            runFieldLevelValidation(safeFields[name], (error: ?any) => {
-              fieldLevelErrors[name] = error
-            })
+            runFieldLevelValidation(
+              fields[name],
+              (
+                error: ?any,
+                hasAsyncErrors?: boolean,
+                promiseResolved?: boolean
+              ) => {
+                fieldLevelErrors[name] = error
+                fieldsWithPromisePending[name] = hasAsyncErrors ? true : false
+                if (
+                  promiseResolved &&
+                  fields[name].subscribeToEachFieldsPromise
+                ) {
+                  if (
+                    !shallowEqual(
+                      formState.fieldsWithPromisePending,
+                      fieldsWithPromisePending
+                    )
+                  ) {
+                    formState.fieldsWithPromisePending = fieldsWithPromisePending
+                    if (callback) {
+                      callback()
+                    }
+                  }
+                }
+              }
+            )
           ),
         []
       )
@@ -418,6 +452,14 @@ function createForm<FormValues: FormValuesShape>(
       })
       if (!shallowEqual(formState.errors, merged)) {
         formState.errors = merged
+      }
+      if (
+        !shallowEqual(
+          formState.fieldsWithPromisePending,
+          fieldsWithPromisePending
+        )
+      ) {
+        formState.fieldsWithPromisePending = fieldsWithPromisePending
       }
       formState.error = recordLevelErrors[FORM_ERROR]
     }
@@ -768,7 +810,9 @@ function createForm<FormValues: FormValuesShape>(
           valid: true,
           validateFields: fieldConfig && fieldConfig.validateFields,
           validators: {},
-          visited: false
+          visited: false,
+          subscribeToEachFieldsPromise:
+            fieldConfig && fieldConfig.subscribeToEachFieldsPromise
         }
       }
       if (fieldConfig) {
@@ -844,9 +888,7 @@ function createForm<FormValues: FormValuesShape>(
 
     reset: (initialValues = state.formState.initialValues) => {
       if (state.formState.submitting) {
-        throw Error(
-          'Cannot reset() in onSubmit(), use setTimeout(form.reset)'
-        )
+        throw Error('Cannot reset() in onSubmit(), use setTimeout(form.reset)')
       }
       state.formState.submitFailed = false
       state.formState.submitSucceeded = false

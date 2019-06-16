@@ -19,7 +19,8 @@ function publishFieldState<FormValues: FormValuesShape>(
     submitFailed,
     submitSucceeded,
     submitting,
-    values
+    values,
+    fieldsWithPromisePending
   } = formState
   const {
     active,
@@ -45,6 +46,7 @@ function publishFieldState<FormValues: FormValuesShape>(
     !field.isEqual(getIn(lastSubmittedValues, name), value)
   )
   const valid = !error && !submitError
+  const validating = getIn(fieldsWithPromisePending, name)
   return {
     active,
     blur,
@@ -67,7 +69,8 @@ function publishFieldState<FormValues: FormValuesShape>(
     touched,
     valid,
     value,
-    visited
+    visited,
+    validating
   }
 }
 

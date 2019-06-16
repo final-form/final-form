@@ -403,6 +403,61 @@ describe('Field.validation', () => {
     // spy not called because sync validation already cleared error
     expect(spy).toHaveBeenCalledTimes(3)
   })
+  it('validating key should be equal to false if no promise returned', async () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.registerField(
+      'username',
+      spy,
+      { error: true, validating: true },
+      {
+        getValidator: () => (value, allErrors) => {
+          const error = value === 'erikras' ? 'Username taken' : undefined
+          return error
+        },
+        subscribeToEachFieldsPromise: true
+      }
+    )
+    // initializes with validating= false
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].validating).toBe(false)
+  })
+  it('validating equal to true for fields subscribeToEachFieldsPromise equals to true', async () => {
+    const delay = 10
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.registerField(
+      'username',
+      spy,
+      { error: true, validating: true },
+      {
+        getValidator: () => async (value, allErrors) => {
+          const error = value === 'erikras' ? 'Username taken' : undefined
+          await sleep(delay)
+          return error
+        },
+        subscribeToEachFieldsPromise: true
+      }
+    )
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].validating).toBe(true)
+
+    const { change } = spy.mock.calls[0][0]
+
+    await sleep(delay * 2)
+    // called after promised resolved
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].validating).toBe(false)
+
+    change('something')
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].validating).toBe(true)
+
+    await sleep(delay * 2)
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].validating).toBe(false)
+    // expect(spy.mock.calls[0][0].validating).toBe(false)
+  })
 
   it('should allow field-level async validation via promise', async () => {
     const delay = 10
