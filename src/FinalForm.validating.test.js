@@ -425,10 +425,10 @@ describe('Field.validation', () => {
   it('should update validating flag during and after async field-level validation', async () => {
     const delay = 2
     const form = createForm({ onSubmit: onSubmitMock })
-    const username = jest.fn()
+    const spy = jest.fn()
     form.registerField(
       'username',
-      username,
+      spy,
       { error: true, validating: true },
       {
         getValidator: () => async (value, allErrors) => {
@@ -439,42 +439,42 @@ describe('Field.validation', () => {
         subscribeToEachFieldsPromise: true
       }
     )
-    expect(username).toHaveBeenCalledTimes(1)
-    expect(username.mock.calls[0][0].error).toBeUndefined()
-    expect(username.mock.calls[0][0].validating).toBe(true)
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].error).toBeUndefined()
+    expect(spy.mock.calls[0][0].validating).toBe(true)
 
-    const { change } = username.mock.calls[0][0]
+    const { change } = spy.mock.calls[0][0]
 
     await sleep(delay * 2)
 
     // called after promised resolved
-    expect(username).toHaveBeenCalledTimes(2)
-    expect(username.mock.calls[1][0].error).toBeUndefined()
-    expect(username.mock.calls[1][0].validating).toBe(false)
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].error).toBeUndefined()
+    expect(spy.mock.calls[1][0].validating).toBe(false)
 
     change('something')
 
-    expect(username).toHaveBeenCalledTimes(3)
-    expect(username.mock.calls[2][0].error).toBeUndefined()
-    expect(username.mock.calls[2][0].validating).toBe(true)
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].error).toBeUndefined()
+    expect(spy.mock.calls[2][0].validating).toBe(true)
 
     await sleep(delay * 2)
 
-    expect(username).toHaveBeenCalledTimes(4)
-    expect(username.mock.calls[3][0].error).toBeUndefined()
-    expect(username.mock.calls[3][0].validating).toBe(false)
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy.mock.calls[3][0].error).toBeUndefined()
+    expect(spy.mock.calls[3][0].validating).toBe(false)
 
     change('erikras')
 
-    expect(username).toHaveBeenCalledTimes(5)
-    expect(username.mock.calls[4][0].error).toBeUndefined()
-    expect(username.mock.calls[4][0].validating).toBe(true)
+    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy.mock.calls[4][0].error).toBeUndefined()
+    expect(spy.mock.calls[4][0].validating).toBe(true)
 
     await sleep(delay * 2)
 
-    expect(username).toHaveBeenCalledTimes(6)
-    expect(username.mock.calls[5][0].error).toBe('Username taken')
-    expect(username.mock.calls[5][0].validating).toBe(false)
+    expect(spy).toHaveBeenCalledTimes(6)
+    expect(spy.mock.calls[5][0].error).toBe('Username taken')
+    expect(spy.mock.calls[5][0].validating).toBe(false)
   })
 
   it('should allow field-level async validation via promise', async () => {
