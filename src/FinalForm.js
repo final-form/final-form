@@ -675,6 +675,14 @@ function createForm<FormValues: FormValuesShape>(
       }
     },
 
+    get destroyOnUnregister() {
+      return !!destroyOnUnregister
+    },
+
+    set destroyOnUnregister(value: boolean) {
+      destroyOnUnregister = value
+    },
+
     focus: (name: string) => {
       const field = state.fields[name]
       if (field && !field.active) {

@@ -184,6 +184,7 @@ export interface FormApi<FormValues = object> {
   batch: (fn: () => void) => void
   blur: (name: string) => void
   change: (name: string, value?: any) => void
+  destroyOnUnregister: boolean
   focus: (name: string) => void
   initialize: (data: FormValues | ((values: FormValues) => FormValues)) => void
   isValidationPaused: () => boolean

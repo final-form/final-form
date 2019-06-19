@@ -195,6 +195,7 @@ form.submit() // only submits if all validation passes
     - [`batch: (fn: () => void) => void)`](#batch-fn---void--void)
     - [`blur: (name: string) => void`](#blur-name-string--void)
     - [`change: (name: string, value: ?any) => void`](#change-name-string-value-any--void)
+    - [`destroyOnUnregister: boolean`](#destroyonunregister-boolean)
     - [`focus: (name: string) => void`](#focus-name-string--void)
     - [`getFieldState: (field: string) => ?FieldState`](#getfieldstate-field-string--fieldstate)
     - [`getRegisteredFields: () => string[]`](#getregisteredfields---string)
@@ -766,6 +767,10 @@ Blurs (marks inactive) the given field.
 #### `change: (name: string, value: ?any) => void`
 
 Changes the value of the given field.
+
+#### `destroyOnUnregister: boolean`
+
+A read/write property to get and set the `destroyOnUnregister` config setting.
 
 #### `focus: (name: string) => void`
 

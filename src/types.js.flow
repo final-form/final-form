@@ -196,6 +196,7 @@ export type FormApi<FormValues: FormValuesShape> = {
   batch: (fn: () => void) => void,
   blur: (name: string) => void,
   change: (name: string, value: ?any) => void,
+  destroyOnUnregister: boolean,
   focus: (name: string) => void,
   initialize: (data: Object | ((values: Object) => Object)) => void,
   isValidationPaused: () => boolean,
