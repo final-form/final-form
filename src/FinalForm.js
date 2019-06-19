@@ -292,17 +292,12 @@ function createForm<FormValues: FormValuesShape>(
 
   const runFieldLevelValidation = (
     field: InternalFieldState,
-    setError: (
-      error: ?any,
-      hasAsyncErrors?: boolean,
-      promiseResolved?: boolean
-    ) => void
+    setError: (error: ?any) => void
   ): Promise<*>[] => {
     const promises = []
     const validators = getValidators(field)
     if (validators.length) {
       let error
-      let hasAsyncErrors = false
       validators.forEach(validator => {
         const errorOrPromise = validator(
           getIn(state.formState.values, field.name),
@@ -314,11 +309,11 @@ function createForm<FormValues: FormValuesShape>(
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
           const asyncValidationPromiseKey = nextAsyncValidationKey++
-          hasAsyncErrors = true
+          field.validating = true
           const promise = errorOrPromise
             .then(error => {
-              hasAsyncErrors = false
-              setError(error, hasAsyncErrors, true)
+              field.validating = false
+              setError(error)
             }) // errors must be resolved, not rejected
             .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
           promises.push(promise)
@@ -328,18 +323,15 @@ function createForm<FormValues: FormValuesShape>(
           error = errorOrPromise
         }
       })
-      setError(error, hasAsyncErrors)
+      setError(error)
     }
     return promises
   }
 
-  const runValidation = (fieldChanged: ?string, callback: ?() => void) => {
+  const runValidation = (fieldChanged: ?string, callback: () => void) => {
     if (validationPaused) {
       validationBlocked = true
-      /* istanbul ignore next */
-      if (callback) {
-        callback()
-      }
+      callback()
       return
     }
 
@@ -350,9 +342,7 @@ function createForm<FormValues: FormValuesShape>(
       !validate &&
       !fieldKeys.some(key => getValidators(safeFields[key]).length)
     ) {
-      if (callback) {
-        callback()
-      }
+      callback()
       return // no validation rules
     }
 
@@ -373,7 +363,6 @@ function createForm<FormValues: FormValuesShape>(
 
     let recordLevelErrors: Object = {}
     const fieldLevelErrors = {}
-    const fieldsWithPromisePending = {}
     const promises = [
       ...runRecordLevelValidation(errors => {
         recordLevelErrors = errors || {}
@@ -381,33 +370,9 @@ function createForm<FormValues: FormValuesShape>(
       ...fieldKeys.reduce(
         (result, name) =>
           result.concat(
-            runFieldLevelValidation(
-              fields[name],
-              (
-                error: ?any,
-                hasAsyncErrors?: boolean,
-                promiseResolved?: boolean
-              ) => {
-                fieldLevelErrors[name] = error
-                fieldsWithPromisePending[name] = hasAsyncErrors ? true : false
-                if (
-                  promiseResolved &&
-                  fields[name].subscribeToEachFieldsPromise
-                ) {
-                  if (
-                    !shallowEqual(
-                      formState.fieldsWithPromisePending,
-                      fieldsWithPromisePending
-                    )
-                  ) {
-                    formState.fieldsWithPromisePending = fieldsWithPromisePending
-                    if (callback) {
-                      callback()
-                    }
-                  }
-                }
-              }
-            )
+            runFieldLevelValidation(fields[name], (error: ?any) => {
+              fieldLevelErrors[name] = error
+            })
           ),
         []
       )
@@ -453,14 +418,6 @@ function createForm<FormValues: FormValuesShape>(
       if (!shallowEqual(formState.errors, merged)) {
         formState.errors = merged
       }
-      if (
-        !shallowEqual(
-          formState.fieldsWithPromisePending,
-          fieldsWithPromisePending
-        )
-      ) {
-        formState.fieldsWithPromisePending = fieldsWithPromisePending
-      }
       formState.error = recordLevelErrors[FORM_ERROR]
     }
 
@@ -470,19 +427,15 @@ function createForm<FormValues: FormValuesShape>(
     if (promises.length) {
       // sync errors have been set. notify listeners while we wait for others
       state.formState.validating++
-      if (callback) {
-        callback()
-      }
+      callback()
 
       const afterPromises = () => {
         state.formState.validating--
         processErrors()
-        if (callback) {
-          callback()
-        }
+        callback()
       }
       Promise.all(promises).then(afterPromises, afterPromises)
-    } else if (callback) {
+    } else {
       callback()
     }
   }
@@ -659,7 +612,7 @@ function createForm<FormValues: FormValuesShape>(
     )
 
   // generate initial errors
-  runValidation()
+  runValidation(undefined, () => {})
 
   const api: FormApi<FormValues> = {
     batch: (fn: () => void) => {
@@ -818,9 +771,8 @@ function createForm<FormValues: FormValuesShape>(
           valid: true,
           validateFields: fieldConfig && fieldConfig.validateFields,
           validators: {},
-          visited: false,
-          subscribeToEachFieldsPromise:
-            fieldConfig && fieldConfig.subscribeToEachFieldsPromise
+          validating: false,
+          visited: false
         }
       }
       if (fieldConfig) {

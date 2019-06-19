@@ -81,6 +81,7 @@ export interface FieldState<FieldValue> {
   submitting?: boolean
   touched?: boolean
   valid?: boolean
+  validating?: boolean
   value?: FieldValue
   visited?: boolean
 }
@@ -102,6 +103,7 @@ export interface FieldSubscription {
   submitting?: boolean
   touched?: boolean
   valid?: boolean
+  validating?: boolean
   value?: boolean
   visited?: boolean
 }
@@ -157,6 +159,7 @@ export interface InternalFieldState<FieldValue> {
     [index: number]: GetFieldValidator<FieldValue>
   }
   valid: boolean
+  validating: boolean
   visited: boolean
 }
 

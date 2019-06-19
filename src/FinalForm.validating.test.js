@@ -403,32 +403,32 @@ describe('Field.validation', () => {
     // spy not called because sync validation already cleared error
     expect(spy).toHaveBeenCalledTimes(3)
   })
-  it('validating key should be equal to false if no promise returned', async () => {
+
+  it('should leave validating flag as false when field-level validation is sync', async () => {
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()
     form.registerField(
       'username',
       spy,
-      { error: true, validating: true },
+      { validating: true },
       {
         getValidator: () => (value, allErrors) => {
           const error = value === 'erikras' ? 'Username taken' : undefined
           return error
-        },
-        subscribeToEachFieldsPromise: true
+        }
       }
     )
-    // initializes with validating= false
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].validating).toBe(false)
   })
-  it('validating equal to true for fields subscribeToEachFieldsPromise equals to true', async () => {
-    const delay = 10
+
+  it('should update validating flag during and after async field-level validation', async () => {
+    const delay = 2
     const form = createForm({ onSubmit: onSubmitMock })
-    const spy = jest.fn()
+    const username = jest.fn()
     form.registerField(
       'username',
-      spy,
+      username,
       { error: true, validating: true },
       {
         getValidator: () => async (value, allErrors) => {
@@ -439,28 +439,46 @@ describe('Field.validation', () => {
         subscribeToEachFieldsPromise: true
       }
     )
-    expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy.mock.calls[0][0].validating).toBe(true)
+    expect(username).toHaveBeenCalledTimes(1)
+    expect(username.mock.calls[0][0].error).toBeUndefined()
+    expect(username.mock.calls[0][0].validating).toBe(true)
 
-    const { change } = spy.mock.calls[0][0]
+    const { change } = username.mock.calls[0][0]
 
     await sleep(delay * 2)
+
     // called after promised resolved
-    expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy.mock.calls[1][0].validating).toBe(false)
+    expect(username).toHaveBeenCalledTimes(2)
+    expect(username.mock.calls[1][0].error).toBeUndefined()
+    expect(username.mock.calls[1][0].validating).toBe(false)
 
     change('something')
-    expect(spy).toHaveBeenCalledTimes(3)
-    expect(spy.mock.calls[2][0].validating).toBe(true)
+
+    expect(username).toHaveBeenCalledTimes(3)
+    expect(username.mock.calls[2][0].error).toBeUndefined()
+    expect(username.mock.calls[2][0].validating).toBe(true)
 
     await sleep(delay * 2)
-    expect(spy).toHaveBeenCalledTimes(4)
-    expect(spy.mock.calls[3][0].validating).toBe(false)
-    // expect(spy.mock.calls[0][0].validating).toBe(false)
+
+    expect(username).toHaveBeenCalledTimes(4)
+    expect(username.mock.calls[3][0].error).toBeUndefined()
+    expect(username.mock.calls[3][0].validating).toBe(false)
+
+    change('erikras')
+
+    expect(username).toHaveBeenCalledTimes(5)
+    expect(username.mock.calls[4][0].error).toBeUndefined()
+    expect(username.mock.calls[4][0].validating).toBe(true)
+
+    await sleep(delay * 2)
+
+    expect(username).toHaveBeenCalledTimes(6)
+    expect(username.mock.calls[5][0].error).toBe('Username taken')
+    expect(username.mock.calls[5][0].validating).toBe(false)
   })
 
   it('should allow field-level async validation via promise', async () => {
-    const delay = 10
+    const delay = 2
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()
     form.registerField(
@@ -518,7 +536,7 @@ describe('Field.validation', () => {
   })
 
   it('should provide field state to field-level validator', async () => {
-    const delay = 10
+    const delay = 2
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()
     form.registerField(
@@ -577,7 +595,7 @@ describe('Field.validation', () => {
   })
 
   it('should not fall over if a field has been unregistered during async validation', async () => {
-    const delay = 10
+    const delay = 2
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()
     const unregister = form.registerField(
