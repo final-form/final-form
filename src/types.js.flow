@@ -132,7 +132,8 @@ export type FieldConfig = {
   getValidator?: GetFieldValidator,
   initialValue?: any,
   isEqual?: IsEqual,
-  validateFields?: string[]
+  validateFields?: string[],
+  subscribeToEachFieldsPromise?: boolean
 }
 
 export type RegisterField = (
@@ -161,10 +162,12 @@ export type InternalFieldState = {
     [number]: GetFieldValidator
   },
   valid: boolean,
-  visited: boolean
+  visited: boolean,
+  subscribeToEachFieldsPromise?: boolean
 }
 
 export type InternalFormState<FormValues: FormValuesShape> = {
+  fieldsWithPromisePending?: Object,
   active?: string,
   dirtySinceLastSubmit: boolean,
   error?: any,
