@@ -189,6 +189,7 @@ form.submit() // only submits if all validation passes
     - [`submitting?: boolean`](#submitting-boolean-1)
     - [`touched?: boolean`](#touched-boolean-1)
     - [`valid?: boolean`](#valid-boolean-1)
+    - [`validating?: boolean`](#validating-boolean)
     - [`value?: boolean`](#value-boolean)
     - [`visited?: boolean`](#visited-boolean-1)
   - [`FormApi`](#formapi)
@@ -229,7 +230,7 @@ form.submit() // only submits if all validation passes
     - [`submitting?: boolean`](#submitting-boolean-2)
     - [`touched?: { [string]: boolean }`](#touched--string-boolean-)
     - [`valid?: boolean`](#valid-boolean-2)
-    - [`validating?: boolean`](#validating-boolean)
+    - [`validating?: boolean`](#validating-boolean-1)
     - [`values?: Object`](#values-object)
     - [`visited?: { [string]: boolean }`](#visited--string-boolean-)
   - [`FormSubscriber: (state: FormState) => void`](#formsubscriber-state-formstate--void)
@@ -254,7 +255,7 @@ form.submit() // only submits if all validation passes
     - [`submitting?: boolean`](#submitting-boolean-3)
     - [`touched?: boolean`](#touched-boolean-2)
     - [`valid?: boolean`](#valid-boolean-3)
-    - [`validating?: boolean`](#validating-boolean-1)
+    - [`validating?: boolean`](#validating-boolean-2)
     - [`values?: boolean`](#values-boolean)
     - [`visited?: boolean`](#visited-boolean-2)
   - [`InternalFieldState`](#internalfieldstate)
@@ -270,6 +271,7 @@ form.submit() // only submits if all validation passes
     - [`validateFields: ?(string[])`](#validatefields-string)
     - [`validators: { [number]: (value: ?any, allValues: Object, meta: FieldState) => ?any | Promise<?any> } }`](#validators--number-value-any-allvalues-object-meta-fieldstate--any--promiseany--)
     - [`valid: boolean`](#valid-boolean)
+    - [`validating: boolean`](#validating-boolean)
     - [`visited: boolean`](#visited-boolean)
   - [`InternalFormState`](#internalformstate)
     - [`active?: string`](#active-string-1)
@@ -736,6 +738,11 @@ value in `FieldState`.
 When `true` the `FieldSubscriber` will be notified of changes to the `valid`
 value in `FieldState`.
 
+#### `validating?: boolean`
+
+When `true` the `FieldSubscriber` will be notified of changes to the `validating`
+value in `FieldState`.
+
 #### `value?: boolean`
 
 When `true` the `FieldSubscriber` will be notified of changes to the `value`
@@ -1117,6 +1124,10 @@ Field-level validators for each field that is registered.
 #### `valid: boolean`
 
 `true` if this field has no validation or submission errors. `false` otherwise.
+
+#### `validating: boolean`
+
+`true` if this field is currently waiting on its asynchronous field-level validation function to resolve. `false` otherwise.
 
 #### `visited: boolean`
 
