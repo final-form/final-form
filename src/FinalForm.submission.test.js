@@ -1,5 +1,7 @@
+import { FORM_ERROR } from '.'
 import createForm from './FinalForm'
 
+const last = arr => (arr.length ? arr[arr.length - 1] : null)
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe('FinalForm.submission', () => {
@@ -465,6 +467,116 @@ describe('FinalForm.submission', () => {
         valid: true
       })
     )
+  })
+
+  it('should clear submitError & submitErrors when submit gets called', async () => {
+    const onSubmit = async values => {
+      await sleep(2)
+
+      if (!('email' in values)) {
+        return {
+          [FORM_ERROR]: 'Please fill all fields.'
+        }
+      }
+
+      if (!values.email.includes('@')) {
+        return {
+          email: 'Email must be valid.'
+        }
+      }
+    }
+    const form = createForm({ onSubmit })
+
+    const formSpy = jest.fn()
+    form.subscribe(formSpy, {
+      submitting: true,
+      submitError: true,
+      submitErrors: true,
+      submitFailed: true,
+      submitSucceeded: true
+    })
+    expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
+      Object {
+        "submitError": undefined,
+        "submitErrors": undefined,
+        "submitFailed": false,
+        "submitSucceeded": false,
+        "submitting": false,
+      }
+    `)
+
+    await form.submit()
+    expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
+      Object {
+        "submitError": "Please fill all fields.",
+        "submitErrors": Object {
+          "FINAL_FORM/form-error": "Please fill all fields.",
+        },
+        "submitFailed": true,
+        "submitSucceeded": false,
+        "submitting": false,
+      }
+    `)
+
+    const emailSpy = jest.fn()
+    form.registerField('email', emailSpy, { submitError: true })
+    expect({ submitError: last(emailSpy.mock.calls)[0].submitError })
+      .toMatchInlineSnapshot(`
+        Object {
+          "submitError": undefined,
+        }
+      `)
+
+    form.change('email', 'erik')
+    let submissionPromise = form.submit()
+    expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
+      Object {
+        "submitError": undefined,
+        "submitErrors": undefined,
+        "submitFailed": false,
+        "submitSucceeded": false,
+        "submitting": true,
+      }
+    `)
+
+    await submissionPromise
+    expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
+      Object {
+        "submitError": undefined,
+        "submitErrors": Object {
+          "email": "Email must be valid.",
+        },
+        "submitFailed": true,
+        "submitSucceeded": false,
+        "submitting": false,
+      }
+    `)
+    expect({ submitError: last(emailSpy.mock.calls)[0].submitError })
+      .toMatchInlineSnapshot(`
+        Object {
+          "submitError": "Email must be valid.",
+        }
+      `)
+
+    form.change('email', 'erikr@s')
+    submissionPromise = form.submit()
+    expect(last(formSpy.mock.calls)[0]).toMatchInlineSnapshot(`
+      Object {
+        "submitError": undefined,
+        "submitErrors": undefined,
+        "submitFailed": false,
+        "submitSucceeded": false,
+        "submitting": true,
+      }
+    `)
+    expect({ submitError: last(emailSpy.mock.calls)[0].submitError })
+      .toMatchInlineSnapshot(`
+        Object {
+          "submitError": undefined,
+        }
+      `)
+
+    await submissionPromise
   })
 
   it('should maintain field-level and form-level dirtySinceLastSubmit', () => {
