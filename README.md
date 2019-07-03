@@ -169,6 +169,7 @@ form.submit() // only submits if all validation passes
     - [`submitting?: boolean`](#submitting-boolean)
     - [`touched?: boolean`](#touched-boolean)
     - [`valid?: boolean`](#valid-boolean)
+    - [`validating: boolean`](#validating-boolean)
     - [`value?: any`](#value-any)
     - [`visited?: boolean`](#visited-boolean)
   - [`FieldSubscriber: (state: FieldState) => void`](#fieldsubscriber-state-fieldstate--void)
@@ -271,7 +272,7 @@ form.submit() // only submits if all validation passes
     - [`validateFields: ?(string[])`](#validatefields-string)
     - [`validators: { [number]: (value: ?any, allValues: Object, meta: FieldState) => ?any | Promise<?any> } }`](#validators--number-value-any-allvalues-object-meta-fieldstate--any--promiseany--)
     - [`valid: boolean`](#valid-boolean)
-    - [`validating: boolean`](#validating-boolean)
+    - [`validating: boolean`](#validating-boolean-1)
     - [`visited: boolean`](#visited-boolean)
   - [`InternalFormState`](#internalformstate)
     - [`active?: string`](#active-string-1)
@@ -645,6 +646,10 @@ for knowing when to display error messages.
 #### `valid?: boolean`
 
 `true` if this field has no validation or submission errors. `false` otherwise.
+
+#### `validating: boolean`
+
+`true` if this field is currently waiting on its asynchronous field-level validation function to resolve. `false` otherwise.
 
 #### `value?: any`
 
