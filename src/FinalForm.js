@@ -761,7 +761,7 @@ function createForm<FormValues: FormValuesShape>(
           beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
           blur: () => api.blur(name),
           change: value => api.change(name, value),
-          data: {},
+          data: (fieldConfig && fieldConfig.data) || {},
           focus: () => api.focus(name),
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
