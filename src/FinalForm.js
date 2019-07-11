@@ -960,8 +960,6 @@ function createForm<FormValues: FormValuesShape>(
           formState.submitError = errors[FORM_ERROR]
           markAllFieldsTouched()
         } else {
-          delete formState.submitErrors
-          delete formState.submitError
           formState.submitFailed = false
           formState.submitSucceeded = true
           afterSubmit()
@@ -974,6 +972,9 @@ function createForm<FormValues: FormValuesShape>(
         }
         return errors
       }
+
+      delete formState.submitErrors
+      delete formState.submitError
       formState.submitting = true
       formState.submitFailed = false
       formState.submitSucceeded = false
