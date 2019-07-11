@@ -130,6 +130,7 @@ export type GetFieldValidator = () => ?FieldValidator
 export type FieldConfig = {
   afterSubmit?: () => void,
   beforeSubmit?: () => void | false,
+  data?: any,
   defaultValue?: any,
   getValidator?: GetFieldValidator,
   initialValue?: any,

@@ -530,6 +530,10 @@ A callback to notify fields after submission has completed successfully.
 
 A function to call just before calling `onSubmit`. If `beforeSubmit` returns `false`, the submission will be aborted. If one of your fields returns `false` on `beforeSubmit`, other fields may not have their `beforeSubmit` called, as the submission is aborted on the first one that returns `false`.
 
+#### `data?: any`
+
+Initial state for arbitrary values to be placed by mutators.
+
 #### `defaultValue?: any`
 
 ⚠️ You probably want `initialValue`! ⚠️

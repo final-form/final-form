@@ -114,4 +114,35 @@ describe('FinalForm.creation', () => {
       pristine: false
     })
   })
+
+  it('should allow data to come from field when registered', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn()
+    const cat = jest.fn()
+    form.registerField(
+      'foo',
+      foo,
+      { pristine: true, data: true },
+      { data: { foo: 'bar' } }
+    )
+    expect(form.getFieldState('foo').data).toEqual({ foo: 'bar' })
+    form.registerField(
+      'cat',
+      cat,
+      { pristine: true, data: true },
+      { data: { foo: 'fubar' } }
+    )
+    expect(form.getFieldState('cat').data).toEqual({ foo: 'fubar' })
+
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0]).toMatchObject({
+      pristine: true,
+      data: { foo: 'bar' }
+    })
+    expect(cat).toHaveBeenCalledTimes(1)
+    expect(cat.mock.calls[0][0]).toMatchObject({
+      pristine: true,
+      data: { foo: 'fubar' }
+    })
+  })
 })
