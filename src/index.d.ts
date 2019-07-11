@@ -123,7 +123,7 @@ type FieldValidator<FieldValue> = (
   allValues: object,
   meta?: FieldState<FieldValue>
 ) => any | Promise<any>
-type GetFieldValidator<FieldValue> = () => FieldValidator<FieldValue>
+type GetFieldValidator<FieldValue> = () => FieldValidator<FieldValue> | undefined
 
 export interface FieldConfig<FieldValue> {
   afterSubmit?: () => void
