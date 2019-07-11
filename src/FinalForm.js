@@ -66,7 +66,7 @@ const hasAnyError = (errors: Object): boolean => {
   return Object.keys(errors).some(key => {
     const value = errors[key]
 
-    if (value && typeof value === 'object') {
+    if (value && typeof value === 'object' && !(value instanceof Error)) {
       return hasAnyError(value)
     }
 
