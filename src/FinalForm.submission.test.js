@@ -893,4 +893,43 @@ describe('FinalForm.submission', () => {
     expect(field).toHaveBeenCalledTimes(4)
     expect(field.mock.calls[3][0].submitSucceeded).toBe(false)
   })
+
+  it('should allow Error object as error value', () => {
+    const onSubmit = jest.fn(values => ({
+      foo: Error('Sorry, "bar" is an illegal value')
+    }))
+    const form = createForm({ onSubmit })
+    const spy = jest.fn()
+    form.subscribe(spy, {
+      valid: true,
+      submitSucceeded: true,
+      submitFailed: true
+    })
+    form.registerField('foo', () => {})
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith({
+      valid: true,
+      submitSucceeded: false,
+      submitFailed: false
+    })
+
+    form.change('foo', 'bar')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    form.submit()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit.mock.calls[0][0]).toEqual({ foo: 'bar' })
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenCalledWith({
+      valid: false,
+      submitSucceeded: false,
+      submitFailed: true
+    })
+  })
 })
