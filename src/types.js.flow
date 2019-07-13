@@ -153,6 +153,7 @@ export type InternalFieldState = {
   change: (value: any) => void,
   data: Object,
   focus: () => void,
+  forceUpdate: boolean,
   isEqual: IsEqual,
   lastFieldState: ?FieldState,
   length?: any,
