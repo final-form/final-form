@@ -143,6 +143,7 @@ form.submit() // only submits if all validation passes
   - [`FieldConfig`](#fieldconfig)
     - [`afterSubmit?: () => void`](#aftersubmit---void)
     - [`beforeSubmit?: () => void | false`](#beforesubmit---void--false)
+    - [`data?: any`](#data-any)
     - [`defaultValue?: any`](#defaultvalue-any)
     - [`getValidator?: () => (value: ?any, allValues: Object, meta: FieldState) => ?any | ?Promise<any>`](#getvalidator---value-any-allvalues-object-meta-fieldstate--any--promiseany)
     - [`initialValue?: any`](#initialvalue-any)
@@ -265,6 +266,7 @@ form.submit() // only submits if all validation passes
     - [`change: (value: any) => void`](#change-value-any--void-1)
     - [`data: Object`](#data-object)
     - [`focus: () => void`](#focus---void-1)
+    - [`forceUpdate: boolean`](#forceupdate-boolean)
     - [`isEqual: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
     - [`modified: boolean`](#modified-boolean)
     - [`name: string`](#name-string-1)
@@ -1102,6 +1104,10 @@ A place for arbitrary values to be placed by mutators.
 #### `focus: () => void`
 
 A function to focus the field (mark it as active).
+
+#### `forceUpdate: boolean`
+
+When set to `true`, this field's subscribers will be sent a notification even if the state has not changed.
 
 #### `isEqual: (a: any, b: any) => boolean`
 
