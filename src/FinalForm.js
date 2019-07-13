@@ -134,14 +134,22 @@ function notify<T: Object>(
   { entries }: Subscribers<T>,
   state: T,
   lastState: ?T,
-  filter: StateFilter<T>
+  filter: StateFilter<T>,
+  force?: boolean
 ): void {
   Object.keys(entries).forEach(key => {
     const entry = entries[Number(key)]
     // istanbul ignore next
     if (entry) {
       const { subscription, subscriber } = entry
-      notifySubscriber(subscriber, subscription, state, lastState, filter)
+      notifySubscriber(
+        subscriber,
+        subscription,
+        state,
+        lastState,
+        filter,
+        force
+      )
     }
   })
 }
@@ -440,7 +448,7 @@ function createForm<FormValues: FormValuesShape>(
     }
   }
 
-  const notifyFieldListeners = (force: ?string) => {
+  const notifyFieldListeners = () => {
     if (inBatch || validationPaused) {
       return
     }
@@ -450,7 +458,7 @@ function createForm<FormValues: FormValuesShape>(
       const field = safeFields[name]
       const fieldState = publishFieldState(formState, field)
       const { lastFieldState } = field
-      if (!shallowEqual(fieldState, lastFieldState)) {
+      if (!shallowEqual(fieldState, lastFieldState) || field.forceUpdate) {
         // **************************************************************
         // Curious about why a field is getting notified? Uncomment this.
         // **************************************************************
@@ -477,8 +485,15 @@ function createForm<FormValues: FormValuesShape>(
         field.lastFieldState = fieldState
         const fieldSubscriber = fieldSubscribers[name]
         if (fieldSubscriber) {
-          notify(fieldSubscriber, fieldState, lastFieldState, filterFieldState)
+          notify(
+            fieldSubscriber,
+            fieldState,
+            lastFieldState,
+            filterFieldState,
+            field.forceUpdate
+          )
         }
+        field.forceUpdate = false
       }
     })
   }
@@ -763,6 +778,7 @@ function createForm<FormValues: FormValuesShape>(
           change: value => api.change(name, value),
           data: (fieldConfig && fieldConfig.data) || {},
           focus: () => api.focus(name),
+          forceUpdate: false,
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
           modified: false,
@@ -827,7 +843,9 @@ function createForm<FormValues: FormValuesShape>(
       })
 
       return () => {
-        delete state.fields[name].validators[index]
+        if (state.fields[name]) {
+          delete state.fields[name].validators[index]
+        }
         delete state.fieldSubscribers[name].entries[index]
         if (!Object.keys(state.fieldSubscribers[name].entries).length) {
           delete state.fieldSubscribers[name]
