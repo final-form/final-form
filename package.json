@@ -100,8 +100,6 @@
     }
   ],
   "dependencies": {
-    "@babel/runtime": "^7.3.1",
-    "final-form": "file:.yalc/final-form",
-    "final-form-arrays": "file:.yalc/final-form-arrays"
+    "@babel/runtime": "^7.3.1"
   }
 }
