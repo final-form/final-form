@@ -842,9 +842,7 @@ function createForm<FormValues: FormValuesShape>(
       })
 
       return () => {
-        if (state.fields[name]) {
-          delete state.fields[name].validators[index]
-        }
+        delete state.fields[name].validators[index]
         delete state.fieldSubscribers[name].entries[index]
         if (!Object.keys(state.fieldSubscribers[name].entries).length) {
           delete state.fieldSubscribers[name]
@@ -891,6 +889,10 @@ function createForm<FormValues: FormValuesShape>(
           visited: false
         }
       }
+      runValidation(undefined, () => {
+        notifyFieldListeners()
+        notifyFormListeners()
+      })
     },
 
     resumeValidation: () => {

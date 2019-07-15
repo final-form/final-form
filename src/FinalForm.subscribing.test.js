@@ -956,4 +956,34 @@ describe('FinalForm.subscribing', () => {
     expect(foo).toHaveBeenCalledTimes(3)
     expect(bar).toHaveBeenCalledTimes(2)
   })
+
+  it('should allow field state to be reset', () => {
+    let unregisterBar
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo = jest.fn()
+    form.registerField('foo', foo, { touched: true, visited: true })
+
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].touched).toBe(false)
+    expect(foo.mock.calls[0][0].visited).toBe(false)
+
+    form.focus('foo')
+
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].touched).toBe(false)
+    expect(foo.mock.calls[1][0].visited).toBe(true)
+
+    form.blur('foo')
+
+    expect(foo).toHaveBeenCalledTimes(3)
+    expect(foo.mock.calls[2][0].touched).toBe(true)
+    expect(foo.mock.calls[2][0].visited).toBe(true)
+
+    form.resetFieldState('foo')
+
+    expect(foo).toHaveBeenCalledTimes(4)
+    expect(foo.mock.calls[3][0].touched).toBe(false)
+    expect(foo.mock.calls[3][0].visited).toBe(false)
+  })
 })
