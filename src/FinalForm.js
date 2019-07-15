@@ -842,7 +842,11 @@ function createForm<FormValues: FormValuesShape>(
       })
 
       return () => {
-        delete state.fields[name].validators[index]
+        // istanbul ignore next
+        if (state.fields[name]) {
+          // state.fields[name] may have been removed by a mutator
+          delete state.fields[name].validators[index]
+        }
         delete state.fieldSubscribers[name].entries[index]
         if (!Object.keys(state.fieldSubscribers[name].entries).length) {
           delete state.fieldSubscribers[name]
