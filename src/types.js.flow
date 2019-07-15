@@ -153,7 +153,6 @@ export type InternalFieldState = {
   change: (value: any) => void,
   data: Object,
   focus: () => void,
-  forceUpdate: boolean,
   isEqual: IsEqual,
   lastFieldState: ?FieldState,
   length?: any,
@@ -212,6 +211,7 @@ export type FormApi<FormValues: FormValuesShape> = {
   pauseValidation: () => void,
   registerField: RegisterField,
   reset: (initialValues?: Object) => void,
+  resetFieldState: (name: string) => void,
   resumeValidation: () => void,
   setConfig: (name: ConfigKey, value: any) => void,
   submit: () => ?Promise<?Object>,
@@ -256,6 +256,7 @@ export type Tools<FormValues: FormValuesShape> = {
   changeValue: ChangeValue<FormValues>,
   getIn: GetIn,
   renameField: RenameField<FormValues>,
+  resetFieldState: string => void,
   setIn: SetIn,
   shallowEqual: IsEqual
 }

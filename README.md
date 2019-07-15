@@ -266,7 +266,6 @@ form.submit() // only submits if all validation passes
     - [`change: (value: any) => void`](#change-value-any--void-1)
     - [`data: Object`](#data-object)
     - [`focus: () => void`](#focus---void-1)
-    - [`forceUpdate: boolean`](#forceupdate-boolean)
     - [`isEqual: (a: any, b: any) => boolean`](#isequal-a-any-b-any--boolean)
     - [`modified: boolean`](#modified-boolean)
     - [`name: string`](#name-string-1)
@@ -303,6 +302,7 @@ form.submit() // only submits if all validation passes
     - [`Tools.changeValue: (state: MutableState, name: string, mutate: (value: any) => any) => void`](#toolschangevalue-state-mutablestate-name-string-mutate-value-any--any--void)
     - [`Tools.getIn: (state: Object, complexKey: string) => any`](#toolsgetin-state-object-complexkey-string--any)
     - [`Tools.renameField: (state: MutableState, from: string, to: string) => any) => void`](#toolsrenamefield-state-mutablestate-from-string-to-string--any--void)
+    - [`Tools.resetFieldState: (name: string) => void`](#toolsresetfieldstate-name-string--void)
     - [`Tools.setIn: (state: Object, key: string, value: any) => Object`](#toolssetin-state-object-key-string-value-any--object)
     - [`Tools.shallowEqual: (a: any, b: any) => boolean`](#toolsshallowequal-a-any-b-any--boolean)
   - [`Unsubscribe : () => void`](#unsubscribe----void)
@@ -842,6 +842,10 @@ Resets the values back to the initial values the form was initialized with. Or e
 
 Note that if you are calling `reset()` and not specify new initial values, you must call it with no arguments. Be careful to avoid things like `promise.catch(reset)` or `onChange={form.reset}` in React, as they will get arguments passed to them and reinitialize your form.
 
+#### `resetFieldState: (name: string) => void`
+
+Resets all of a field's flags (e.g. `touched`, `visited`, etc.) to their initial state.
+
 #### `resumeValidation: () => void`
 
 Resumes validation paused by `pauseValidation()`. If validation was blocked while it was paused, validation will be run.
@@ -1105,10 +1109,6 @@ A place for arbitrary values to be placed by mutators.
 
 A function to focus the field (mark it as active).
 
-#### `forceUpdate: boolean`
-
-When set to `true`, this field's subscribers will be sent a notification even if the state has not changed.
-
 #### `isEqual: (a: any, b: any) => boolean`
 
 A function to determine if two values are equal. Used to calculate
@@ -1273,6 +1273,10 @@ dot-and-bracket syntax (e.g. `some.deep.values[3].whatever`).
 #### `Tools.renameField: (state: MutableState, from: string, to: string) => any) => void`
 
 A utility function to rename a field, copying over its value and field subscribers. _Advanced usage only_.
+
+#### `Tools.resetFieldState: (name: string) => void`
+
+A utility function to reset all of a field's flags (e.g. `touched`, `visited`, etc.) to their initial state. This can be useful for inserting a new field that has the same name as an existing field.
 
 #### `Tools.setIn: (state: Object, key: string, value: any) => Object`
 

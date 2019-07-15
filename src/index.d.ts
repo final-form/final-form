@@ -151,7 +151,6 @@ export interface InternalFieldState<FieldValue> {
   change: (value: any) => void
   data: AnyObject
   focus: () => void
-  forceUpdate: boolean
   isEqual: IsEqual
   lastFieldState?: FieldState<FieldValue>
   length?: any
@@ -202,6 +201,7 @@ export interface FormApi<FormValues = object> {
   pauseValidation: () => void
   registerField: RegisterField<any>
   reset: (initialValues?: object) => void
+  resetFieldState: (name: string) => void
   resumeValidation: () => void
   setConfig: (name: ConfigKey, value: any) => void
   submit: () => Promise<FormValues | undefined> | undefined
@@ -241,6 +241,7 @@ export interface Tools<FormValues> {
   changeValue: ChangeValue<FormValues>
   getIn: GetIn
   renameField: RenameField<FormValues>
+  resetFieldState: (name: string) => void
   setIn: SetIn
   shallowEqual: IsEqual
 }

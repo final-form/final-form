@@ -247,6 +247,7 @@ function createForm<FormValues: FormValuesShape>(
         changeValue,
         getIn,
         renameField,
+        resetFieldState: api.resetFieldState,
         setIn,
         shallowEqual
       })
@@ -458,7 +459,7 @@ function createForm<FormValues: FormValuesShape>(
       const field = safeFields[name]
       const fieldState = publishFieldState(formState, field)
       const { lastFieldState } = field
-      if (!shallowEqual(fieldState, lastFieldState) || field.forceUpdate) {
+      if (!shallowEqual(fieldState, lastFieldState)) {
         // **************************************************************
         // Curious about why a field is getting notified? Uncomment this.
         // **************************************************************
@@ -490,10 +491,9 @@ function createForm<FormValues: FormValuesShape>(
             fieldState,
             lastFieldState,
             filterFieldState,
-            field.forceUpdate
+            lastFieldState === undefined
           )
         }
-        field.forceUpdate = false
       }
     })
   }
@@ -778,7 +778,6 @@ function createForm<FormValues: FormValuesShape>(
           change: value => api.change(name, value),
           data: (fieldConfig && fieldConfig.data) || {},
           focus: () => api.focus(name),
-          forceUpdate: false,
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
           modified: false,
@@ -843,9 +842,7 @@ function createForm<FormValues: FormValuesShape>(
       })
 
       return () => {
-        if (state.fields[name]) {
-          delete state.fields[name].validators[index]
-        }
+        delete state.fields[name].validators[index]
         delete state.fieldSubscribers[name].entries[index]
         if (!Object.keys(state.fieldSubscribers[name].entries).length) {
           delete state.fieldSubscribers[name]
@@ -874,6 +871,28 @@ function createForm<FormValues: FormValuesShape>(
       delete state.formState.submitErrors
       delete state.formState.lastSubmittedValues
       api.initialize(initialValues || {})
+    },
+
+    /**
+     * Resets all field flags (e.g. touched, visited, etc.) to their initial state
+     */
+    resetFieldState: (name: string) => {
+      state.fields[name] = {
+        ...state.fields[name],
+        ...{
+          active: false,
+          lastFieldState: undefined,
+          modified: false,
+          touched: false,
+          valid: true,
+          validating: false,
+          visited: false
+        }
+      }
+      runValidation(undefined, () => {
+        notifyFieldListeners()
+        notifyFormListeners()
+      })
     },
 
     resumeValidation: () => {
