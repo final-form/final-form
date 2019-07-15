@@ -958,7 +958,6 @@ describe('FinalForm.subscribing', () => {
   })
 
   it('should allow field state to be reset', () => {
-    let unregisterBar
     const form = createForm({ onSubmit: onSubmitMock })
     const foo = jest.fn()
     form.registerField('foo', foo, { touched: true, visited: true })
