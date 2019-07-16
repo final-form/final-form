@@ -215,6 +215,10 @@ function createForm<FormValues: FormValuesShape>(
         [to]: {
           ...state.fields[from],
           name: to,
+          // rebind event handlers
+          blur: () => api.blur(to),
+          change: value => api.change(to, value),
+          focus: () => api.focus(to),
           lastFieldState: undefined
         }
       }

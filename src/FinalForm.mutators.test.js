@@ -84,16 +84,21 @@ describe('FinalForm.mutators', () => {
       mutators: { rename }
     })
     const formListener = jest.fn()
+    const fieldListener = jest.fn()
     form.subscribe(formListener, { values: true })
-    form.registerField('foo', () => {}, { value: true })
+    form.registerField('foo', fieldListener, { value: true })
 
     expect(formListener).toHaveBeenCalledTimes(1)
     expect(formListener.mock.calls[0][0].values).toEqual({})
+    expect(fieldListener).toHaveBeenCalledTimes(1)
+    expect(fieldListener.mock.calls[0][0].value).toBeUndefined()
 
-    form.change('foo', 'bar')
+    fieldListener.mock.calls[0][0].change('bar')
 
     expect(formListener).toHaveBeenCalledTimes(2)
     expect(formListener.mock.calls[1][0].values).toEqual({ foo: 'bar' })
+    expect(fieldListener).toHaveBeenCalledTimes(2)
+    expect(fieldListener.mock.calls[1][0].value).toBe('bar')
 
     form.mutators.rename('foo', 'fooRenamed')
 
@@ -104,6 +109,14 @@ describe('FinalForm.mutators', () => {
     expect(Object.keys(formListener.mock.calls[2][0].values)).toEqual([
       'fooRenamed'
     ])
+    expect(fieldListener).toHaveBeenCalledTimes(3)
+    expect(fieldListener.mock.calls[2][0].value).toBe('bar')
+
+    fieldListener.mock.calls[2][0].focus()
+    fieldListener.mock.calls[2][0].change('newValue')
+    fieldListener.mock.calls[2][0].blur()
+    expect(fieldListener).toHaveBeenCalledTimes(4)
+    expect(fieldListener.mock.calls[3][0].value).toBe('newValue')
   })
 
   it('should do nothing when renameField called with nonexistent field', () => {
