@@ -1,112 +1,112 @@
 [
   {
-    "caption": "Cisco",
-    "image": "cisco.svg",
-    "infoLink": "https://www.cisco.com/",
+    "name": "Cisco",
+    "logo": "cisco.svg",
+    "link": "https://www.cisco.com/",
     "pinned": true
   },
   {
-    "caption": "HSBC",
-    "image": "hsbc.svg",
-    "infoLink": "https://www.hsbc.com/",
+    "name": "HSBC",
+    "logo": "hsbc.svg",
+    "link": "https://www.hsbc.com/",
     "pinned": true
   },
   {
-    "caption": "KPMG",
-    "image": "kpmg.svg",
-    "infoLink": "https://www.kpmg.com/",
+    "name": "KPMG",
+    "logo": "kpmg.svg",
+    "link": "https://www.kpmg.com/",
     "pinned": true
   },
   {
-    "caption": "Nokia",
-    "image": "nokia.svg",
-    "infoLink": "https://www.nokia.com/",
+    "name": "Nokia",
+    "logo": "nokia.svg",
+    "link": "https://www.nokia.com/",
     "pinned": true
   },
   {
-    "caption": "Vodafone",
-    "image": "vodafone.svg",
-    "infoLink": "https://www.vodafone.com/",
+    "name": "Vodafone",
+    "logo": "vodafone.svg",
+    "link": "https://www.vodafone.com/",
     "pinned": true
   },
   {
-    "caption": "Konica Minolta",
-    "image": "konicaminolta.svg",
-    "infoLink": "https://www.konicaminolta.com",
+    "name": "Konica Minolta",
+    "logo": "konicaminolta.svg",
+    "link": "https://www.konicaminolta.com",
     "pinned": true
   },
   {
-    "caption": "Trend Micro",
-    "image": "trendmicro.svg",
-    "infoLink": "https://www.trendmicro.com/",
+    "name": "Trend Micro",
+    "logo": "trendmicro.svg",
+    "link": "https://www.trendmicro.com/",
     "pinned": true
   },
   {
-    "caption": "LiveChat",
-    "image": "livechat.png",
-    "infoLink": "https://www.livechatinc.com",
+    "name": "LiveChat",
+    "logo": "livechat.png",
+    "link": "https://www.livechatinc.com",
     "pinned": true
   },
   {
-    "caption": "Smarter Click",
-    "image": "smarterclick.png",
-    "infoLink": "https://www.smarterclick.com/",
+    "name": "Smarter Click",
+    "logo": "smarterclick.png",
+    "link": "https://www.smarterclick.com/",
     "pinned": true
   },
   {
-    "caption": "HalcyonMobile",
-    "image": "halcyonmobile.svg",
-    "infoLink": "https://halcyonmobile.com/",
+    "name": "HalcyonMobile",
+    "logo": "halcyonmobile.svg",
+    "link": "https://halcyonmobile.com/",
     "pinned": true
   },
   {
-    "caption": "Discogs",
-    "image": "discogs.svg",
-    "infoLink": "https://www.discogs.com/"
+    "name": "Discogs",
+    "logo": "discogs.svg",
+    "link": "https://www.discogs.com/"
   },
   {
-    "caption": "UnityTee",
-    "image": "unityt.png",
-    "infoLink": "https://www.unitytee.com/"
+    "name": "UnityTee",
+    "logo": "unityt.png",
+    "link": "https://www.unitytee.com/"
   },
   {
-    "caption": "Makina Corpus",
-    "image": "makinacorpus.jpg",
-    "infoLink": "https://makina-corpus.com/"
+    "name": "Makina Corpus",
+    "logo": "makinacorpus.jpg",
+    "link": "https://makina-corpus.com/"
   },
   {
-    "caption": "EPAM",
-    "image": "epam.png",
-    "infoLink": "https://www.epam.com/"
+    "name": "EPAM",
+    "logo": "epam.png",
+    "link": "https://www.epam.com/"
   },
   {
-    "caption": "Stunjelly",
-    "image": "stunjelly.jpg",
-    "infoLink": "http://stunjelly.com/"
+    "name": "Stunjelly",
+    "logo": "stunjelly.jpg",
+    "link": "http://stunjelly.com/"
   },
   {
-    "caption": "Entelect",
-    "image": "entelect.jpg",
-    "infoLink": "https://www.entelect.co.za/"
+    "name": "Entelect",
+    "logo": "entelect.jpg",
+    "link": "https://www.entelect.co.za/"
   },
   {
-    "caption": "FINN.no",
-    "image": "finn.png",
-    "infoLink": "https://www.finn.no/"
+    "name": "FINN.no",
+    "logo": "finn.png",
+    "link": "https://www.finn.no/"
   },
   {
-    "caption": "AMARO",
-    "image": "amaro.png",
-    "infoLink": "https://amaro.com/"
+    "name": "AMARO",
+    "logo": "amaro.png",
+    "link": "https://amaro.com/"
   },
   {
-    "caption": "Instrument",
-    "image": "instrument.jpg",
-    "infoLink": "https://www.instrument.com/"
+    "name": "Instrument",
+    "logo": "instrument.jpg",
+    "link": "https://www.instrument.com/"
   },
   {
-    "caption": "Therms.io",
-    "image": "therms.png",
-    "infoLink": "https://therms.io/"
+    "name": "Therms.io",
+    "logo": "therms.png",
+    "link": "https://therms.io/"
   }
 ]
