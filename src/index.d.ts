@@ -282,8 +282,8 @@ export function createForm<FormValues>(
 ): FormApi<FormValues>
 export const fieldSubscriptionItems: string[]
 export const formSubscriptionItems: string[]
-export const ARRAY_ERROR: string
-export const FORM_ERROR: string
+export const ARRAY_ERROR: 'FINAL_FORM/array-error'
+export const FORM_ERROR: 'FINAL_FORM/form-error'
 export function getIn(state: object, complexKey: string): any
 export function setIn(state: object, key: string, value: any): object
 export const version: string
