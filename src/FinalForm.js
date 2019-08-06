@@ -618,8 +618,8 @@ function createForm<FormValues: FormValuesShape>(
     }
   }
 
-  const beforeSubmit = (): ?string =>
-    Object.keys(state.fields).find(
+  const beforeSubmit = (): boolean =>
+    Object.keys(state.fields).some(
       name =>
         state.fields[name].beforeSubmit &&
         state.fields[name].beforeSubmit() === false
@@ -989,8 +989,8 @@ function createForm<FormValues: FormValuesShape>(
         ).then(api.submit, api.submit)
         return
       }
-      const fieldBlockingSubmit = beforeSubmit()
-      if (fieldBlockingSubmit) {
+      const submitIsBlocked = beforeSubmit()
+      if (submitIsBlocked) {
         return
       }
 
