@@ -105,10 +105,7 @@ class Form extends React.Component {
             />
           </div>
           <div className="buttons">
-            <button
-              type="submit"
-              disabled={formState.submitting || formState.pristine}
-            >
+            <button type="submit" disabled={formState.submitting}>
               Submit
             </button>
             <button
