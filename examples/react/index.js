@@ -51,7 +51,6 @@ class Form extends React.Component {
   }
 
   componentWillUnmount() {
-    // probably not needed, but healthy coding practice
     this.unsubscribe()
     this.unsubscribeFields.forEach(unsubscribe => unsubscribe())
   }
