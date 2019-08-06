@@ -203,7 +203,7 @@ export interface FormApi<FormValues = object> {
   reset: (initialValues?: object) => void
   resetFieldState: (name: string) => void
   resumeValidation: () => void
-  setConfig: (name: ConfigKey, value: any) => void
+  setConfig: <K extends ConfigKey>(name: K, value: Config<FormValues>[K]) => void
   submit: () => Promise<FormValues | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber<FormValues>,
