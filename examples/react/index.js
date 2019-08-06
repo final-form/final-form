@@ -31,7 +31,7 @@ class Form extends React.Component {
     )
 
     // register fields
-    this.unsubscribeFields = ['firstName', 'lastName'].map(fieldName => {
+    this.unsubscribeFields = ['firstName', 'lastName'].map(fieldName =>
       this.form.registerField(
         fieldName,
         fieldState => {
@@ -44,7 +44,7 @@ class Form extends React.Component {
         },
         { value: true }
       )
-    })
+    )
 
     this.state = initialState
     inConstructor = false
