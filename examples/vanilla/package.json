@@ -1,0 +1,17 @@
+{
+  "name": "final-form-vanilla-js-demo",
+  "version": "1.0.0",
+  "description": "A demonstration of using final-form with no other libraries",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "final-form": "4.18.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "parcel-bundler": "^1.6.1"
+  }
+}

@@ -1,24 +1,15 @@
+# This documentation is meant to be read on [final-form.org](https://final-form.org/docs/final-form/faq). Links may not work on Github.com.
+
 # Frequently Asked Questions
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+## Why does Final Form set my `''` field value to `undefined`?
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-* [Why does 🏁 Final Form set my `''` field value to `undefined`?](#why-does--final-form-set-my--field-value-to-undefined)
-* [Why do my numeric keys result in an array structure?](#why-do-my-numeric-keys-result-in-an-array-structure)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Why does 🏁 Final Form set my `''` field value to `undefined`?
-
-If you change a form value to `''`, 🏁 Final Form will set the value in its
+If you change a form value to `''`, Final Form will set the value in its
 state to `undefined`. This can be counterintutive, because `'' !== undefined` in
-javascript. The reason 🏁 Final Form does this is so that `pristine` will be
+javascript. The reason Final Form does this is so that `pristine` will be
 `true` if you start with an uninitialized form field (i.e. `value === undefined`), type into it (`pristine` is now `false`), and then empty the form
 field. In this case, `pristine` should return to `true`, but the value that the
-HTML DOM gives for that input is `''`. If 🏁 Final Form did _not_ treat `''` and
+HTML DOM gives for that input is `''`. If Final Form did _not_ treat `''` and
 `undefined` as the same, any field that was ever typed in would forever be
 `dirty`, no matter what the user did.
 
@@ -59,4 +50,4 @@ if (!values.myField) {
 
 ## Why do my numeric keys result in an array structure?
 
-The field name parsing code in 🏁 Final Form was modeled after Lodash's [`_.set()`](https://lodash.com/docs/#set). Writing a parser that detects that `foo.0.bar` is different from `foo[0].bar` is _extremely_ complicated. [Read more about field names](https://github.com/final-form/final-form#field-names).
+The field name parsing code in Final Form was modeled after Lodash's [`_.set()`](https://lodash.com/docs/#set). Writing a parser that detects that `foo.0.bar` is different from `foo[0].bar` is _extremely_ complicated. [Read more about field names](field-names).

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Final Form - Vanilla JS Demo</title>
+  </head>
+
+  <body>
+    <form id="form">
+      <h1>
+        🏁 Final Form - Vanilla JS Demo
+      </h1>
+      <p>
+        Uses record level validation. Errors don't show up until a field is
+        "touched" or a submit is attempted. Errors disappear immediately as the
+        user types.
+      </p>
+      <div>
+        <label>First Name</label>
+        <input type="text" name="firstName" placeholder="First Name" />
+        <span id="firstName_error" />
+      </div>
+      <div>
+        <label>Last Name</label>
+        <input type="text" name="lastName" placeholder="Last Name" />
+        <span id="lastName_error" />
+      </div>
+      <div>
+        <label>Favorite Color</label>
+        <select name="color">
+          <option value="#FF0000">Red</option>
+          <option value="#00FF00">Green</option>
+          <option value="#0000FF">Blue</option>
+        </select>
+        <span id="color_error" />
+      </div>
+      <div>
+        <label>Employed?</label>
+        <input type="checkbox" name="employed" />
+        <span id="employed_error" />
+      </div>
+      <div>
+        <button type="submit">Submit</button>
+        <button type="button" id="reset">Reset</button>
+      </div>
+    </form>
+
+    <script src="src/index.js"></script>
+  </body>
+</html>

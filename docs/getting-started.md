@@ -1,9 +1,24 @@
+# This documentation is meant to be read on [final-form.org](https://final-form.org/docs/final-form/getting-started). Links may not work on Github.com.
+
 # Getting Started
 
-🏁 Final Form works on subscriptions to perform updates based on the
-[Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern). Both form
-and field subscribers must specify exactly which parts of the form state they
-want to receive updates about.
+Before we jump right into code, you might want to learn a little bit about the [philosophy](philosophy) and origin story of Final Form.
+
+## Installation
+
+```bash
+npm install --save final-form
+```
+
+or
+
+```bash
+yarn add final-form
+```
+
+## Usage
+
+The general idea is that you create a "form instance" with `createForm()`, which you can then `subscribe()` to as many times as you like, and then you can `registerField()` as many fields as your need, including registering more than once to the same field. You can then call `submit()` to call your `onSubmit` function with the values of the form.
 
 ```js
 import { createForm } from 'final-form'
@@ -44,4 +59,7 @@ const unregisterField = form.registerField(
     value: true
   }
 )
+
+// Submit
+form.submit() // only submits if all validation passe
 ```
