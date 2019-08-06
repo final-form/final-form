@@ -1,0 +1,30 @@
+{
+  "name": "final-form-react-example",
+  "version": "1.0.0",
+  "description": "Educational example demonstrating how to connect React to Final Form",
+  "keywords": [],
+  "main": "index.js",
+  "dependencies": {
+    "final-form": "^4.18.2",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "react-final-form": "^6.3.0",
+    "react-scripts": "3.0.1",
+    "styled-components": "^4.3.2"
+  },
+  "devDependencies": {
+    "typescript": "3.3.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
