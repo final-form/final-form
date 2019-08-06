@@ -69,7 +69,7 @@ export interface FieldState<FieldValue> {
   dirtySinceLastSubmit?: boolean
   error?: any
   focus: () => void
-  initial?: any
+  initial?: FieldValue
   invalid?: boolean
   length?: number
   modified?: boolean
