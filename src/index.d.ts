@@ -47,7 +47,7 @@ export interface FormState<FormValues> {
   modified?: { [key: string]: boolean }
   pristine: boolean
   submitError: any
-  submitErrors: AnyObject
+  submitErrors: SubmissionErrors
   submitFailed: boolean
   submitSucceeded: boolean
   submitting: boolean
