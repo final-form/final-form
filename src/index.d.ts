@@ -112,7 +112,11 @@ export type FieldSubscriber<FieldValue> = Subscriber<FieldState<FieldValue>>
 export type Subscribers<T extends Object> = {
   index: number
   entries: {
-    [key: number]: { subscriber: Subscriber<T>; subscription: Subscription }
+    [key: number]: {
+      subscriber: Subscriber<T>
+      subscription: Subscription
+      notified: boolean
+    }
   }
 }
 
@@ -203,7 +207,10 @@ export interface FormApi<FormValues = object> {
   reset: (initialValues?: object) => void
   resetFieldState: (name: string) => void
   resumeValidation: () => void
-  setConfig: <K extends ConfigKey>(name: K, value: Config<FormValues>[K]) => void
+  setConfig: <K extends ConfigKey>(
+    name: K,
+    value: Config<FormValues>[K]
+  ) => void
   submit: () => Promise<FormValues | undefined> | undefined
   subscribe: (
     subscriber: FormSubscriber<FormValues>,

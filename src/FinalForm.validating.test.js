@@ -1255,4 +1255,57 @@ describe('Field.validation', () => {
     expect(spy.mock.calls[4][0].validating).toBe(false)
     expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
   })
+
+  it('should notify all field subscribers when field validation result changes', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+
+    const foo1 = jest.fn()
+    form.registerField('foo', foo1, { error: true })
+    expect(foo1).toHaveBeenCalledTimes(1)
+    expect(foo1.mock.calls[0][0].error).toBeUndefined()
+
+    const foo2 = jest.fn()
+    form.registerField('foo', foo2, { error: true })
+    expect(foo2).toHaveBeenCalledTimes(1)
+    expect(foo2.mock.calls[0][0].error).toBeUndefined()
+
+    // Each listener called once.
+
+    // Did not need to call first listener again
+    expect(foo1).toHaveBeenCalledTimes(1)
+
+    // Now we introduce a field with field-level validation
+    const foo3 = jest.fn()
+    form.registerField(
+      'foo',
+      foo3,
+      { error: true },
+      {
+        getValidator: () => value => (value ? undefined : 'Required')
+      }
+    )
+    expect(foo3).toHaveBeenCalledTimes(1)
+    expect(foo3.mock.calls[0][0].error).toBe('Required')
+
+    // We also have to notify the other field listeners that we now have an error!
+    expect(foo1).toHaveBeenCalledTimes(2)
+    expect(foo1.mock.calls[1][0].error).toBe('Required')
+    expect(foo2).toHaveBeenCalledTimes(2)
+    expect(foo2.mock.calls[1][0].error).toBe('Required')
+
+    // provide value and all get notified of error going away
+    foo1.mock.calls[0][0].change('bar')
+    expect(foo1).toHaveBeenCalledTimes(3)
+    expect(foo1.mock.calls[2][0].error).toBeUndefined()
+    expect(foo2).toHaveBeenCalledTimes(3)
+    expect(foo2.mock.calls[2][0].error).toBeUndefined()
+    expect(foo3).toHaveBeenCalledTimes(2)
+    expect(foo3.mock.calls[1][0].error).toBeUndefined()
+
+    // change again and no notification
+    foo1.mock.calls[0][0].change('bartender')
+    expect(foo1).toHaveBeenCalledTimes(3)
+    expect(foo2).toHaveBeenCalledTimes(3)
+    expect(foo3).toHaveBeenCalledTimes(2)
+  })
 })

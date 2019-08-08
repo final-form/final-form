@@ -122,12 +122,14 @@ function notifySubscriber<T: Object>(
   state: T,
   lastState: ?T,
   filter: StateFilter<T>,
-  force: boolean = false
-): void {
+  force
+): boolean {
   const notification: ?T = filter(state, lastState, subscription, force)
   if (notification) {
     subscriber(notification)
+    return true
   }
+  return false
 }
 
 function notify<T: Object>(
@@ -141,15 +143,19 @@ function notify<T: Object>(
     const entry = entries[Number(key)]
     // istanbul ignore next
     if (entry) {
-      const { subscription, subscriber } = entry
-      notifySubscriber(
-        subscriber,
-        subscription,
-        state,
-        lastState,
-        filter,
-        force
-      )
+      const { subscription, subscriber, notified } = entry
+      if (
+        notifySubscriber(
+          subscriber,
+          subscription,
+          state,
+          lastState,
+          filter,
+          force || !notified
+        )
+      ) {
+        entry.notified = true
+      }
     }
   })
 }
@@ -454,7 +460,7 @@ function createForm<FormValues: FormValuesShape>(
   }
 
   const notifyFieldListeners = () => {
-    if (inBatch || validationPaused) {
+    if (inBatch) {
       return
     }
     const { fields, fieldSubscribers, formState } = state
@@ -463,41 +469,16 @@ function createForm<FormValues: FormValuesShape>(
       const field = safeFields[name]
       const fieldState = publishFieldState(formState, field)
       const { lastFieldState } = field
-      if (!shallowEqual(fieldState, lastFieldState)) {
-        // **************************************************************
-        // Curious about why a field is getting notified? Uncomment this.
-        // **************************************************************
-        // const diffKeys = Object.keys(fieldState).filter(
-        //   key => fieldState[key] !== (lastFieldState && lastFieldState[key])
-        // )
-        // console.debug(
-        //   'notifying',
-        //   field.name,
-        //   '\nField State\n',
-        //   diffKeys.reduce(
-        //     (result, key) => ({ ...result, [key]: fieldState[key] }),
-        //     {}
-        //   ),
-        //   '\nLast Field State\n',
-        //   diffKeys.reduce(
-        //     (result, key) => ({
-        //       ...result,
-        //       [key]: lastFieldState && lastFieldState[key]
-        //     }),
-        //     {}
-        //   )
-        // )
-        field.lastFieldState = fieldState
-        const fieldSubscriber = fieldSubscribers[name]
-        if (fieldSubscriber) {
-          notify(
-            fieldSubscriber,
-            fieldState,
-            lastFieldState,
-            filterFieldState,
-            lastFieldState === undefined
-          )
-        }
+      field.lastFieldState = fieldState
+      const fieldSubscriber = fieldSubscribers[name]
+      if (fieldSubscriber) {
+        notify(
+          fieldSubscriber,
+          fieldState,
+          lastFieldState,
+          filterFieldState,
+          lastFieldState === undefined
+        )
       }
     })
   }
@@ -769,7 +750,8 @@ function createForm<FormValues: FormValuesShape>(
       // save field subscriber callback
       state.fieldSubscribers[name].entries[index] = {
         subscriber: memoize(subscriber),
-        subscription
+        subscription,
+        notified: false
       }
 
       if (!state.fields[name]) {
@@ -819,29 +801,8 @@ function createForm<FormValues: FormValuesShape>(
         }
       }
 
-      let sentFirstNotification = false
-      const firstNotification = () => {
-        const fieldState = publishFieldState(
-          state.formState,
-          state.fields[name]
-        )
-        notifySubscriber(
-          subscriber,
-          subscription,
-          fieldState,
-          undefined,
-          filterFieldState,
-          true
-        )
-        state.fields[name].lastFieldState = fieldState
-        sentFirstNotification = true
-      }
-
       runValidation(undefined, () => {
         notifyFormListeners()
-        if (!sentFirstNotification) {
-          firstNotification()
-        }
         notifyFieldListeners()
       })
 
@@ -1068,7 +1029,8 @@ function createForm<FormValues: FormValuesShape>(
       const index = subscribers.index++
       subscribers.entries[index] = {
         subscriber: memoized,
-        subscription
+        subscription,
+        notified: false
       }
       const nextFormState = calculateNextFormState()
       if (nextFormState !== lastFormState) {
