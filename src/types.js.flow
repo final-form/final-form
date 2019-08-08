@@ -114,7 +114,11 @@ export type FieldSubscriber = Subscriber<FieldState>
 export type Subscribers<T: Object> = {
   index: number,
   entries: {
-    [number]: { subscriber: Subscriber<T>, subscription: Subscription }
+    [number]: {
+      subscriber: Subscriber<T>,
+      subscription: Subscription,
+      notified: boolean
+    }
   }
 }
 
