@@ -404,6 +404,40 @@ describe('Field.validation', () => {
     expect(spy).toHaveBeenCalledTimes(3)
   })
 
+  it('should ignore old validation promise results', async () => {
+    const delay = 10
+    const validate = jest.fn(values => {
+      const errors = {}
+      if (values.username === 'erikras') {
+        errors.username = 'Username taken'
+        return errors
+      }
+
+      // valid values will take longer to validate than error values
+      return sleep(delay).then(() => errors)
+    })
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate
+    })
+
+    const spy = jest.fn()
+    form.registerField('username', spy, { error: true })
+
+    // valid input
+    form.change('username', 'erikra')
+    // invalid input
+    form.change('username', 'erikras')
+
+    // wait for validation to return
+    await sleep(delay * 2)
+
+    // if the previous validation result (which would be valid) was correctly cancelled,
+    // we will have an error now
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].error).toBe('Username taken')
+  })
+
   it('should leave validating flag as false when field-level validation is sync', async () => {
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()

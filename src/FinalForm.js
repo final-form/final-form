@@ -287,12 +287,7 @@ function createForm<FormValues: FormValuesShape>(
     if (validate) {
       const errorsOrPromise = validate({ ...state.formState.values }) // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
-        const asyncValidationPromiseKey = nextAsyncValidationKey++
-        const promise = errorsOrPromise
-          .then(setErrors)
-          .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
-        promises.push(promise)
-        asyncValidationPromises[asyncValidationPromiseKey] = promise
+        promises.push(errorsOrPromise.then(setErrors))
       } else {
         setErrors(errorsOrPromise)
       }
@@ -327,16 +322,12 @@ function createForm<FormValues: FormValuesShape>(
         )
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          const asyncValidationPromiseKey = nextAsyncValidationKey++
           field.validating = true
-          const promise = errorOrPromise
-            .then(error => {
-              field.validating = false
-              setError(error)
-            }) // errors must be resolved, not rejected
-            .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+          const promise = errorOrPromise.then(error => {
+            field.validating = false
+            setError(error)
+          }) // errors must be resolved, not rejected
           promises.push(promise)
-          asyncValidationPromises[asyncValidationPromiseKey] = promise
         } else if (!error) {
           // first registered validator wins
           error = errorOrPromise
@@ -382,7 +373,8 @@ function createForm<FormValues: FormValuesShape>(
 
     let recordLevelErrors: Object = {}
     const fieldLevelErrors = {}
-    const promises = [
+
+    const promises: Promise<*>[] = [
       ...runRecordLevelValidation(errors => {
         recordLevelErrors = errors || {}
       }),
@@ -396,6 +388,17 @@ function createForm<FormValues: FormValuesShape>(
         []
       )
     ]
+
+    const hasAsyncValidations = promises.length > 0
+    const asyncValidationPromiseKey = ++nextAsyncValidationKey
+    const promise = Promise.all(promises).then(
+      clearAsyncValidationPromise(asyncValidationPromiseKey)
+    )
+
+    // backwards-compat: add promise to submit-blocking promises iff there are any promises to await
+    if (hasAsyncValidations) {
+      asyncValidationPromises[asyncValidationPromiseKey] = promise
+    }
 
     const processErrors = () => {
       let merged = {
@@ -442,20 +445,28 @@ function createForm<FormValues: FormValuesShape>(
 
     // process sync errors
     processErrors()
+    // sync errors have been set. notify listeners while we wait for others
+    callback()
 
     if (promises.length) {
-      // sync errors have been set. notify listeners while we wait for others
       state.formState.validating++
       callback()
 
-      const afterPromises = () => {
+      const afterPromise = () => {
         state.formState.validating--
-        processErrors()
         callback()
       }
-      Promise.all(promises).then(afterPromises, afterPromises)
-    } else {
-      callback()
+
+      promise
+        .then(() => {
+          if (nextAsyncValidationKey > asyncValidationPromiseKey) {
+            // if this async validator has been superseded by another, ignore its results
+            return
+          }
+
+          processErrors()
+        })
+        .then(afterPromise, afterPromise)
     }
   }
 
@@ -943,10 +954,9 @@ function createForm<FormValues: FormValuesShape>(
       if (asyncValidationPromisesKeys.length) {
         // still waiting on async validation to complete...
         Promise.all(
-          asyncValidationPromisesKeys.reduce((result, key) => {
-            result.push(asyncValidationPromises[Number(key)])
-            return result
-          }, [])
+          asyncValidationPromisesKeys.map(
+            key => asyncValidationPromises[Number(key)]
+          )
         ).then(api.submit, api.submit)
         return
       }
