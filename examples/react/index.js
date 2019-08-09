@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
+/* eslint-disable jsx-a11y/accessible-emoji */
 import React from 'react'
 import { render } from 'react-dom'
 import Styles from './Styles'
