@@ -82,8 +82,7 @@ The initial value of the field. `undefined` if it was never initialized.
 boolean
 ```
 
-`true` if the field has a validation error or a submission error. `false`
-otherwise.
+`true` if the field has a validation error or a submission error. `false` otherwise.
 
 ## `length`
 
@@ -100,6 +99,7 @@ boolean
 ```
 
 `true` if this field's value has ever been changed. `false` otherwise.
+
 Once `true`, it will remain `true` for the lifetime of the field, or until the form is reset.
 
 ## `name`
@@ -116,8 +116,7 @@ The name of the field.
 boolean
 ```
 
-`true` if the current value is `===` to the initial value, `false` if the values
-are `!==`.
+`true` if the current value is `===` to the initial value, `false` if the values are `!==`.
 
 ## `submitError`
 
@@ -149,8 +148,7 @@ boolean
 boolean
 ```
 
-`true` if the form is currently being submitted asynchronously. `false`
-otherwise.
+`true` if the form is currently being submitted asynchronously. `false` otherwise.
 
 ## `touched`
 
@@ -158,8 +156,9 @@ otherwise.
 boolean
 ```
 
-`true` if this field has ever gained and lost focus. `false` otherwise. Useful
-for knowing when to display error messages.
+`true` if this field has ever gained and lost focus. `false` otherwise.
+
+Useful for knowing when to display error messages.
 
 ## `valid`
 
@@ -191,4 +190,4 @@ The value of the field.
 boolean
 ```
 
-`true` if this field has ever gained focus.
+`true` if this field has ever gained focus. `false` otherwise.

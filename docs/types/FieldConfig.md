@@ -76,11 +76,11 @@ The value given here will override any `initialValues` given to the entire form.
 (a: any, b: any) => boolean
 ```
 
-Optional.
+Optional. Defaults to `===`.
 
-A function to determine if two values are equal. Defaults to `===`.
+A function to determine if two values are equal.
 
-## `validateFields?: string[]`
+## `validateFields`
 
 ```ts
 string[]
