@@ -25,7 +25,7 @@ describe('filterFormState', () => {
       expect(result).toBeUndefined()
     })
 
-    it(`should not notify when ${key} changes`, () => {
+    it(`should notify when ${key} changes`, () => {
       const result = filterFormState({ ...state, [key]: newValue }, state, {
         [key]: true
       })

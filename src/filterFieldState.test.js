@@ -23,7 +23,7 @@ describe('filterFieldState', () => {
       expect(result).toBeUndefined()
     })
 
-    it(`should not notify when ${key} changes`, () => {
+    it(`should notify when ${key} changes`, () => {
       const result = filterFieldState({ ...state, [key]: newValue }, state, {
         [key]: true
       })
