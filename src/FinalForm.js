@@ -374,7 +374,7 @@ function createForm<FormValues: FormValuesShape>(
     let recordLevelErrors: Object = {}
     const fieldLevelErrors = {}
 
-    const promises: Promise<*>[] = [
+    const promises = [
       ...runRecordLevelValidation(errors => {
         recordLevelErrors = errors || {}
       }),
@@ -448,7 +448,7 @@ function createForm<FormValues: FormValuesShape>(
     // sync errors have been set. notify listeners while we wait for others
     callback()
 
-    if (promises.length) {
+    if (hasAsyncValidations) {
       state.formState.validating++
       callback()
 
