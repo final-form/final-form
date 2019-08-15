@@ -854,4 +854,38 @@ describe('Field.subscribing', () => {
     expect(cat).toHaveBeenCalledTimes(2)
     expect(dog).toHaveBeenCalledTimes(2)
   })
+
+  it('should notify form on last field subscriber removed', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      destroyOnUnregister: true,
+      validate: () => ({
+        name: 'Required'
+      })
+    })
+    const spy = jest.fn()
+    form.subscribe(spy, { errors: true })
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].errors).toEqual({ name: 'Required' })
+
+    const name1 = jest.fn()
+    const name2 = jest.fn()
+    const unregisterName1 = form.registerField('name', name1, { error: true })
+    const unregisterName2 = form.registerField('name', name2, { error: true })
+    expect(name1).toHaveBeenCalledTimes(1)
+    expect(name1.mock.calls[0][0].error).toBe('Required')
+    expect(name2).toHaveBeenCalledTimes(1)
+    expect(name2.mock.calls[0][0].error).toBe('Required')
+
+    unregisterName1()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(name1).toHaveBeenCalledTimes(1)
+    expect(name2).toHaveBeenCalledTimes(1)
+
+    unregisterName2()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(name1).toHaveBeenCalledTimes(1)
+    expect(name2).toHaveBeenCalledTimes(1)
+  })
 })

@@ -8,10 +8,10 @@ describe('FinalForm.debugging', () => {
     const form = createForm({ onSubmit: onSubmitMock, debug })
 
     form.registerField('foo', () => {})
-    expect(debug).toHaveBeenCalledTimes(1)
+    expect(debug).toHaveBeenCalledTimes(2)
 
     form.change('foo', 'bar')
 
-    expect(debug).toHaveBeenCalledTimes(2)
+    expect(debug).toHaveBeenCalledTimes(3)
   })
 })
