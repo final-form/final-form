@@ -766,24 +766,24 @@ describe('FinalForm.subscribing', () => {
 
   it('should allow subscribing to validating', async () => {
     const delay = 2
+    const validate = jest.fn(async values => {
+      await sleep(delay)
+      const errors = {}
+      if (values.foo > 3) {
+        errors.foo = 'Too many'
+      }
+      return errors
+    })
     const { spy, change } = prepareFormSubscriber(
       'foo',
       { validating: true },
-      {
-        validate: async values => {
-          await sleep(delay)
-          const errors = {}
-          if (values.foo > 3) {
-            errors.foo = 'Too many'
-          }
-          return errors
-        }
-      }
+      { validate }
     )
 
     // should be validating initially
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].validating).toBe(true)
+    expect(validate).toHaveBeenCalledTimes(1)
 
     await sleep(2 * delay)
 

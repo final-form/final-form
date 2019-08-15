@@ -470,13 +470,13 @@ function createForm<FormValues: FormValuesShape>(
     }
   }
 
-  const notifyFieldListeners = () => {
+  const notifyFieldListeners = (name: ?string) => {
     if (inBatch) {
       return
     }
     const { fields, fieldSubscribers, formState } = state
     const safeFields = { ...fields }
-    Object.keys(safeFields).forEach(name => {
+    const notifyField = (name: string) => {
       const field = safeFields[name]
       const fieldState = publishFieldState(formState, field)
       const { lastFieldState } = field
@@ -491,7 +491,12 @@ function createForm<FormValues: FormValuesShape>(
           lastFieldState === undefined
         )
       }
-    })
+    }
+    if (name) {
+      notifyField(name)
+    } else {
+      Object.keys(safeFields).forEach(notifyField)
+    }
   }
 
   const markAllFieldsTouched = (): void => {
@@ -623,7 +628,9 @@ function createForm<FormValues: FormValuesShape>(
     )
 
   // generate initial errors
-  runValidation(undefined, () => {})
+  runValidation(undefined, () => {
+    notifyFormListeners()
+  })
 
   const api: FormApi<FormValues> = {
     batch: (fn: () => void) => {
@@ -787,7 +794,11 @@ function createForm<FormValues: FormValuesShape>(
           visited: false
         }
       }
+      let haveValidator = false
       if (fieldConfig) {
+        haveValidator = !!(
+          fieldConfig.getValidator && fieldConfig.getValidator()
+        )
         if (fieldConfig.getValidator) {
           state.fields[name].validators[index] = fieldConfig.getValidator
         }
@@ -812,32 +823,50 @@ function createForm<FormValues: FormValuesShape>(
         }
       }
 
-      runValidation(undefined, () => {
+      if (haveValidator) {
+        runValidation(undefined, () => {
+          notifyFormListeners()
+          notifyFieldListeners()
+        })
+      } else {
         notifyFormListeners()
-        notifyFieldListeners()
-      })
+        notifyFieldListeners(name)
+      }
 
       return () => {
+        let validatorRemoved = false
         // istanbul ignore next
         if (state.fields[name]) {
           // state.fields[name] may have been removed by a mutator
+          validatorRemoved = !!(
+            state.fields[name].validators[index] &&
+            state.fields[name].validators[index]()
+          )
           delete state.fields[name].validators[index]
         }
         delete state.fieldSubscribers[name].entries[index]
-        if (!Object.keys(state.fieldSubscribers[name].entries).length) {
+        let lastOne = !Object.keys(state.fieldSubscribers[name].entries).length
+        if (lastOne) {
           delete state.fieldSubscribers[name]
           delete state.fields[name]
-          state.formState.errors =
-            setIn(state.formState.errors, name, undefined) || {}
+          if (validatorRemoved) {
+            state.formState.errors =
+              setIn(state.formState.errors, name, undefined) || {}
+          }
           if (destroyOnUnregister) {
             state.formState.values =
               setIn(state.formState.values, name, undefined, true) || {}
           }
         }
-        runValidation(undefined, () => {
-          notifyFieldListeners()
+        if (validatorRemoved) {
+          runValidation(undefined, () => {
+            notifyFormListeners()
+            notifyFieldListeners()
+          })
+        } else if (lastOne) {
+          // values or errors may have changed
           notifyFormListeners()
-        })
+        }
       }
     },
 
@@ -1035,7 +1064,7 @@ function createForm<FormValues: FormValuesShape>(
         )
       }
       const memoized = memoize(subscriber)
-      const { subscribers, lastFormState } = state
+      const { subscribers } = state
       const index = subscribers.index++
       subscribers.entries[index] = {
         subscriber: memoized,
@@ -1043,9 +1072,6 @@ function createForm<FormValues: FormValuesShape>(
         notified: false
       }
       const nextFormState = calculateNextFormState()
-      if (nextFormState !== lastFormState) {
-        state.lastFormState = nextFormState
-      }
       notifySubscriber(
         memoized,
         subscription,

@@ -182,32 +182,32 @@ describe('FinalForm.setConfig', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].error).toBe('Required')
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
 
     form.setConfig('validateOnBlur', true)
 
     form.focus('foo')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2) // not called on focus
+    expect(validate).toHaveBeenCalledTimes(1) // not called on focus
     form.change('foo', 'typing')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.blur('foo')
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy.mock.calls[1][0].error).toBeUndefined()
-    expect(validate).toHaveBeenCalledTimes(3) // called on blur
+    expect(validate).toHaveBeenCalledTimes(2) // called on blur
 
     form.setConfig('validateOnBlur', false)
 
     form.focus('foo')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(3) // not called on focus
+    expect(validate).toHaveBeenCalledTimes(2) // not called on focus
     form.change('foo', 'typing something else')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(4) // called on change because we set validateOnBlur=false
+    expect(validate).toHaveBeenCalledTimes(3) // called on change because we set validateOnBlur=false
     form.blur('foo')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(4) // not called on blur
+    expect(validate).toHaveBeenCalledTimes(3) // not called on blur
   })
 
   it('should throw on unknown names', () => {

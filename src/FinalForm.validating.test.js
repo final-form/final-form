@@ -25,44 +25,44 @@ describe('Field.validation', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].error).toBe('Required')
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
 
     form.focus('foo')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2) // not called on focus
+    expect(validate).toHaveBeenCalledTimes(1) // not called on focus
     form.change('foo', 't')
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy.mock.calls[1][0].error).toBeUndefined()
-    expect(validate).toHaveBeenCalledTimes(3)
+    expect(validate).toHaveBeenCalledTimes(2)
     form.change('foo', 'ty')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(4)
+    expect(validate).toHaveBeenCalledTimes(3)
     form.change('foo', 'typ')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(5)
+    expect(validate).toHaveBeenCalledTimes(4)
     form.change('foo', 'typi')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(6)
+    expect(validate).toHaveBeenCalledTimes(5)
     form.change('foo', 'typin')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(7)
+    expect(validate).toHaveBeenCalledTimes(6)
     form.change('foo', 'typing')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(8)
+    expect(validate).toHaveBeenCalledTimes(7)
     form.blur('foo')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(8) // not called on blur
+    expect(validate).toHaveBeenCalledTimes(7) // not called on blur
 
     // now user goes to empty the field
     form.focus('foo')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(8)
+    expect(validate).toHaveBeenCalledTimes(7)
     form.change('foo', '')
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy.mock.calls[2][0].error).toBe('Required')
-    expect(validate).toHaveBeenCalledTimes(9)
+    expect(validate).toHaveBeenCalledTimes(8)
     form.blur('foo')
-    expect(validate).toHaveBeenCalledTimes(9)
+    expect(validate).toHaveBeenCalledTimes(8)
   })
 
   it('should validate on blur when validateOnBlur is true', () => {
@@ -86,45 +86,45 @@ describe('Field.validation', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].error).toBe('Required')
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
 
     form.focus('foo')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2) // not called on focus
+    expect(validate).toHaveBeenCalledTimes(1) // not called on focus
     form.change('foo', 't')
     expect(spy).toHaveBeenCalledTimes(1) // error not updated
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.change('foo', 'ty')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.change('foo', 'typ')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.change('foo', 'typi')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.change('foo', 'typin')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.change('foo', 'typing')
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate).toHaveBeenCalledTimes(1)
     form.blur('foo')
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy.mock.calls[1][0].error).toBeUndefined()
-    expect(validate).toHaveBeenCalledTimes(3) // called on blur
+    expect(validate).toHaveBeenCalledTimes(2) // called on blur
 
     // now user goes to empty the field
     form.focus('foo')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(3)
+    expect(validate).toHaveBeenCalledTimes(2)
     form.change('foo', '')
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(validate).toHaveBeenCalledTimes(3)
+    expect(validate).toHaveBeenCalledTimes(2)
     form.blur('foo')
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy.mock.calls[2][0].error).toBe('Required')
-    expect(validate).toHaveBeenCalledTimes(4)
+    expect(validate).toHaveBeenCalledTimes(3)
   })
 
   it("should return first subscribed field's error first", () => {
@@ -770,12 +770,12 @@ describe('Field.validation', () => {
     const firstName0 = jest.fn()
     form.registerField('customers[0].firstName', firstName0, { error: true })
 
-    expect(validate).toHaveBeenCalledTimes(3)
-    expect(validate.mock.calls[2][0]).toEqual([{}])
-    expect(array).toHaveBeenCalledTimes(3)
-    expect(array.mock.calls[2][0].error).toEqual([{ firstName: 'Required' }])
-    expect(spy).toHaveBeenCalledTimes(3)
-    expect(spy.mock.calls[2][0].errors).toEqual({
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(validate.mock.calls[1][0]).toEqual([{}])
+    expect(array).toHaveBeenCalledTimes(2)
+    expect(array.mock.calls[1][0].error).toEqual([{ firstName: 'Required' }])
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].errors).toEqual({
       customers: [{ firstName: 'Required' }]
     })
     expect(firstName0).toHaveBeenCalled()
@@ -785,15 +785,15 @@ describe('Field.validation', () => {
     // add another empty customer
     form.change('customers', [{}, {}])
 
-    expect(validate).toHaveBeenCalledTimes(4)
-    expect(validate.mock.calls[3][0]).toEqual([{}, {}])
-    expect(array).toHaveBeenCalledTimes(4)
-    expect(array.mock.calls[3][0].error).toEqual([
+    expect(validate).toHaveBeenCalledTimes(3)
+    expect(validate.mock.calls[2][0]).toEqual([{}, {}])
+    expect(array).toHaveBeenCalledTimes(3)
+    expect(array.mock.calls[2][0].error).toEqual([
       { firstName: 'Required' },
       { firstName: 'Required' }
     ])
-    expect(spy).toHaveBeenCalledTimes(4)
-    expect(spy.mock.calls[3][0].errors).toEqual({
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].errors).toEqual({
       customers: [{ firstName: 'Required' }, { firstName: 'Required' }]
     })
     expect(firstName0).toHaveBeenCalledTimes(1) // no need to call this again
@@ -802,15 +802,15 @@ describe('Field.validation', () => {
     const firstName1 = jest.fn()
     form.registerField('customers[1].firstName', firstName1, { error: true })
 
-    expect(validate).toHaveBeenCalledTimes(5)
-    expect(validate.mock.calls[4][0]).toEqual([{}, {}])
-    expect(array).toHaveBeenCalledTimes(5)
-    expect(array.mock.calls[4][0].error).toEqual([
+    expect(validate).toHaveBeenCalledTimes(3)
+    expect(validate.mock.calls[2][0]).toEqual([{}, {}])
+    expect(array).toHaveBeenCalledTimes(3)
+    expect(array.mock.calls[2][0].error).toEqual([
       { firstName: 'Required' },
       { firstName: 'Required' }
     ])
-    expect(spy).toHaveBeenCalledTimes(5)
-    expect(spy.mock.calls[4][0].errors).toEqual({
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].errors).toEqual({
       customers: [{ firstName: 'Required' }, { firstName: 'Required' }]
     })
     expect(firstName1).toHaveBeenCalled()
@@ -1043,10 +1043,10 @@ describe('Field.validation', () => {
     expect(items1).toHaveBeenCalledTimes(1)
     expect(items1.mock.calls[0][0].error).toBe('Required')
 
-    expect(validate).toHaveBeenCalledTimes(4)
+    expect(validate).toHaveBeenCalledTimes(1)
 
     form.change('items[1]', 'Cat')
-    expect(validate).toHaveBeenCalledTimes(5)
+    expect(validate).toHaveBeenCalledTimes(2)
     expect(items).toHaveBeenCalledTimes(1)
     expect(items0).toHaveBeenCalledTimes(1)
     expect(items1).toHaveBeenCalledTimes(2)
@@ -1341,5 +1341,38 @@ describe('Field.validation', () => {
     expect(foo1).toHaveBeenCalledTimes(3)
     expect(foo2).toHaveBeenCalledTimes(3)
     expect(foo3).toHaveBeenCalledTimes(2)
+  })
+
+  it('should only call validate on field register if field-level validation provided', () => {
+    const validate = jest.fn()
+    const form = createForm({ onSubmit: onSubmitMock, validate })
+    expect(validate).toHaveBeenCalledTimes(1)
+
+    form.registerField('a', () => {}, { error: true })
+    form.registerField('b', () => {}, { error: true })
+
+    expect(validate).toHaveBeenCalledTimes(1)
+
+    const cValidate = jest.fn()
+    form.registerField(
+      'c',
+      () => {},
+      { error: true },
+      { getValidator: () => cValidate }
+    )
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(cValidate).toHaveBeenCalledTimes(1)
+
+    // must actually call getValidator() to see if there's a function there
+    form.registerField(
+      'd',
+      () => {},
+      { error: true },
+      { getValidator: () => undefined }
+    )
+    expect(validate).toHaveBeenCalledTimes(2)
+
+    form.change('a', 'foo')
+    expect(validate).toHaveBeenCalledTimes(3)
   })
 })
