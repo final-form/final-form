@@ -28,11 +28,11 @@ A collection of form state mutators for handling arrays of fields.
 
 ## Decorators
 
-### [Final Form Focus 🧐](https://github.com/final-form/final-form-focus)
+### [Final Form Focus](https://github.com/final-form/final-form-focus)
 
 A "decorator" that will attempt to apply focus to the first field with an error upon an attempted form submission.
 
-### [Final Form Submit Listener 🧐](https://github.com/final-form/final-form-submit-listener)
+### [Final Form Submit Listener](https://github.com/final-form/final-form-submit-listener)
 
 A "decorator" that will listen for events around attempted, successful, or failed submissions and fire callbacks you provide.
 
