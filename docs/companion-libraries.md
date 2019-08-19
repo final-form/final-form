@@ -2,6 +2,8 @@
 
 The following are libraries that are either built upon, or play nicely with, Final Form.
 
+## Framework Bindings
+
 ### [React Final Form](https://final-form.org/react)
 
 A form state management system for React that uses Final Form under the hood.
@@ -18,13 +20,23 @@ CorpusculeJS provides a way to manage form state with Final Form using Web Compo
 
 Opinionated way to create forms in React. Data-driven forms that let you focus on what matters: your application. Provide a `GraphQL` mutation and `<Frontier/>` will do the rest for you.
 
-### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
+## Mutators
 
-Define Form offers alternative typescript bindings for Final Form. The key difference is that _the form data is now a strongly typed object_, rather than an `any`. This makes the `initialValues` config option required.
+### [Final Form Arrays](/arrays)
+
+A collection of form state mutators for handling arrays of fields.
+
+## Decorators
 
 ### [Final Form Focus 🧐](https://github.com/final-form/final-form-focus)
 
 A "decorator" that will attempt to apply focus to the first field with an error upon an attempted form submission.
+
+### [Final Form Submit Listener 🧐](https://github.com/final-form/final-form-submit-listener)
+
+A "decorator" that will listen for events around attempted, successful, or failed submissions and fire callbacks you provide.
+
+## Helper Libraries
 
 ### [React Final Form HTML5 Validation](https://github.com/final-form/react-final-form-html5-validation)
 
@@ -34,6 +46,6 @@ A swap-in replacement for React Final Form's `<Field>` component to provide HTML
 
 A collection of useful components for listening to fields in a React Final Form.
 
-### [Final Form Submit Listener 🧐](https://github.com/final-form/final-form-submit-listener)
+### [Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/define-form) and [React Define Form](https://github.com/ForbesLindesay/define-form/tree/master/packages/react-define-form)
 
-A "decorator" that will listen for events around attempted, successful, or failed submissions and fire callbacks you provide.
+Define Form offers alternative typescript bindings for Final Form. The key difference is that _the form data is now a strongly typed object_, rather than an `any`. This makes the `initialValues` config option required.
