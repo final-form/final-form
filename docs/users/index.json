@@ -30,6 +30,12 @@
     "pinned": true
   },
   {
+    "name": "TED",
+    "logo": "ted.svg",
+    "link": "https://www.ted.com",
+    "pinned": true
+  },
+  {
     "name": "Konica Minolta",
     "logo": "konicaminolta.svg",
     "link": "https://www.konicaminolta.com",
