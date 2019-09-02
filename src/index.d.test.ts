@@ -120,7 +120,11 @@ form2.subscribe(
 )
 
 // mutators
-const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
+const setValue: Mutator<FormValues2> = (
+  [name, newValue],
+  state,
+  { changeValue }
+) => {
   changeValue(state, name, value => newValue)
 }
 

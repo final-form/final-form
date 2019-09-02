@@ -264,7 +264,7 @@ export interface Config<FormValues = object> {
   destroyOnUnregister?: boolean
   initialValues?: FormValues
   keepDirtyOnReinitialize?: boolean
-  mutators?: { [key: string]: Mutator }
+  mutators?: { [key: string]: Mutator<FormValues> }
   onSubmit: (
     values: FormValues,
     form: FormApi<FormValues>,
