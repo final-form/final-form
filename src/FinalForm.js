@@ -346,7 +346,7 @@ function createForm<FormValues: FormValuesShape>(
     }
 
     const { fields, formState } = state
-    const safeFields = { ...fields }
+    const safeFields: $ReadOnly<typeof fields> = fields;
     let fieldKeys = Object.keys(safeFields)
     if (
       !validate &&
@@ -475,7 +475,7 @@ function createForm<FormValues: FormValuesShape>(
       return
     }
     const { fields, fieldSubscribers, formState } = state
-    const safeFields = { ...fields }
+    const safeFields: $ReadOnly<typeof fields> = fields;
     const notifyField = (name: string) => {
       const field = safeFields[name]
       const fieldState = publishFieldState(formState, field)
@@ -510,7 +510,7 @@ function createForm<FormValues: FormValuesShape>(
 
   const calculateNextFormState = (): FormState<FormValues> => {
     const { fields, formState, lastFormState } = state
-    const safeFields = { ...fields }
+    const safeFields: $ReadOnly<typeof fields> = fields;
     const safeFieldKeys = Object.keys(safeFields)
 
     // calculate dirty/pristine
@@ -720,7 +720,7 @@ function createForm<FormValues: FormValuesShape>(
 
     initialize: (data: Object | ((values: Object) => Object)) => {
       const { fields, formState } = state
-      const safeFields = { ...fields }
+      const safeFields: $ReadOnly<typeof fields> = fields;
       const values = typeof data === 'function' ? data(formState.values) : data
       if (!keepDirtyOnReinitialize) {
         formState.values = values
