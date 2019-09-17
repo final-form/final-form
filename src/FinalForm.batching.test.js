@@ -81,4 +81,51 @@ describe('FinalForm.batching', () => {
     expect(firstField).toHaveBeenCalledTimes(2)
     expect(secondField).toHaveBeenCalledTimes(1) // not called
   })
+
+  it('should perform batching correctly with nested batch calls', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const formListener = jest.fn()
+    const firstField = jest.fn()
+    const secondField = jest.fn()
+    form.subscribe(formListener, { values: true })
+    form.registerField('firstField', firstField, { value: true })
+    form.registerField('secondField', secondField, { value: true })
+
+    expect(formListener).toHaveBeenCalledTimes(1)
+    expect(firstField).toHaveBeenCalledTimes(1)
+    expect(secondField).toHaveBeenCalledTimes(1)
+
+    form.batch(() => {
+      form.batch(() => {
+        // change a field
+        form.focus('firstField')
+        form.change('firstField', 'what')
+        form.blur('firstField')
+      })
+
+      form.batch(() => {
+        // change it again
+        form.focus('firstField')
+        form.change('firstField', 'the')
+        form.blur('firstField')
+      })
+
+      form.batch(() => {
+        // and a third time
+        form.focus('firstField')
+        form.change('firstField', 'foo')
+        form.blur('firstField')
+      })
+
+      // No listeners called
+      expect(formListener).toHaveBeenCalledTimes(1)
+      expect(firstField).toHaveBeenCalledTimes(1)
+      expect(secondField).toHaveBeenCalledTimes(1)
+    })
+
+    // only listeners that need to be are called, and only once for the whole batch
+    expect(formListener).toHaveBeenCalledTimes(2)
+    expect(firstField).toHaveBeenCalledTimes(2)
+    expect(secondField).toHaveBeenCalledTimes(1) // not called
+  })
 })
