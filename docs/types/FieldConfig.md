@@ -42,7 +42,7 @@ any
 
 Optional.
 
-The value of the field upon creation only if both `initialValue` is `undefined` and the value from `initialValues` is also `undefined`. The field will be `dirty` when `defaultValue` is used.
+The value of the field upon creation only if both the field's [`initialValue`](#initialvalue) is `undefined` and the value from the form's [`initialValues`](FormState.md#initialvalues) is also `undefined`. The field will be `dirty` when `defaultValue` is used.
 
 ## `getValidator`
 
