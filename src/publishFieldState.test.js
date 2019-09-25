@@ -48,6 +48,8 @@ const check = (error, initial, value, submitError) => {
   expect(result.focus).toBe(focus)
   expect(result.name).toBe(name)
   expect(result.error).toBe(error)
+  expect(result.hasSubmitError).toBe(!!submitError)
+  expect(result.hasValidationError).toBe(!!error)
   expect(result.initial).toBe(initial)
   expect(result.value).toBe(value)
   expect(result.dirty).toBe(initial !== value)

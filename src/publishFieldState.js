@@ -54,6 +54,8 @@ function publishFieldState<FormValues: FormValuesShape>(
     dirty: !pristine,
     dirtySinceLastSubmit,
     error,
+    hasSubmitError: !!submitError,
+    hasValidationError: !!error,
     focus,
     initial,
     invalid: !valid,
