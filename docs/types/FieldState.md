@@ -168,7 +168,7 @@ boolean
 
 `true` if this field has no validation or submission errors. `false` otherwise.
 
-## `validating: boolean`
+## `validating`
 
 ```ts
 boolean
