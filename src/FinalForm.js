@@ -529,10 +529,14 @@ function createForm<FormValues: FormValuesShape>(
     const dirtyFieldsSinceLastSubmit = safeFieldKeys.reduce((result, key) => {
       // istanbul ignore next
       const nonNullLastSubmittedValues = formState.lastSubmittedValues || {} // || {} is for flow, but causes branch coverage complaint
-      result[key] = !safeFields[key].isEqual(
-        getIn(formState.values, key),
-        getIn(nonNullLastSubmittedValues, key)
-      )
+      if (
+        !safeFields[key].isEqual(
+          getIn(formState.values, key),
+          getIn(nonNullLastSubmittedValues, key)
+        )
+      ) {
+        result[key] = true
+      }
       return result
     }, {})
     formState.pristine = !foundDirty
