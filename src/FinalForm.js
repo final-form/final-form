@@ -816,7 +816,11 @@ function createForm<FormValues: FormValuesShape>(
         if (fieldConfig.getValidator) {
           state.fields[name].validators[index] = fieldConfig.getValidator
         }
-        if (fieldConfig.initialValue !== undefined) {
+        if (
+          fieldConfig.initialValue !== undefined &&
+          getIn(state.formState.values, name) === undefined
+          // only initialize if we don't yet have any value for this field
+        ) {
           state.formState.initialValues = setIn(
             state.formState.initialValues || {},
             name,
@@ -828,7 +832,11 @@ function createForm<FormValues: FormValuesShape>(
             fieldConfig.initialValue
           )
         }
-        if (fieldConfig.defaultValue !== undefined && fieldConfig.initialValue === undefined && getIn(state.formState.initialValues || {}, name) === undefined) {
+        if (
+          fieldConfig.defaultValue !== undefined &&
+          fieldConfig.initialValue === undefined &&
+          getIn(state.formState.initialValues, name) === undefined
+        ) {
           state.formState.values = setIn(
             state.formState.values,
             name,
