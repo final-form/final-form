@@ -80,8 +80,54 @@ describe('FinalForm.creation', () => {
     })
   })
 
+  it('should only initialize field if no field value yet exists', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const foo1 = jest.fn()
+    form.registerField(
+      'foo',
+      foo1,
+      { initial: true, value: true, pristine: true },
+      { initialValue: 'bar' }
+    )
+    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
+    expect(form.getState().values).toEqual({ foo: 'bar' })
+    expect(foo1).toHaveBeenCalled()
+    expect(foo1).toHaveBeenCalledTimes(1)
+    expect(foo1.mock.calls[0][0]).toMatchObject({
+      value: 'bar',
+      initial: 'bar',
+      pristine: true
+    })
+    form.change('foo', 'baz')
+    expect(foo1).toHaveBeenCalledTimes(2)
+    expect(foo1.mock.calls[1][0]).toMatchObject({
+      value: 'baz',
+      initial: 'bar',
+      pristine: false
+    })
+
+    const foo2 = jest.fn()
+    form.registerField(
+      'foo',
+      foo2,
+      { initial: true, value: true, pristine: true },
+      { initialValue: 'bar' }
+    )
+    expect(foo2).toHaveBeenCalled()
+    expect(foo2).toHaveBeenCalledTimes(1)
+    expect(foo2.mock.calls[0][0]).toMatchObject({
+      value: 'baz',
+      initial: 'bar',
+      pristine: false
+    })
+    expect(foo1).toHaveBeenCalledTimes(2)
+  })
+
   it('should allow default value to come from field when registered', () => {
-    const form = createForm({ initialValues: { baz: 'baz' }, onSubmit: onSubmitMock })
+    const form = createForm({
+      initialValues: { baz: 'baz' },
+      onSubmit: onSubmitMock
+    })
     const baz = jest.fn()
     const foo = jest.fn()
     const cat = jest.fn()
