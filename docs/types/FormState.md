@@ -28,6 +28,14 @@ boolean
 
 An object full of booleans, with a value of `true` for each `dirty` field. _Pristine fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirty` value for that field will be available under `dirty['addresses.shipping.street']`.
 
+## `dirtyFieldsSinceLastSubmit`
+
+```ts
+{ [string]: boolean }
+```
+
+An object full of booleans, with a value of `true` for each field that has a different value from the one when the form was last submitted. _Pristine (since last submit) fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirtySinceLastSubmit` value for that field will be available under `dirty['addresses.shipping.street']`.
+
 ## `dirtySinceLastSubmit`
 
 ```ts
