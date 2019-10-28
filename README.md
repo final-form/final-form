@@ -14,7 +14,7 @@
 [![codecov.io](https://codecov.io/gh/final-form/final-form/branch/master/graph/badge.svg)](https://codecov.io/gh/final-form/final-form)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-✅ **Zero** dependencies [\*](#zero-dependencies)
+✅ **Zero** dependencies
 
 ✅ Framework agnostic
 
