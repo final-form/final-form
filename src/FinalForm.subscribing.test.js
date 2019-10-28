@@ -221,6 +221,36 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].dirtyFields).toEqual({})
   })
 
+  it('should allow subscribing to form dirtyFieldsSinceLastSubmit', () => {
+    const { spy, change } = prepareFormSubscriber('deep.foo', {
+      dirtyFieldsSinceLastSubmit: true
+    })
+
+    // one call with initial value
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].dirtyFieldsSinceLastSubmit).toEqual({})
+
+    change('bar')
+
+    // form is now dirty
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].dirtyFieldsSinceLastSubmit).toEqual({
+      'deep.foo': true
+    })
+
+    change('baz')
+
+    // form is still dirty, so no need to call back
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    change(undefined)
+
+    // form is now pristine
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].dirtyFieldsSinceLastSubmit).toEqual({})
+  })
+
   it('should allow subscribing to form pristine', () => {
     const { spy, change } = prepareFormSubscriber('foo', {
       pristine: true
