@@ -41,9 +41,8 @@ any
 ```
 
 Optional.
-⚠️ You probably want [`initialValue`](#initialvalue)! ⚠️
 
-The value of the field upon creation. _**This value is only needed if you want your field be `dirty` upon creation (i.e. for its value to be different from its initial value).**_
+The value of the field upon creation only if both the field's [`initialValue`](#initialvalue) is `undefined` and the value from the form's [`initialValues`](FormState.md#initialvalues) is also `undefined`. The field will be `dirty` when `defaultValue` is used.
 
 ## `getValidator`
 
