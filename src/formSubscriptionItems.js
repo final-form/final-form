@@ -3,6 +3,7 @@ export default [
   'active',
   'dirty',
   'dirtyFields',
+  'dirtyFieldsSinceLastSubmit',
   'dirtySinceLastSubmit',
   'error',
   'errors',

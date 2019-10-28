@@ -526,17 +526,19 @@ function createForm<FormValues: FormValuesShape>(
       }
       return result
     }, {})
+    const dirtyFieldsSinceLastSubmit = safeFieldKeys.reduce((result, key) => {
+      // istanbul ignore next
+      const nonNullLastSubmittedValues = formState.lastSubmittedValues || {} // || {} is for flow, but causes branch coverage complaint
+      result[key] = !safeFields[key].isEqual(
+        getIn(formState.values, key),
+        getIn(nonNullLastSubmittedValues, key)
+      )
+      return result
+    }, {})
     formState.pristine = !foundDirty
     formState.dirtySinceLastSubmit = !!(
       formState.lastSubmittedValues &&
-      !safeFieldKeys.every(key => {
-        // istanbul ignore next
-        const nonNullLastSubmittedValues = formState.lastSubmittedValues || {} // || {} is for flow, but causes branch coverage complaint
-        return safeFields[key].isEqual(
-          getIn(formState.values, key),
-          getIn(nonNullLastSubmittedValues, key)
-        )
-      })
+      Object.values(dirtyFieldsSinceLastSubmit).some(value => value)
     )
 
     formState.valid =
@@ -558,6 +560,14 @@ function createForm<FormValues: FormValuesShape>(
       lastFormState && shallowEqual(lastFormState.dirtyFields, dirtyFields)
         ? lastFormState.dirtyFields
         : dirtyFields
+    nextFormState.dirtyFieldsSinceLastSubmit =
+      lastFormState &&
+      shallowEqual(
+        lastFormState.dirtyFieldsSinceLastSubmit,
+        dirtyFieldsSinceLastSubmit
+      )
+        ? lastFormState.dirtyFieldsSinceLastSubmit
+        : dirtyFieldsSinceLastSubmit
     nextFormState.modified =
       lastFormState && shallowEqual(lastFormState.modified, modified)
         ? lastFormState.modified
