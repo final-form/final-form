@@ -1,3 +1,9 @@
+<p align="center">
+<a href="https://codefund.io/properties/556/visit-sponsor">
+<img src="https://codefund.io/properties/556/sponsor" />
+</a>
+</p>
+
 💰 **Hey there! Do you fancy yourself a javascript expert? [Take this quiz](https://triplebyte.com/a/V6j0KPS/ff) and get offers from top tech companies!** 💰
 
 ---
