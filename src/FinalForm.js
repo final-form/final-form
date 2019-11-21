@@ -52,7 +52,8 @@ type InternalState<FormValues> = {
     [string]: InternalFieldState
   },
   fieldSubscribers: { [string]: Subscribers<FieldState> },
-  formState: InternalFormState<FormValues>
+  formState: InternalFormState<FormValues>,
+  registeredFieldCounts: { [string]: number }
 } & MutableState<FormValues>
 
 export type StateFilter<T> = (
@@ -197,7 +198,8 @@ function createForm<FormValues: FormValuesShape>(
       validating: 0,
       values: initialValues ? { ...initialValues } : (({}: any): FormValues)
     },
-    lastFormState: undefined
+    lastFormState: undefined,
+    registeredFieldCounts: {}
   }
   let inBatch = 0
   let validationPaused = false
@@ -641,6 +643,39 @@ function createForm<FormValues: FormValuesShape>(
       name => state.fields[name].afterSubmit && state.fields[name].afterSubmit()
     )
 
+  const subscribeToFieldState = (
+    name: string,
+    subscriber: FieldSubscriber,
+    subscription: FieldSubscription = {},
+    notified
+  ): Unsubscribe => {
+    if (state.fields[name] === undefined) {
+      throw Error(
+        'You must register ' + name + ' field before you can subscribe to it!'
+      )
+    }
+
+    if (!state.fieldSubscribers[name]) {
+      state.fieldSubscribers[name] = { index: 0, entries: {} }
+    }
+    const index = state.fieldSubscribers[name].index++
+
+    // save field subscriber callback
+    state.fieldSubscribers[name].entries[index] = {
+      subscriber: memoize(subscriber),
+      subscription,
+      notified
+    }
+
+    return () => {
+      delete state.fieldSubscribers[name].entries[index]
+      let lastOne = !Object.keys(state.fieldSubscribers[name].entries).length
+      if (lastOne) {
+        delete state.fieldSubscribers[name]
+      }
+    }
+  }
+
   // generate initial errors
   runValidation(undefined, () => {
     notifyFormListeners()
@@ -781,21 +816,14 @@ function createForm<FormValues: FormValuesShape>(
 
     registerField: (
       name: string,
-      subscriber: FieldSubscriber,
-      subscription: FieldSubscription = {},
+      subscriber?: FieldSubscriber,
+      subscription?: FieldSubscription = {},
       fieldConfig?: FieldConfig
     ): Unsubscribe => {
-      if (!state.fieldSubscribers[name]) {
-        state.fieldSubscribers[name] = { index: 0, entries: {} }
+      if (state.registeredFieldCounts[name] === undefined) {
+        state.registeredFieldCounts[name] = 0
       }
-      const index = state.fieldSubscribers[name].index++
-
-      // save field subscriber callback
-      state.fieldSubscribers[name].entries[index] = {
-        subscriber: memoize(subscriber),
-        subscription,
-        notified: false
-      }
+      const index = ++state.registeredFieldCounts[name]
 
       if (!state.fields[name]) {
         // create initial field state
@@ -818,7 +846,20 @@ function createForm<FormValues: FormValuesShape>(
           validating: false,
           visited: false
         }
+
+        if (subscriber === undefined) {
+          state.fields[name].lastFieldState = publishFieldState(
+            state.formState,
+            state.fields[name]
+          )
+        }
       }
+
+      // subscribe or don't
+      const unscribeToFieldState =
+        subscriber &&
+        subscribeToFieldState(name, subscriber, subscription, false)
+
       let haveValidator = false
       if (fieldConfig) {
         haveValidator = !!(
@@ -865,7 +906,7 @@ function createForm<FormValues: FormValuesShape>(
           notifyFormListeners()
           notifyFieldListeners()
         })
-      } else {
+      } else if (subscriber !== undefined) {
         notifyFormListeners()
         notifyFieldListeners(name)
       }
@@ -881,9 +922,10 @@ function createForm<FormValues: FormValuesShape>(
           )
           delete state.fields[name].validators[index]
         }
-        delete state.fieldSubscribers[name].entries[index]
-        let lastOne = !Object.keys(state.fieldSubscribers[name].entries).length
+        unscribeToFieldState && unscribeToFieldState()
+        let lastOne = --state.registeredFieldCounts[name] === 0
         if (lastOne) {
+          delete state.registeredFieldCounts[name]
           delete state.fieldSubscribers[name]
           delete state.fields[name]
           if (validatorRemoved) {
@@ -900,7 +942,7 @@ function createForm<FormValues: FormValuesShape>(
             notifyFormListeners()
             notifyFieldListeners()
           })
-        } else if (lastOne) {
+        } else if (lastOne && subscriber !== undefined) {
           // values or errors may have changed
           notifyFormListeners()
         }
@@ -1120,7 +1162,14 @@ function createForm<FormValues: FormValuesShape>(
       return () => {
         delete subscribers.entries[index]
       }
-    }
+    },
+
+    subscribeToFieldState: (
+      name: string,
+      subscriber: FieldSubscriber,
+      subscription: FieldSubscription = {}
+    ): Unsubscribe =>
+      subscribeToFieldState(name, subscriber, subscription, true)
   }
   return api
 }
