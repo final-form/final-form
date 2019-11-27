@@ -845,7 +845,7 @@ function createForm<FormValues: FormValuesShape>(
         }
       }
 
-      if (haveValidator) {
+      if (haveValidator || config.validate) {
         runValidation(undefined, () => {
           notifyFormListeners()
           notifyFieldListeners()
