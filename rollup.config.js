@@ -3,9 +3,10 @@ import babel from 'rollup-plugin-babel'
 import json from 'rollup-plugin-json'
 import flow from 'rollup-plugin-flow'
 import commonjs from 'rollup-plugin-commonjs'
-import { uglify } from 'rollup-plugin-uglify'
+import compiler from '@ampproject/rollup-plugin-closure-compiler'
 import replace from 'rollup-plugin-replace'
 import pkg from './package.json'
+import { terser } from 'rollup-plugin-terser'
 
 const makeExternalPredicate = externalArr => {
   if (externalArr.length === 0) {
@@ -80,21 +81,7 @@ export default {
       ],
       plugins: [
         ['@babel/plugin-transform-runtime', { useESModules: !cjs }],
-        '@babel/plugin-transform-flow-strip-types',
-        '@babel/plugin-syntax-dynamic-import',
-        '@babel/plugin-syntax-import-meta',
-        '@babel/plugin-proposal-class-properties',
-        '@babel/plugin-proposal-json-strings',
-        [
-          '@babel/plugin-proposal-decorators',
-          {
-            legacy: true
-          }
-        ],
-        '@babel/plugin-proposal-function-sent',
-        '@babel/plugin-proposal-export-namespace-from',
-        '@babel/plugin-proposal-numeric-separator',
-        '@babel/plugin-proposal-throw-expressions'
+        '@babel/plugin-transform-flow-strip-types'
       ]
     }),
     umd || es
@@ -104,6 +91,11 @@ export default {
           )
         })
       : null,
-    minify ? uglify() : null
+    umd && minify
+      ? compiler({
+          compilation_level: 'SIMPLE_OPTIMIZATIONS'
+        })
+      : null,
+    minify ? terser() : null
   ].filter(Boolean)
 }
