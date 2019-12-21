@@ -739,20 +739,29 @@ function createForm<FormValues: FormValuesShape>(
       if (!keepDirtyOnReinitialize) {
         formState.values = values
       }
-      Object.keys(safeFields).forEach(key => {
-        const field = safeFields[key]
-        field.modified = false
-        field.touched = false
-        field.visited = false
-        if (keepDirtyOnReinitialize) {
-          const pristine = field.isEqual(
-            getIn(formState.values, key),
-            getIn(formState.initialValues || {}, key)
-          )
-          if (pristine) {
-            // only update pristine values
-            formState.values = setIn(formState.values, key, getIn(values, key))
+      Object.keys(values).forEach(key => {
+        if (key in safeFields) {
+          const field = safeFields[key]
+          field.modified = false
+          field.touched = false
+          field.visited = false
+          if (keepDirtyOnReinitialize) {
+            const pristine = field.isEqual(
+              getIn(formState.values, key),
+              getIn(formState.initialValues || {}, key)
+            )
+            if (pristine) {
+              // only update pristine values
+              formState.values = setIn(
+                formState.values,
+                key,
+                getIn(values, key)
+              )
+            }
           }
+        } else if (keepDirtyOnReinitialize) {
+          // update any non-registered values, even when keepDirtyOnReinitialize is on
+          formState.values = setIn(formState.values, key, getIn(values, key))
         }
       })
       formState.initialValues = values
