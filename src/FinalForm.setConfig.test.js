@@ -25,7 +25,8 @@ describe('FinalForm.setConfig', () => {
     const form = createForm({
       onSubmit: onSubmitMock,
       initialValues: {
-        foo: 'bar'
+        foo: 'bar',
+        goo: 'moo'
       }
     })
     const spy = jest.fn()
@@ -332,6 +333,58 @@ describe('FinalForm.setConfig', () => {
     expect(spy).toHaveBeenCalledTimes(5)
     expect(spy.mock.calls[4][0].initial).toBe('cat')
     expect(spy.mock.calls[4][0].value).toBe('dog')
+  })
+
+  it('should reinitialize non-registered values with keepDirtyOnReinitialize, on form reinitalize', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      keepDirtyOnReinitialize: true,
+      initialValues: {
+        foo: 'bar',
+        goo: 'moo'
+      }
+    })
+
+    const formListener = jest.fn()
+    form.subscribe(formListener, { values: true })
+    const spy = jest.fn()
+    form.registerField('foo', spy, { initial: true, value: true })
+
+    // should initialize with initial value
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].initial).toBe('bar')
+    expect(spy.mock.calls[0][0].value).toBe('bar')
+
+    expect(formListener).toHaveBeenCalledTimes(1)
+    expect(formListener.mock.calls[0][0].values).toEqual({
+      foo: 'bar',
+      goo: 'moo'
+    })
+
+    form.reset()
+
+    // same initial value, duh
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    spy.mock.calls[0][0].change('baz')
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].initial).toBe('bar')
+    expect(spy.mock.calls[1][0].value).toBe('baz')
+
+    form.setConfig('initialValues', { foo: 'bax', goo: 'poo', john: 'snow' })
+
+    // new initial value, but same old dirty value
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].initial).toBe('bax')
+    expect(spy.mock.calls[2][0].value).toBe('baz')
+
+    expect(formListener).toHaveBeenCalledTimes(4)
+    expect(formListener.mock.calls[3][0].values).toEqual({
+      foo: 'baz',
+      goo: 'poo',
+      john: 'snow'
+    })
   })
 
   it('should update destroyOnUnregister on setConfig("destroyOnUnregister", value)', () => {
