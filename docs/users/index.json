@@ -119,5 +119,11 @@
     "name": "Grupo Acert",
     "logo": "grupoacert.png",
     "link": "https://grupoacert.com.br/"
+  },
+  {
+    "name": "TinaCMS",
+    "logo": "tinacms.svg",
+    "link": "https://tinacms.org",
+    "pinned": true
   }
 ]
