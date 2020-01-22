@@ -739,32 +739,34 @@ function createForm<FormValues: FormValuesShape>(
       if (!keepDirtyOnReinitialize) {
         formState.values = values
       }
-      Object.keys(values).forEach(key => {
-        if (key in safeFields) {
-          const field = safeFields[key]
-          field.modified = false
-          field.touched = false
-          field.visited = false
-          if (keepDirtyOnReinitialize) {
+      /**
+       * Hello, inquisitive code reader! Thanks for taking the time to dig in!
+       *
+       * The following code is the way it is to allow for non-registered deep
+       * field values to be set via initialize()
+       */
+
+      // save dirty values
+      const savedDirtyValues = keepDirtyOnReinitialize
+        ? Object.keys(safeFields).reduce((result, key) => {
+            const field = safeFields[key]
             const pristine = field.isEqual(
               getIn(formState.values, key),
               getIn(formState.initialValues || {}, key)
             )
-            if (pristine) {
-              // only update pristine values
-              formState.values = setIn(
-                formState.values,
-                key,
-                getIn(values, key)
-              )
+            if (!pristine) {
+              result[key] = getIn(formState.values, key)
             }
-          }
-        } else if (keepDirtyOnReinitialize) {
-          // update any non-registered values, even when keepDirtyOnReinitialize is on
-          formState.values = setIn(formState.values, key, getIn(values, key))
-        }
-      })
+            return result
+          }, {})
+        : {}
+      // update initalValues and values
       formState.initialValues = values
+      formState.values = values
+      // restore the dirty values
+      Object.keys(savedDirtyValues).forEach(key => {
+        formState.values = setIn(formState.values, key, savedDirtyValues[key])
+      })
       runValidation(undefined, () => {
         notifyFieldListeners()
         notifyFormListeners()
