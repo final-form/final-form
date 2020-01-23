@@ -1046,13 +1046,8 @@ describe('FinalForm.submission', () => {
   })
 
   describe('async validation error', () => {
-    let spyConsoleError
-
-    beforeEach(() => {
-      spyConsoleError = jest.spyOn(console, 'error')
-    })
-
     it('should log an error if async validation throw an error and do not freeze', async () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
       const onSubmit = jest.fn()
       const validationError = new Error('uh oh error during validation')
       const form = createForm({
@@ -1071,11 +1066,8 @@ describe('FinalForm.submission', () => {
       form.submit()
       await new Promise(resolve => setTimeout(resolve, 100))
       expect(onSubmit).not.toHaveBeenCalled()
-      expect(spyConsoleError).toHaveBeenCalledWith(validationError)
-    })
-
-    afterEach(() => {
-      spyConsoleError.mockRestore()
+      expect(errorSpy).toHaveBeenCalledWith(validationError)
+      console.error.mockRestore()
     })
   })
 })
