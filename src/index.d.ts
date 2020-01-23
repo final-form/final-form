@@ -11,6 +11,7 @@ export interface FormSubscription {
   active?: boolean
   dirty?: boolean
   dirtyFields?: boolean
+  dirtyFieldsSinceLastSubmit?: boolean
   dirtySinceLastSubmit?: boolean
   error?: boolean
   errors?: boolean
@@ -37,6 +38,7 @@ export interface FormState<FormValues> {
   active: undefined | string
   dirty: boolean
   dirtyFields: { [key: string]: boolean }
+  dirtyFieldsSinceLastSubmit: { [key: string]: boolean }
   dirtySinceLastSubmit: boolean
   error: any
   errors: ValidationErrors
@@ -264,7 +266,7 @@ export interface Config<FormValues = object> {
   destroyOnUnregister?: boolean
   initialValues?: FormValues
   keepDirtyOnReinitialize?: boolean
-  mutators?: { [key: string]: Mutator }
+  mutators?: { [key: string]: Mutator<FormValues> }
   onSubmit: (
     values: FormValues,
     form: FormApi<FormValues>,

@@ -67,6 +67,10 @@ createForm<FormValues>({ onSubmit }).initialize(formData => ({
 console.log(formState.active as string, formState.active as undefined)
 console.log(formState.dirty as boolean)
 console.log(formState.dirtyFields as AnyObject, formState.dirtyFields)
+console.log(
+  formState.dirtyFieldsSinceLastSubmit as AnyObject,
+  formState.dirtyFieldsSinceLastSubmit
+)
 console.log(formState.dirtySinceLastSubmit as boolean)
 console.log(
   formState.error.foo,
@@ -120,7 +124,11 @@ form2.subscribe(
 )
 
 // mutators
-const setValue: Mutator = ([name, newValue], state, { changeValue }) => {
+const setValue: Mutator<FormValues2> = (
+  [name, newValue],
+  state,
+  { changeValue }
+) => {
   changeValue(state, name, value => newValue)
 }
 

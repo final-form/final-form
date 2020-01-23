@@ -13,3 +13,20 @@ Related:
 
 - [`FormApi`](FormApi)
 - [`Unsubscribe`](Unsubscribe)
+
+## Example Usage
+
+```js
+import { createForm } from 'final-form'
+
+// Create Form
+const form = createForm({ onSubmit })
+
+// Decorate form
+const undecorate = decorator(form)
+
+// Use form as normal
+
+// Clean up
+undecorate()
+```

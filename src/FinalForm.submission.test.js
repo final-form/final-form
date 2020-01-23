@@ -1044,4 +1044,30 @@ describe('FinalForm.submission', () => {
       submitFailed: true
     })
   })
+
+  describe('async validation error', () => {
+    it('should log an error if async validation throw an error and do not freeze', async () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+      const onSubmit = jest.fn()
+      const validationError = new Error('uh oh error during validation')
+      const form = createForm({
+        onSubmit,
+        validate: async values => {
+          throw validationError
+        }
+      })
+      form.registerField('foo', () => {})
+      form.registerField('foo2', () => {})
+
+      form.change('foo', 'bar')
+      form.change('foo2', 'baz')
+
+      expect(onSubmit).not.toHaveBeenCalled()
+      form.submit()
+      await new Promise(resolve => setTimeout(resolve, 100))
+      expect(onSubmit).not.toHaveBeenCalled()
+      expect(errorSpy).toHaveBeenCalledWith(validationError)
+      console.error.mockRestore()
+    })
+  })
 })

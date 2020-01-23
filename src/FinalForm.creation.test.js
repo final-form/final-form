@@ -80,32 +80,93 @@ describe('FinalForm.creation', () => {
     })
   })
 
-  it('should allow default value to come from field when registered', () => {
+  it('should only initialize field if no field value yet exists', () => {
     const form = createForm({ onSubmit: onSubmitMock })
+    const foo1 = jest.fn()
+    form.registerField(
+      'foo',
+      foo1,
+      { initial: true, value: true, pristine: true },
+      { initialValue: 'bar' }
+    )
+    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
+    expect(form.getState().values).toEqual({ foo: 'bar' })
+    expect(foo1).toHaveBeenCalled()
+    expect(foo1).toHaveBeenCalledTimes(1)
+    expect(foo1.mock.calls[0][0]).toMatchObject({
+      value: 'bar',
+      initial: 'bar',
+      pristine: true
+    })
+    form.change('foo', 'baz')
+    expect(foo1).toHaveBeenCalledTimes(2)
+    expect(foo1.mock.calls[1][0]).toMatchObject({
+      value: 'baz',
+      initial: 'bar',
+      pristine: false
+    })
+
+    const foo2 = jest.fn()
+    form.registerField(
+      'foo',
+      foo2,
+      { initial: true, value: true, pristine: true },
+      { initialValue: 'bar' }
+    )
+    expect(foo2).toHaveBeenCalled()
+    expect(foo2).toHaveBeenCalledTimes(1)
+    expect(foo2.mock.calls[0][0]).toMatchObject({
+      value: 'baz',
+      initial: 'bar',
+      pristine: false
+    })
+    expect(foo1).toHaveBeenCalledTimes(2)
+  })
+
+  it('should allow default value to come from field when registered', () => {
+    const form = createForm({
+      initialValues: { baz: 'baz' },
+      onSubmit: onSubmitMock
+    })
+    const baz = jest.fn()
     const foo = jest.fn()
     const cat = jest.fn()
+    form.registerField(
+      'baz',
+      baz,
+      { pristine: true, initial: true, value: true },
+      { defaultValue: 'fubar' }
+    )
+    expect(form.getState().initialValues).toEqual({ baz: 'baz' })
+    expect(form.getState().values).toEqual({ baz: 'baz' })
     form.registerField(
       'foo',
       foo,
       { pristine: true, initial: true, value: true },
       { initialValue: 'bar', defaultValue: 'fubar' }
     )
-    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
-    expect(form.getState().values).toEqual({ foo: 'fubar' })
+    expect(form.getState().initialValues).toEqual({ baz: 'baz', foo: 'bar' })
+    expect(form.getState().values).toEqual({ baz: 'baz', foo: 'bar' })
     form.registerField(
       'cat',
       cat,
       { pristine: true, initial: true, value: true },
       { defaultValue: 42 }
     )
-    expect(form.getState().initialValues).toEqual({ foo: 'bar' })
-    expect(form.getState().values).toEqual({ foo: 'fubar', cat: 42 })
+    expect(form.getState().initialValues).toEqual({ baz: 'baz', foo: 'bar' })
+    expect(form.getState().values).toEqual({ baz: 'baz', foo: 'bar', cat: 42 })
 
+    expect(baz).toHaveBeenCalledTimes(1)
+    expect(baz.mock.calls[0][0]).toMatchObject({
+      value: 'baz',
+      initial: 'baz',
+      pristine: true
+    })
     expect(foo).toHaveBeenCalledTimes(1)
     expect(foo.mock.calls[0][0]).toMatchObject({
-      value: 'fubar',
+      value: 'bar',
       initial: 'bar',
-      pristine: false
+      pristine: true
     })
     expect(cat).toHaveBeenCalledTimes(1)
     expect(cat.mock.calls[0][0]).toMatchObject({

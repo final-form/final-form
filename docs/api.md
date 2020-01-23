@@ -11,6 +11,10 @@ The following are exported by the Final Form package.
 (config: Config) => FormApi
 ```
 
+```ts
+import { createForm } from 'final-form'
+```
+
 Creates a form instance. It takes a [`Config`](types/Config) and returns a
 [`FormApi`](types/FormApi).
 
@@ -18,6 +22,10 @@ Creates a form instance. It takes a [`Config`](types/Config) and returns a
 
 ```ts
  string[]
+```
+
+```ts
+import { fieldSubscriptionItems } from 'final-form'
 ```
 
 An _à la carte_ list of all the possible things you can subscribe to for a
@@ -29,6 +37,10 @@ field. Useful for subscribing to everything.
  string[]
 ```
 
+```ts
+import { formSubscriptionItems } from 'final-form'
+```
+
 An _à la carte_ list of all the possible things you can subscribe to for a form.
 Useful for subscribing to everything.
 
@@ -38,12 +50,20 @@ Useful for subscribing to everything.
 string
 ```
 
+```ts
+import { ARRAY_ERROR } from 'final-form'
+```
+
 A special `string` key used to return an error for an array of fields.
 
 ### `FORM_ERROR`
 
 ```ts
 string
+```
+
+```ts
+import { FORM_ERROR } from 'final-form'
 ```
 
 A special `string` key used to return a whole-form error inside error objects

@@ -30,6 +30,12 @@
     "pinned": true
   },
   {
+    "name": "TED",
+    "logo": "ted.svg",
+    "link": "https://www.ted.com",
+    "pinned": true
+  },
+  {
     "name": "Konica Minolta",
     "logo": "konicaminolta.svg",
     "link": "https://www.konicaminolta.com",
@@ -108,5 +114,16 @@
     "name": "Therms.io",
     "logo": "therms.png",
     "link": "https://therms.io/"
+  },
+  {
+    "name": "Grupo Acert",
+    "logo": "grupoacert.png",
+    "link": "https://grupoacert.com.br/"
+  },
+  {
+    "name": "TinaCMS",
+    "logo": "tinacms.svg",
+    "link": "https://tinacms.org",
+    "pinned": true
   }
 ]

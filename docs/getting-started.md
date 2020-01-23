@@ -61,5 +61,5 @@ const unregisterField = form.registerField(
 )
 
 // Submit
-form.submit() // only submits if all validation passe
+form.submit() // only submits if all validation passes
 ```

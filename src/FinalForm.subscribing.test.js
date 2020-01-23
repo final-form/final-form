@@ -221,6 +221,36 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].dirtyFields).toEqual({})
   })
 
+  it('should allow subscribing to form dirtyFieldsSinceLastSubmit', () => {
+    const { spy, change } = prepareFormSubscriber('deep.foo', {
+      dirtyFieldsSinceLastSubmit: true
+    })
+
+    // one call with initial value
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0].dirtyFieldsSinceLastSubmit).toEqual({})
+
+    change('bar')
+
+    // form is now dirty
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0].dirtyFieldsSinceLastSubmit).toEqual({
+      'deep.foo': true
+    })
+
+    change('baz')
+
+    // form is still dirty, so no need to call back
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    change(undefined)
+
+    // form is now pristine
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0].dirtyFieldsSinceLastSubmit).toEqual({})
+  })
+
   it('should allow subscribing to form pristine', () => {
     const { spy, change } = prepareFormSubscriber('foo', {
       pristine: true
@@ -766,24 +796,24 @@ describe('FinalForm.subscribing', () => {
 
   it('should allow subscribing to validating', async () => {
     const delay = 2
+    const validate = jest.fn(async values => {
+      await sleep(delay)
+      const errors = {}
+      if (values.foo > 3) {
+        errors.foo = 'Too many'
+      }
+      return errors
+    })
     const { spy, change } = prepareFormSubscriber(
       'foo',
       { validating: true },
-      {
-        validate: async values => {
-          await sleep(delay)
-          const errors = {}
-          if (values.foo > 3) {
-            errors.foo = 'Too many'
-          }
-          return errors
-        }
-      }
+      { validate }
     )
 
     // should be validating initially
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].validating).toBe(true)
+    expect(validate).toHaveBeenCalledTimes(1)
 
     await sleep(2 * delay)
 
