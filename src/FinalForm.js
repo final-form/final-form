@@ -842,6 +842,10 @@ function createForm<FormValues: FormValuesShape>(
             name,
             fieldConfig.initialValue
           )
+          runValidation(undefined, () => {
+            notifyFormListeners()
+            notifyFieldListeners()
+          })
         }
         if (
           fieldConfig.defaultValue !== undefined &&

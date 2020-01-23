@@ -1375,4 +1375,25 @@ describe('Field.validation', () => {
     form.change('a', 'foo')
     expect(validate).toHaveBeenCalledTimes(3)
   })
+  it('should mark the form as valid when required fields are initialized with a value', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate: values => {
+        const errors = {}
+        if (!values.foo) {
+          errors.foo = 'Required'
+        }
+        return errors
+      }
+    })
+    const foo = jest.fn()
+    form.registerField('foo', foo, { error: true }, { initialValue: 'bar' })
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].error).toBe(undefined)
+    expect(form.getState().invalid).toBe(false)
+    form.change('foo', '')
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].error).toBe('Required')
+    expect(form.getState().invalid).toBe(true)
+  })
 })
