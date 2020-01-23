@@ -1019,7 +1019,7 @@ function createForm<FormValues: FormValuesShape>(
           asyncValidationPromisesKeys.map(
             key => asyncValidationPromises[Number(key)]
           )
-        ).then(api.submit, api.submit)
+        ).then(api.submit, console.error)
         return
       }
       const submitIsBlocked = beforeSubmit()
