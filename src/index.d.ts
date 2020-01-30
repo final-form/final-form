@@ -144,11 +144,11 @@ export interface FieldConfig<FieldValue> {
   validateFields?: string[]
 }
 
-export type RegisterField<FieldValue> = (
-  name: string,
-  subscriber: FieldSubscriber<FieldValue>,
+export type RegisterField<FormValues> = <F extends keyof FormValues>(
+  name: F,
+  subscriber: FieldSubscriber<FormValues[F]>,
   subscription: FieldSubscription,
-  config?: FieldConfig<FieldValue>
+  config?: FieldConfig<FormValues[F]>
 ) => Unsubscribe
 
 export interface InternalFieldState<FieldValue> {
@@ -200,12 +200,14 @@ export interface FormApi<FormValues = object> {
   focus: (name: keyof FormValues) => void
   initialize: (data: FormValues | ((values: FormValues) => FormValues)) => void
   isValidationPaused: () => boolean
-  getFieldState: <F extends keyof FormValues>(field: F) => FieldState<FormValues[F]> | undefined
+  getFieldState: <F extends keyof FormValues>(
+    field: F
+  ) => FieldState<FormValues[F]> | undefined
   getRegisteredFields: () => string[]
   getState: () => FormState<FormValues>
   mutators: Record<string, (...args: any[]) => any>
   pauseValidation: () => void
-  registerField: RegisterField<any>
+  registerField: RegisterField<FormValues>
   reset: (initialValues?: FormValues) => void
   resetFieldState: (name: keyof FormValues) => void
   resumeValidation: () => void
