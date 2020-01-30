@@ -192,7 +192,7 @@ export interface InternalFormState {
 
 type ConfigKey = keyof Config
 
-export interface FormApi<FormValues = object> {
+export interface FormApi<FormValues = Record<string, any>> {
   batch: (fn: () => void) => void
   blur: (name: keyof FormValues) => void
   change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void
