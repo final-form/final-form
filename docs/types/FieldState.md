@@ -100,7 +100,7 @@ boolean
 
 `true` if this field's value has ever been changed. `false` otherwise.
 
-Once `true`, it will remain `true` for the lifetime of the field, or until the form is reset.
+Once `true`, it will remain `true` for the lifetime of the field, or until the form or field state is reset.
 
 ## `name`
 
