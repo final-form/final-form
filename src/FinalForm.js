@@ -1009,6 +1009,10 @@ function createForm<FormValues: FormValuesShape>(
         return
       }
 
+      delete formState.submitErrors
+      delete formState.submitError
+      formState.lastSubmittedValues = { ...formState.values }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched()
         state.formState.submitFailed = true
@@ -1055,12 +1059,9 @@ function createForm<FormValues: FormValuesShape>(
         return errors
       }
 
-      delete formState.submitErrors
-      delete formState.submitError
       formState.submitting = true
       formState.submitFailed = false
       formState.submitSucceeded = false
-      formState.lastSubmittedValues = { ...formState.values }
 
       // onSubmit is either sync, callback or async with a Promise
       const result = onSubmit(formState.values, api, complete)
