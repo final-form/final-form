@@ -49,4 +49,16 @@ describe('structure.getIn', () => {
     expect(getIn({ a: [{ b: 2 }] }, 'a[0].b')).toBe(2)
     expect(getIn({ a: ['first', [{ b: 'c' }]] }, 'a[1][0].b')).toBe('c')
   })
+
+  it('should get "path-like" key', () => {
+    expect(getIn({ 'a.b': 'c' }, 'a.b')).toBe('c')
+    expect(getIn({ 'a.b': undefined }, 'a.b')).toBeUndefined()
+    expect(getIn({ 'a[0]': 1 }, 'a[0]')).toBe(1)
+  })
+
+  it('should prefer "path-like" key when both key types exists', () => {
+    expect(getIn({ 'a.b': 'c', a: { b: 'd' } }, 'a.b')).toBe('c')
+    expect(getIn({ 'a.b': undefined, a: { b: true } }, 'a.b')).toBeUndefined()
+    expect(getIn({ 'a[0]': true, a: [false] }, 'a[0]')).toBe(true)
+  })
 })
