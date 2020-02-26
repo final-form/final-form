@@ -251,6 +251,66 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[2][0].dirtyFieldsSinceLastSubmit).toEqual({})
   })
 
+  it('form dirtyFieldsSinceLastSubmit and field dirtySinceLastSubmit must be synchronized', () => {
+    // https://github.com/final-form/react-final-form/issues/742
+
+    const form = createForm({
+      onSubmit: () => {},
+      initialValues: { foo: 'bar' },
+      validate: values => {
+        const errors = {};
+        if (values.foo !== 'bar') {
+          errors.foo = 'Sorry, only "bar" can pass this step';
+        }
+        return errors;
+      },
+    })
+
+    const formSpy = jest.fn()
+    const fieldSpy = jest.fn()
+    form.subscribe(formSpy, { dirtyFieldsSinceLastSubmit: true })
+    form.registerField('foo', fieldSpy, { dirtySinceLastSubmit: true })
+
+    form.submit()
+
+    expect(formSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dirtyFieldsSinceLastSubmit: {},
+      }),
+    )
+    expect(fieldSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dirtySinceLastSubmit: false,
+      }),
+    )
+
+    form.change('foo', 'baz');
+
+    expect(formSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dirtyFieldsSinceLastSubmit: { foo: true },
+      }),
+    )
+    expect(fieldSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dirtySinceLastSubmit: true,
+      }),
+    )
+
+    form.submit()
+
+    expect(formSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dirtyFieldsSinceLastSubmit: {},
+      }),
+    )
+    expect(fieldSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dirtySinceLastSubmit: false,
+      }),
+    )
+  })
+
   it('should allow subscribing to form pristine', () => {
     const { spy, change } = prepareFormSubscriber('foo', {
       pristine: true
