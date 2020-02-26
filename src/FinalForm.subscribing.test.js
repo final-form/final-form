@@ -488,6 +488,29 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[1][0].submitErrors).toEqual({ foo: 'Why no foo?' })
   })
 
+  it('should allow subscribing to nested submit errors', () => {
+    const simpleStringSubmitError = '«foo.bar» shall not pass!'
+    const nestedObjectSubmitError = 'foo["baz"] shall not pass!'
+
+    const form = createForm({
+      onSubmit: () => ({
+        'foo.bar': simpleStringSubmitError,
+        foo: { baz: nestedObjectSubmitError },
+      })
+    })
+
+    const spy = jest.fn()
+    form.subscribe(spy, { submitErrors: true })
+
+    form.submit()
+    expect(spy).toHaveBeenLastCalledWith({
+      submitErrors: {
+        'foo.bar': simpleStringSubmitError,
+        foo: { baz: nestedObjectSubmitError },
+      },
+    })
+  })
+
   it('should allow subscribing to hasSubmitErrors', () => {
     const onSubmit = jest.fn(values => {
       const errors = {}

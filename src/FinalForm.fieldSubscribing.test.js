@@ -200,6 +200,56 @@ describe('Field.subscribing', () => {
     expect(spy.mock.calls[2][0].error).toBe('Required')
   })
 
+  it('should allow subscribing to submitError', () => {
+    const fooSubmitError = 'Foo shall not pass'
+    const fooBarSubmitError = '«Foo.bar» shall not pass'
+    const bazQuxSubmitError = 'baz["qux"] shall not pass'
+
+    const {
+      foo: { spy: fooSpy },
+      'foo.bar': { spy: fooBarSpy },
+      'baz.qux': { spy: bazQuxSpy },
+      form,
+    } = prepareFieldSubscribers(
+      {},
+      {
+        foo: { submitError: true },
+        'foo.bar': { submitError: true },
+        'baz.qux': { submitError: true },
+      },
+      {},
+      {
+        onSubmit: () => ({
+          foo: fooSubmitError,
+          'foo.bar': fooBarSubmitError,
+          baz: { qux: bazQuxSubmitError },
+        })
+      }
+    )
+
+    expect(fooSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitError: undefined })
+    )
+    expect(fooBarSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitError: undefined })
+    )
+    expect(bazQuxSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitError: undefined })
+    )
+
+    form.submit()
+
+    expect(fooSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitError: fooSubmitError })
+    )
+    expect(fooBarSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitError: fooBarSubmitError })
+    )
+    expect(bazQuxSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitError: bazQuxSubmitError })
+    )
+  })
+
   it('should allow subscribing to initial', () => {
     const {
       form,
