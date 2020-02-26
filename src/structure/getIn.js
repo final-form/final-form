@@ -3,6 +3,15 @@ import toPath from './toPath'
 import type { GetIn } from '../types'
 
 const getIn: GetIn = (state: Object, complexKey: string): any => {
+  const hasDirectKey =
+    state !== null &&
+    (typeof state === 'object' || Array.isArray(state)) &&
+    state.hasOwnProperty(complexKey)
+
+  if (hasDirectKey) {
+    return state[complexKey]
+  }
+
   // Intentionally using iteration rather than recursion
   const path = toPath(complexKey)
   let current: any = state
