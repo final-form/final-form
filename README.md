@@ -4,7 +4,7 @@
 </a>
 </p>
 
-💰 **Hey there! Do you fancy yourself a javascript expert? [Take this quiz](https://triplebyte.com/a/V6j0KPS/ff) and get offers from top tech companies!** 💰
+[<img src="form-nerd-logo.png" align="left"/>](https://formnerd.co/final-form-readme) **You build great forms, but do you know HOW users use your forms? [Find out with Form Nerd!](https://formnerd.co/final-form-readme) Professional analytics from the creator of Final Form.**
 
 ---
 
