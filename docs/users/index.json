@@ -1,5 +1,17 @@
 [
   {
+    "name": "Atlassian",
+    "logo": "atlassian.svg",
+    "link": "https://www.atlassian.com",
+    "pinned": true
+  },
+  {
+    "name": "Netflix",
+    "logo": "netflix.svg",
+    "link": "https://www.netflix.com/",
+    "pinned": true
+  },
+  {
     "name": "Cisco",
     "logo": "cisco.svg",
     "link": "https://www.cisco.com/",
@@ -44,20 +56,17 @@
   {
     "name": "Trend Micro",
     "logo": "trendmicro.svg",
-    "link": "https://www.trendmicro.com/",
-    "pinned": true
+    "link": "https://www.trendmicro.com/"
   },
   {
     "name": "LiveChat",
     "logo": "livechat.png",
-    "link": "https://www.livechatinc.com",
-    "pinned": true
+    "link": "https://www.livechatinc.com"
   },
   {
     "name": "Smarter Click",
     "logo": "smarterclick.png",
-    "link": "https://www.smarterclick.com/",
-    "pinned": true
+    "link": "https://www.smarterclick.com/"
   },
   {
     "name": "HalcyonMobile",
