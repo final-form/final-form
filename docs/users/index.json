@@ -24,6 +24,12 @@
     "pinned": true
   },
   {
+    "name": "Deloitte",
+    "logo": "deloitte.svg",
+    "link": "https://www.deloitte.com",
+    "pinned": true
+  },
+  {
     "name": "KPMG",
     "logo": "kpmg.svg",
     "link": "https://www.kpmg.com/",
