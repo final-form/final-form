@@ -28,7 +28,7 @@ Final Form provides strong typing via both [Flow](https://flow.org) and [Typescr
 
 ### Modularity
 
-Just because some forms can be complex doesn't mean that your users should need to download all that code for a simple form! Final Form and Final Form break out complex functionality into separate packages, so the form state management core doesn't get bloated by complicated use cases. This allows you to _build the form library you need_ for every use case.
+Just because some forms can be complex doesn't mean that your users should need to download all that code for a simple form! Final Form and React Final Form, break out complex functionality into separate packages, so the form state management core doesn't get bloated by complicated use cases. This allows you to _build the form library you need_ for every use case.
 
 Also, this allows for...
 
