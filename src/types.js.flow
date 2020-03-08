@@ -276,7 +276,7 @@ export type Mutator<FormValues: FormValuesShape> = (
 export type Config<FormValues: FormValuesShape> = {
   debug?: DebugFunction<FormValues>,
   destroyOnUnregister?: boolean,
-  initialValues?: Partial<FormValues>,
+  initialValues?: $Shape<FormValues>,
   keepDirtyOnReinitialize?: boolean,
   mutators?: { [string]: Mutator<FormValues> },
   onSubmit: (
