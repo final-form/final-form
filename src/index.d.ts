@@ -264,7 +264,7 @@ export type Mutator<FormValues = object> = (
 export interface Config<FormValues = object> {
   debug?: DebugFunction<FormValues>
   destroyOnUnregister?: boolean
-  initialValues?: FormValues
+  initialValues?: Partial<FormValues>
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator<FormValues> }
   onSubmit: (

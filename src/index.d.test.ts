@@ -99,6 +99,7 @@ interface FormValues2 {
   a: string
   b: boolean
   c: number
+  d?: string
 }
 const initialValues: Config<FormValues2>['initialValues'] = {
   a: 'a',
