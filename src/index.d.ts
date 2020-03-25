@@ -33,7 +33,7 @@ export interface FormSubscription {
   visited?: boolean
 }
 
-export interface FormState<FormValues> {
+export interface FormState<FormValues, InitialFormValues = Partial<FormValues>> {
   // by default: all values are subscribed. if subscription is specified, some values may be undefined
   active: undefined | string
   dirty: boolean
@@ -44,7 +44,7 @@ export interface FormState<FormValues> {
   errors: ValidationErrors
   hasSubmitErrors: boolean
   hasValidationErrors: boolean
-  initialValues: FormValues
+  initialValues: InitialFormValues
   invalid: boolean
   modified?: { [key: string]: boolean }
   pristine: boolean
@@ -261,10 +261,10 @@ export type Mutator<FormValues = object> = (
   tools: Tools<FormValues>
 ) => any
 
-export interface Config<FormValues = object> {
+export interface Config<FormValues = object, InitialFormValues = Partial<FormValues>> {
   debug?: DebugFunction<FormValues>
   destroyOnUnregister?: boolean
-  initialValues?: FormValues
+  initialValues?: InitialFormValues
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator<FormValues> }
   onSubmit: (
