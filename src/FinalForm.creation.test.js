@@ -206,4 +206,29 @@ describe('FinalForm.creation', () => {
       data: { foo: 'fubar' }
     })
   })
+
+  it('should not call listeners when registering silently', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const listener = jest.fn()
+    form.subscribe(listener, { values: true })
+    expect(listener).toHaveBeenCalled()
+    expect(listener).toHaveBeenCalledTimes(1)
+
+    const apple = jest.fn()
+    form.registerField('apple', apple, { value: true }, { initialValue: 'red' })
+    expect(apple).toHaveBeenCalled()
+    expect(apple).toHaveBeenCalledTimes(1)
+    expect(listener).toHaveBeenCalledTimes(2)
+
+    const banana = jest.fn()
+    form.registerField(
+      'banana',
+      banana,
+      { value: true },
+      { initialValue: 'yellow', silent: true }
+    )
+    expect(banana).toHaveBeenCalled()
+    expect(banana).toHaveBeenCalledTimes(1)
+    expect(listener).toHaveBeenCalledTimes(2)
+  })
 })

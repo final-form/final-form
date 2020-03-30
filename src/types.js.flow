@@ -141,6 +141,7 @@ export type FieldConfig = {
   getValidator?: GetFieldValidator,
   initialValue?: any,
   isEqual?: IsEqual,
+  silent?: boolean,
   validateFields?: string[]
 }
 
