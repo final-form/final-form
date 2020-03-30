@@ -820,6 +820,15 @@ function createForm<FormValues: FormValuesShape>(
         }
       }
       let haveValidator = false
+      const silent = fieldConfig && fieldConfig.silent
+      const notify = () => {
+        if (silent) {
+          notifyFieldListeners(name)
+        } else {
+          notifyFormListeners()
+          notifyFieldListeners()
+        }
+      }
       if (fieldConfig) {
         haveValidator = !!(
           fieldConfig.getValidator && fieldConfig.getValidator()
@@ -842,10 +851,7 @@ function createForm<FormValues: FormValuesShape>(
             name,
             fieldConfig.initialValue
           )
-          runValidation(undefined, () => {
-            notifyFormListeners()
-            notifyFieldListeners()
-          })
+          runValidation(undefined, notify)
         }
         if (
           fieldConfig.defaultValue !== undefined &&
@@ -861,13 +867,9 @@ function createForm<FormValues: FormValuesShape>(
       }
 
       if (haveValidator) {
-        runValidation(undefined, () => {
-          notifyFormListeners()
-          notifyFieldListeners()
-        })
+        runValidation(undefined, notify)
       } else {
-        notifyFormListeners()
-        notifyFieldListeners(name)
+        notify()
       }
 
       return () => {

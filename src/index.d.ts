@@ -141,6 +141,7 @@ export interface FieldConfig<FieldValue> {
   getValidator?: GetFieldValidator<FieldValue>
   initialValue?: any
   isEqual?: IsEqual
+  silent?: boolean
   validateFields?: string[]
 }
 

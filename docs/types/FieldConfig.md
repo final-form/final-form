@@ -79,6 +79,20 @@ Optional. Defaults to `===`.
 
 A function to determine if two values are equal.
 
+## `silent`
+
+```ts
+boolean
+```
+
+Optional.
+
+If `true`, no form or field listeners (apart from the one currently registering) will be notified of anything that has changed with the registration of this field. _Shhhh!!_
+
+This can be useful to do a "dry run" of registering a field and immediately unregistering it to get an initial state for that field without disturbing all the other listeners.
+
+Defaults to `false`.
+
 ## `validateFields`
 
 ```ts
