@@ -897,14 +897,16 @@ function createForm<FormValues: FormValuesShape>(
               setIn(state.formState.values, name, undefined, true) || {}
           }
         }
-        if (validatorRemoved) {
-          runValidation(undefined, () => {
+        if (!silent) {
+          if (validatorRemoved) {
+            runValidation(undefined, () => {
+              notifyFormListeners()
+              notifyFieldListeners()
+            })
+          } else if (lastOne) {
+            // values or errors may have changed
             notifyFormListeners()
-            notifyFieldListeners()
-          })
-        } else if (lastOne) {
-          // values or errors may have changed
-          notifyFormListeners()
+          }
         }
       }
     },
