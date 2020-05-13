@@ -1,6 +1,6 @@
 // @flow
 const keysCache: {[string]: string[]} = {}
-const keysRegex = /[.[\]]+/;
+const keysRegex = /[.[\]]+/
 
 const toPath = (key: string): string[] => {
   if (key === null || key === undefined || !key.length) {
@@ -9,10 +9,10 @@ const toPath = (key: string): string[] => {
   if (typeof key !== 'string') {
     throw new Error('toPath() expects a string')
   }
-  if(keysCache[key] == null) {
+  if (keysCache[key] == null) {
     keysCache[key] = key.split(keysRegex).filter(Boolean)
   }
-  return keysCache[key];
+  return keysCache[key]
 }
 
 export default toPath
