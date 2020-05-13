@@ -140,5 +140,11 @@
     "logo": "tinacms.svg",
     "link": "https://tinacms.org",
     "pinned": true
+  },
+  {
+    "name": "Simpplr",
+    "logo": "simpplr.svg",
+    "link": "https://www.simpplr.com/",
+    "pinned": true
   }
 ]
