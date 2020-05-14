@@ -2,6 +2,10 @@
 
 ---
 
+💰 **Hey there! Do you fancy yourself a javascript expert? [Take this quiz](https://triplebyte.com/a/V6j0KPS/ff) and get offers from top tech companies!** 💰
+
+---
+
 # 🏁 Final Form
 
 [![Final Form](banner.png)](https://final-form.org)
