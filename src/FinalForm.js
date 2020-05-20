@@ -549,7 +549,10 @@ function createForm<FormValues: FormValuesShape>(
     )
     formState.modifiedSinceLastSubmit = !!(
       formState.lastSubmittedValues &&
-      Object.values(safeFields).some(value => value.modifiedSinceLastSubmit)
+      // Object.values would treat values as mixed (facebook/flow#2221)
+      Object.keys(safeFields).some(
+        value => safeFields[value].modifiedSinceLastSubmit
+      )
     )
 
     formState.valid =
