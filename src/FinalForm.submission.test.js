@@ -408,6 +408,7 @@ describe('FinalForm.submission', () => {
     expect(spy).not.toHaveBeenCalled()
     form.subscribe(spy, {
       dirtySinceLastSubmit: true,
+      modifiedSinceLastSubmit: true,
       valid: true,
       submitSucceeded: true,
       submitFailed: true
@@ -416,6 +417,7 @@ describe('FinalForm.submission', () => {
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0]).toEqual({
       dirtySinceLastSubmit: false,
+      modifiedSinceLastSubmit: false,
       valid: true,
       submitSucceeded: false,
       submitFailed: false
@@ -439,6 +441,7 @@ describe('FinalForm.submission', () => {
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy.mock.calls[1][0]).toEqual({
       dirtySinceLastSubmit: false,
+      modifiedSinceLastSubmit: false,
       valid: false,
       submitSucceeded: false,
       submitFailed: true
@@ -456,6 +459,7 @@ describe('FinalForm.submission', () => {
     expect(spy).toHaveBeenCalledTimes(3)
     expect(spy.mock.calls[2][0]).toEqual({
       dirtySinceLastSubmit: false,
+      modifiedSinceLastSubmit: false,
       valid: true,
       submitSucceeded: false,
       submitFailed: false
@@ -726,6 +730,89 @@ describe('FinalForm.submission', () => {
     expect(foo).toHaveBeenCalledTimes(3)
     expect(foo2).toHaveBeenCalledTimes(2)
     expect(foo2.mock.calls[1][0].dirtySinceLastSubmit).toBe(true)
+  })
+
+  it('should maintain field-level and form-level modifiedSinceLastSubmit', () => {
+    const onSubmit = jest.fn((values, form) => {
+      const errors = {}
+      if (values.foo === 'bar') {
+        errors.foo = 'Sorry, "bar" is an illegal value'
+      }
+      return errors
+    })
+    const form = createForm({ onSubmit })
+    const spy = jest.fn()
+    expect(spy).not.toHaveBeenCalled()
+    form.subscribe(spy, {
+      modifiedSinceLastSubmit: true,
+      valid: true,
+      submitSucceeded: true,
+      submitFailed: true
+    })
+    const foo = jest.fn()
+    const foo2 = jest.fn()
+    form.registerField('foo', foo, { modifiedSinceLastSubmit: true })
+    form.registerField('foo2', foo2, { modifiedSinceLastSubmit: true })
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith({
+      modifiedSinceLastSubmit: false,
+      valid: true,
+      submitSucceeded: false,
+      submitFailed: false
+    })
+    expect(foo).toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo.mock.calls[0][0].modifiedSinceLastSubmit).toBe(false)
+
+    expect(foo2).toHaveBeenCalled()
+    expect(foo2).toHaveBeenCalledTimes(1)
+    expect(foo2.mock.calls[0][0].modifiedSinceLastSubmit).toBe(false)
+
+    form.change('foo', 'bar')
+    form.change('foo2', 'baz')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo2).toHaveBeenCalledTimes(1)
+
+    form.submit()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit.mock.calls[0][0]).toEqual({ foo: 'bar', foo2: 'baz' })
+    expect(typeof onSubmit.mock.calls[0][1]).toBe('object')
+
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenCalledWith({
+      modifiedSinceLastSubmit: false,
+      valid: false,
+      submitSucceeded: false,
+      submitFailed: true
+    })
+    expect(foo).toHaveBeenCalledTimes(1)
+    expect(foo2).toHaveBeenCalledTimes(1)
+
+    form.change('foo', 'notbar')
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy).toHaveBeenCalledWith({
+      modifiedSinceLastSubmit: true,
+      valid: false,
+      submitSucceeded: false,
+      submitFailed: true
+    })
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo.mock.calls[1][0].modifiedSinceLastSubmit).toBe(true)
+    expect(foo2).toHaveBeenCalledTimes(1)
+
+    // change back to bar
+    form.change('foo', 'bar')
+
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(foo).toHaveBeenCalledTimes(2)
+    expect(foo2).toHaveBeenCalledTimes(1)
   })
 
   it('should not submit if form is still validating', () => {

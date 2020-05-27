@@ -9,6 +9,7 @@ export default [
   'invalid',
   'length',
   'modified',
+  'modifiedSinceLastSubmit',
   'pristine',
   'submitError',
   'submitFailed',
