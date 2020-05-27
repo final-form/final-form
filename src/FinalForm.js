@@ -319,7 +319,7 @@ function createForm<FormValues: FormValuesShape>(
         const errorOrPromise = validator(
           getIn(state.formState.values, field.name),
           state.formState.values,
-          validator.length === 3
+          validator.length === 0 || validator.length === 3
             ? publishFieldState(state.formState, state.fields[field.name])
             : undefined
         )

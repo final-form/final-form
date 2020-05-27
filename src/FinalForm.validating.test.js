@@ -1396,4 +1396,36 @@ describe('Field.validation', () => {
     expect(foo.mock.calls[1][0].error).toBe('Required')
     expect(form.getState().invalid).toBe(true)
   })
+
+  it('should pass in all three arguments into a wrapped validate function with unknown number of arguments', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock
+    });
+    const noArg = jest.fn()
+    
+    form.registerField('foo', () => {}, { error: true }, { initialValue: 'value', getValidator: () => noArg })
+    const meta = form.getFieldState('foo')
+    const { values } = form.getState()
+
+    expect(noArg).toHaveBeenNthCalledWith(1, values.foo, values, meta)
+  })
+
+  it('should not pass field state to a validator function with 1 or 2 arguments', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock
+    });
+    const oneArg = jest.fn(val => {})
+    const twoArg = jest.fn((val, all) => {})
+    const threeArg = jest.fn((val, all, meta) => {})
+    
+    form.registerField('foo', () => {}, { error: true }, { initialValue: 'value', getValidator: () => oneArg })
+    form.registerField('bar', () => {}, { error: true }, { initialValue: 'value', getValidator: () => twoArg })
+    form.registerField('baz', () => {}, { error: true }, { initialValue: 'value', getValidator: () => threeArg })
+
+    const meta = form.getFieldState('baz')
+
+    expect(oneArg.mock.calls[0][2]).toBeUndefined()
+    expect(twoArg.mock.calls[0][2]).toBeUndefined()
+    expect(threeArg.mock.calls[0][2]).toEqual(meta)
+  })
 })
