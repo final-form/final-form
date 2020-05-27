@@ -583,6 +583,51 @@ describe('FinalForm.submission', () => {
     await submissionPromise
   })
 
+  it('should clear submitError & submitErrors when submit gets called, but validation fails', () => {
+    const submitErrorText = 'You shall not pass'
+    const fooSubmitErrorText = 'Foo shall not pass'
+
+    const form = createForm({
+      onSubmit: () => ({
+        [FORM_ERROR]: submitErrorText,
+        foo: fooSubmitErrorText,
+      }),
+      initialValues: { foo: 'bar' },
+      validate: values => {
+        const errors = {};
+        if (values.foo !== 'bar') {
+          errors.foo = 'Sorry, only "bar" can pass this step';
+        }
+        return errors;
+      },
+    })
+    form.registerField('foo', () => {})
+
+    const spy = jest.fn()
+    form.subscribe(spy, {
+      submitError: true,
+      submitErrors: true,
+    })
+
+    form.submit()
+
+    expect(spy).toHaveBeenLastCalledWith({
+      submitError: submitErrorText,
+      submitErrors: {
+        [FORM_ERROR]: submitErrorText,
+        foo: fooSubmitErrorText,
+      },
+    })
+
+    form.change('foo', 'baz')
+    form.submit()
+
+    expect(spy).toHaveBeenLastCalledWith({
+      submitError: undefined,
+      submitErrors: undefined,
+    })
+  })
+
   it('should maintain field-level and form-level dirtySinceLastSubmit', () => {
     const onSubmit = jest.fn((values, form) => {
       const errors = {}

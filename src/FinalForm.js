@@ -1057,6 +1057,10 @@ function createForm<FormValues: FormValuesShape>(
         return
       }
 
+      delete formState.submitErrors
+      delete formState.submitError
+      formState.lastSubmittedValues = { ...formState.values }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched()
         state.formState.submitFailed = true
@@ -1103,8 +1107,6 @@ function createForm<FormValues: FormValuesShape>(
         return errors
       }
 
-      delete formState.submitErrors
-      delete formState.submitError
       formState.submitting = true
       formState.submitFailed = false
       formState.submitSucceeded = false
