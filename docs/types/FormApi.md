@@ -155,6 +155,14 @@ Note that if you are calling `reset()` and not specify new initial values, you m
 
 Resets all of a field's flags (e.g. `touched`, `visited`, etc.) to their initial state.
 
+## `restart`
+
+```ts
+() => void
+```
+
+Resets all form and field state. Same as calling `reset()` on the form and `resetFieldState()` for each field. Form should be just as it was when it was first created.
+
 ## `resumeValidation`
 
 ```ts
