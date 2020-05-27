@@ -36,7 +36,7 @@ export interface FormSubscription {
 
 export interface FormState<FormValues, InitialFormValues = Partial<FormValues>> {
   // by default: all values are subscribed. if subscription is specified, some values may be undefined
-  active: undefined | string
+  active: undefined | keyof FormValues
   dirty: boolean
   dirtyFields: { [key: string]: boolean }
   dirtyFieldsSinceLastSubmit: { [key: string]: boolean }
@@ -67,7 +67,7 @@ export type FormSubscriber<FormValues, InitialFormValues = Partial<FormValues>> 
 export interface FieldState<FieldValue> {
   active?: boolean
   blur: () => void
-  change: (value: any) => void
+  change: (value: FieldValue | undefined) => void
   data?: AnyObject
   dirty?: boolean
   dirtySinceLastSubmit?: boolean
@@ -149,11 +149,11 @@ export interface FieldConfig<FieldValue> {
   validateFields?: string[]
 }
 
-export type RegisterField<FieldValue> = (
-  name: string,
-  subscriber: FieldSubscriber<FieldValue>,
+export type RegisterField<FormValues> = <F extends keyof FormValues>(
+  name: F,
+  subscriber: FieldSubscriber<FormValues[F]>,
   subscription: FieldSubscription,
-  config?: FieldConfig<FieldValue>
+  config?: FieldConfig<FormValues[F]>
 ) => Unsubscribe
 
 export interface InternalFieldState<FieldValue> {
@@ -199,22 +199,24 @@ export interface InternalFormState {
 
 type ConfigKey = keyof Config
 
-export interface FormApi<FormValues = object, InitialFormValues = Partial<FormValues>> {
+export interface FormApi<FormValues = Record<string, any>, InitialFormValues = Partial<FormValues>> {
   batch: (fn: () => void) => void
-  blur: (name: string) => void
-  change: (name: string, value?: any) => void
+  blur: (name: keyof FormValues) => void
+  change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void
   destroyOnUnregister: boolean
-  focus: (name: string) => void
+  focus: (name: keyof FormValues) => void
   initialize: (data: FormValues | ((values: FormValues) => FormValues)) => void
   isValidationPaused: () => boolean
-  getFieldState: (field: string) => FieldState<any> | undefined
+  getFieldState: <F extends keyof FormValues>(
+    field: F
+  ) => FieldState<FormValues[F]> | undefined
   getRegisteredFields: () => string[]
   getState: () => FormState<FormValues, InitialFormValues>
-  mutators: { [key: string]: (...args: any[]) => any }
+  mutators: Record<string, (...args: any[]) => any>
   pauseValidation: () => void
-  registerField: RegisterField<any>
-  reset: (initialValues?: object) => void
-  resetFieldState: (name: string) => void
+  registerField: RegisterField<FormValues>
+  reset: (initialValues?: FormValues) => void
+  resetFieldState: (name: keyof FormValues) => void
   resumeValidation: () => void
   setConfig: <K extends ConfigKey>(
     name: K,
