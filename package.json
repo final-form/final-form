@@ -1,6 +1,6 @@
 {
   "name": "final-form",
-  "version": "4.18.7",
+  "version": "4.19.1",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
@@ -93,18 +93,19 @@
   "bundlesize": [
     {
       "path": "dist/final-form.umd.min.js",
-      "maxSize": "5.1kB"
+      "maxSize": "5.2kB"
     },
     {
       "path": "dist/final-form.es.js",
-      "maxSize": "8.9kB"
+      "maxSize": "9.1kB"
     },
     {
       "path": "dist/final-form.cjs.js",
-      "maxSize": "9.0kB"
+      "maxSize": "9.2kB"
     }
   ],
   "dependencies": {
-    "@babel/runtime": "^7.8.3"
+    "@babel/runtime": "^7.8.3",
+    "@scarf/scarf": "^1.0.5"
   }
 }

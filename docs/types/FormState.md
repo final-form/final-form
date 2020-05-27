@@ -104,6 +104,14 @@ belong to any currently registered fields.
 
 An object full of booleans, with a boolean value for each field name denoting whether that field is `modified` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `modified` value for that field will be available under `modified['addresses.shipping.street']`.
 
+## `modifiedSinceLastSubmit`
+
+```ts
+boolean
+```
+
+true if the form values have ever been changed since the last submission. false otherwise.
+
 ## `pristine`
 
 ```ts

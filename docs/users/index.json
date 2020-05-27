@@ -1,5 +1,17 @@
 [
   {
+    "name": "Atlassian",
+    "logo": "atlassian.svg",
+    "link": "https://www.atlassian.com",
+    "pinned": true
+  },
+  {
+    "name": "Netflix",
+    "logo": "netflix.svg",
+    "link": "https://www.netflix.com/",
+    "pinned": true
+  },
+  {
     "name": "Cisco",
     "logo": "cisco.svg",
     "link": "https://www.cisco.com/",
@@ -9,6 +21,12 @@
     "name": "HSBC",
     "logo": "hsbc.svg",
     "link": "https://www.hsbc.com/",
+    "pinned": true
+  },
+  {
+    "name": "Deloitte",
+    "logo": "deloitte.svg",
+    "link": "https://www.deloitte.com",
     "pinned": true
   },
   {
@@ -44,20 +62,17 @@
   {
     "name": "Trend Micro",
     "logo": "trendmicro.svg",
-    "link": "https://www.trendmicro.com/",
-    "pinned": true
+    "link": "https://www.trendmicro.com/"
   },
   {
     "name": "LiveChat",
     "logo": "livechat.png",
-    "link": "https://www.livechatinc.com",
-    "pinned": true
+    "link": "https://www.livechatinc.com"
   },
   {
     "name": "Smarter Click",
     "logo": "smarterclick.png",
-    "link": "https://www.smarterclick.com/",
-    "pinned": true
+    "link": "https://www.smarterclick.com/"
   },
   {
     "name": "HalcyonMobile",
@@ -124,6 +139,12 @@
     "name": "TinaCMS",
     "logo": "tinacms.svg",
     "link": "https://tinacms.org",
+    "pinned": true
+  },
+  {
+    "name": "Simpplr",
+    "logo": "simpplr.svg",
+    "link": "https://www.simpplr.com/",
     "pinned": true
   }
 ]
