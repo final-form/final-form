@@ -12,6 +12,7 @@ export default [
   'initialValues',
   'invalid',
   'modified',
+  'modifiedSinceLastSubmit',
   'pristine',
   'submitting',
   'submitError',

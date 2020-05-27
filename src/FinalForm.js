@@ -78,6 +78,7 @@ function convertToExternalFormState<FormValues: FormValuesShape>({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
   active,
   dirtySinceLastSubmit,
+  modifiedSinceLastSubmit,
   error,
   errors,
   initialValues,
@@ -95,6 +96,7 @@ function convertToExternalFormState<FormValues: FormValuesShape>({
     active,
     dirty: !pristine,
     dirtySinceLastSubmit,
+    modifiedSinceLastSubmit,
     error,
     errors,
     hasSubmitErrors: !!(
@@ -186,6 +188,7 @@ function createForm<FormValues: FormValuesShape>(
     fields: {},
     formState: {
       dirtySinceLastSubmit: false,
+      modifiedSinceLastSubmit: false,
       errors: {},
       initialValues: initialValues && { ...initialValues },
       invalid: false,
@@ -544,6 +547,13 @@ function createForm<FormValues: FormValuesShape>(
       formState.lastSubmittedValues &&
       Object.values(dirtyFieldsSinceLastSubmit).some(value => value)
     )
+    formState.modifiedSinceLastSubmit = !!(
+      formState.lastSubmittedValues &&
+      // Object.values would treat values as mixed (facebook/flow#2221)
+      Object.keys(safeFields).some(
+        value => safeFields[value].modifiedSinceLastSubmit
+      )
+    )
 
     formState.valid =
       !formState.error &&
@@ -641,6 +651,11 @@ function createForm<FormValues: FormValuesShape>(
       name => state.fields[name].afterSubmit && state.fields[name].afterSubmit()
     )
 
+  const resetModifiedAfterSubmit = (): void =>
+    Object.keys(state.fields).forEach(
+      key => (state.fields[key].modifiedSinceLastSubmit = false)
+    )
+
   // generate initial errors
   runValidation(undefined, () => {
     notifyFormListeners()
@@ -687,7 +702,8 @@ function createForm<FormValues: FormValuesShape>(
           // only track modified for registered fields
           fields[name] = {
             ...previous,
-            modified: true
+            modified: true,
+            modifiedSinceLastSubmit: !!formState.lastSubmittedValues
           }
         }
         if (validateOnBlur) {
@@ -810,6 +826,7 @@ function createForm<FormValues: FormValuesShape>(
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
           lastFieldState: undefined,
           modified: false,
+          modifiedSinceLastSubmit: false,
           name,
           touched: false,
           valid: true,
@@ -933,6 +950,7 @@ function createForm<FormValues: FormValuesShape>(
           active: false,
           lastFieldState: undefined,
           modified: false,
+          modifiedSinceLastSubmit: false,
           touched: false,
           valid: true,
           validating: false,
@@ -1065,6 +1083,7 @@ function createForm<FormValues: FormValuesShape>(
       formState.submitFailed = false
       formState.submitSucceeded = false
       formState.lastSubmittedValues = { ...formState.values }
+      resetModifiedAfterSubmit()
 
       // onSubmit is either sync, callback or async with a Promise
       const result = onSubmit(formState.values, api, complete)

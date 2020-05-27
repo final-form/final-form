@@ -102,6 +102,16 @@ boolean
 
 Once `true`, it will remain `true` for the lifetime of the field, or until the form or field state is reset.
 
+## `modifiedSinceLastSubmit`
+
+```ts
+boolean
+```
+
+`true` if this field's value has ever been changed since the last submission. `false` otherwise.
+
+Once `true`, it will remain `true` until the next submit action, or until the form or field state is reset.
+
 ## `name`
 
 ```ts
