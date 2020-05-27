@@ -13,6 +13,7 @@ export interface FormSubscription {
   dirtyFields?: boolean
   dirtyFieldsSinceLastSubmit?: boolean
   dirtySinceLastSubmit?: boolean
+  modifiedSinceLastSubmit?: boolean
   error?: boolean
   errors?: boolean
   hasSubmitErrors?: boolean
@@ -47,6 +48,7 @@ export interface FormState<FormValues> {
   initialValues: FormValues
   invalid: boolean
   modified?: { [key: string]: boolean }
+  modifiedSinceLastSubmit: boolean
   pristine: boolean
   submitError: any
   submitErrors: SubmissionErrors
@@ -75,6 +77,7 @@ export interface FieldState<FieldValue> {
   invalid?: boolean
   length?: number
   modified?: boolean
+  modifiedSinceLastSubmit?: boolean
   name: string
   pristine?: boolean
   submitError?: any
@@ -98,6 +101,7 @@ export interface FieldSubscription {
   invalid?: boolean
   length?: boolean
   modified?: boolean
+  modifiedSinceLastSubmit?: false
   pristine?: boolean
   submitError?: boolean
   submitFailed?: boolean
@@ -162,6 +166,7 @@ export interface InternalFieldState<FieldValue> {
   lastFieldState?: FieldState<FieldValue>
   length?: any
   modified: boolean
+  modifiedSinceLastSubmit: boolean
   name: string
   touched: boolean
   validateFields?: string[]
@@ -176,6 +181,7 @@ export interface InternalFieldState<FieldValue> {
 export interface InternalFormState {
   active?: string
   dirtySinceLastSubmit: boolean
+  modifiedSinceLastSubmit: boolean
   error?: any
   errors: ValidationErrors
   initialValues?: object
