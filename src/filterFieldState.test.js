@@ -1,4 +1,5 @@
 import filterFieldState from './filterFieldState'
+import createForm from './FinalForm.js'
 
 describe('filterFieldState', () => {
   const name = 'foo'
@@ -84,5 +85,38 @@ describe('filterFieldState', () => {
 
   describe('filterFieldState.visited', () => {
     testValue('visited', state, !state.visited)
+  })
+})
+
+describe('restart', () => {
+  it('both state and value are cleared after a "restart" call', async () => {
+    const fieldName = 'fooField'
+
+    const form = createForm({
+      onSubmit: () => {}
+    })
+    form.registerField(fieldName, () => {})
+
+    function isTouched() {
+      return form.getState().touched[fieldName]
+    }
+
+    function value() {
+      return form.getState().values[fieldName]
+    }
+
+    expect(isTouched()).not.toBeTruthy()
+    form.focus(fieldName)
+    form.blur(fieldName)
+    expect(isTouched()).toBeTruthy()
+
+    expect(value()).toBeUndefined()
+    form.change(fieldName, 1)
+    expect(value()).toEqual(1)
+
+    form.restart()
+
+    expect(isTouched()).not.toBeTruthy()
+    expect(value()).toBeUndefined()
   })
 })

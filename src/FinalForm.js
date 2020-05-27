@@ -950,7 +950,6 @@ function createForm<FormValues: FormValuesShape>(
           active: false,
           lastFieldState: undefined,
           modified: false,
-          modifiedSinceLastSubmit: false,
           touched: false,
           valid: true,
           validating: false,
@@ -960,6 +959,33 @@ function createForm<FormValues: FormValuesShape>(
       runValidation(undefined, () => {
         notifyFieldListeners()
         notifyFormListeners()
+      })
+    },
+
+    /**
+     * Returns the form to a clean slate; that is:
+     * - Clear all values
+     * - Resets all fields to their initial state
+     */
+    restart: (initialValues = state.formState.initialValues) => {
+      api.batch(() => {
+        for (const name in state.fields) {
+          api.resetFieldState(name)
+          state.fields[name] = {
+            ...state.fields[name],
+            ...{
+              active: false,
+              lastFieldState: undefined,
+              modified: false,
+              modifiedSinceLastSubmit: false,
+              touched: false,
+              valid: true,
+              validating: false,
+              visited: false
+            }
+          }
+        }
+        api.reset(initialValues)
       })
     },
 
