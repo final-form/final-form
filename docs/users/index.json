@@ -1,5 +1,11 @@
 [
   {
+    "name": "Apple",
+    "logo": "apple.svg",
+    "link": "https://www.apple.com",
+    "pinned": true
+  },
+  {
     "name": "Atlassian",
     "logo": "atlassian.svg",
     "link": "https://www.atlassian.com",
