@@ -90,7 +90,7 @@
     "name": "HalcyonMobile",
     "logo": "halcyonmobile.svg",
     "link": "https://halcyonmobile.com/",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Discogs",
@@ -157,6 +157,6 @@
     "name": "Simpplr",
     "logo": "simpplr.svg",
     "link": "https://www.simpplr.com/",
-    "pinned": true
+    "pinned": false
   }
 ]
