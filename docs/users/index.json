@@ -1,5 +1,11 @@
 [
   {
+    "name": "Amazon",
+    "logo": "amazon.svg",
+    "link": "https://www.amazon.com",
+    "pinned": true
+  },
+  {
     "name": "Apple",
     "logo": "apple.svg",
     "link": "https://www.apple.com",
