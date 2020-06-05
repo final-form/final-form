@@ -12,6 +12,12 @@
     "pinned": true
   },
   {
+    "name": "Google",
+    "logo": "google.svg",
+    "link": "https://www.google.com",
+    "pinned": true
+  },
+  {
     "name": "Atlassian",
     "logo": "atlassian.svg",
     "link": "https://www.atlassian.com",
@@ -66,9 +72,26 @@
     "pinned": true
   },
   {
+    "name": "Xfinity",
+    "logo": "xfinity.svg",
+    "link": "https://www.xfinity.com",
+    "pinned": true
+  },
+  {
     "name": "Konica Minolta",
     "logo": "konicaminolta.svg",
-    "link": "https://www.konicaminolta.com",
+    "link": "https://www.konicaminolta.com"
+  },
+  {
+    "name": "World Food Programme",
+    "logo": "world-food-programme.svg",
+    "link": "https://wfp.org",
+    "pinned": true
+  },
+  {
+    "name": "Dick's Sporting Goods",
+    "logo": "dicks.png",
+    "link": "https://www.dickssportinggoods.com",
     "pinned": true
   },
   {
