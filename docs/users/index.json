@@ -18,6 +18,12 @@
     "pinned": true
   },
   {
+    "name": "Microsoft",
+    "logo": "microsoft.svg",
+    "link": "https://www.microsoft.com",
+    "pinned": true
+  },
+  {
     "name": "Atlassian",
     "logo": "atlassian.svg",
     "link": "https://www.atlassian.com",
