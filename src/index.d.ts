@@ -270,24 +270,24 @@ export type Mutator<FormValues = object, InitialFormValues = Partial<FormValues>
   tools: Tools<FormValues, InitialFormValues>
 ) => any
 
+export type SubmissionHandler<FormValues, InitialFormValues = Partial<FormValues>> = (
+  values: FormValues,
+  form: FormApi<FormValues, InitialFormValues>,
+  callback?: (errors?: SubmissionErrors) => void
+) => SubmissionErrors | Promise<SubmissionErrors | undefined> | undefined | void
+
+export type ValidationHandler<FormValues> = (
+  values: FormValues
+) => ValidationErrors | Promise<ValidationErrors> | undefined
+
 export interface Config<FormValues = object, InitialFormValues = Partial<FormValues>> {
   debug?: DebugFunction<FormValues, InitialFormValues>
   destroyOnUnregister?: boolean
   initialValues?: InitialFormValues
   keepDirtyOnReinitialize?: boolean
   mutators?: { [key: string]: Mutator<FormValues, InitialFormValues> }
-  onSubmit: (
-    values: FormValues,
-    form: FormApi<FormValues, InitialFormValues>,
-    callback?: (errors?: SubmissionErrors) => void
-  ) =>
-    | SubmissionErrors
-    | Promise<SubmissionErrors | undefined>
-    | undefined
-    | void
-  validate?: (
-    values: FormValues
-  ) => ValidationErrors | Promise<ValidationErrors> | undefined
+  onSubmit: SubmissionHandler<FormValues, InitialFormValues>
+  validate?: ValidationHandler<FormValues>
   validateOnBlur?: boolean
 }
 
