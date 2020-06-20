@@ -101,6 +101,11 @@
     "pinned": true
   },
   {
+    "name": "Accenture",
+    "logo": "accenture.svg",
+    "link": "https://www.accenture.com/"
+  },
+  {
     "name": "Trend Micro",
     "logo": "trendmicro.svg",
     "link": "https://www.trendmicro.com/"
