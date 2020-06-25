@@ -215,7 +215,7 @@ export interface FormApi<FormValues = Record<string, any>, InitialFormValues = P
   mutators: Record<string, (...args: any[]) => any>
   pauseValidation: () => void
   registerField: RegisterField<FormValues>
-  reset: (initialValues?: FormValues) => void
+  reset: (initialValues?: InitialFormValues) => void
   resetFieldState: (name: keyof FormValues) => void
   resumeValidation: () => void
   setConfig: <K extends ConfigKey>(
