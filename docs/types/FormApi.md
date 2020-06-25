@@ -140,7 +140,7 @@ Related:
 ## `reset`
 
 ```ts
-(initialValues: ?FormValues) => void
+(initialValues: ?FormInitialValues) => void
 ```
 
 Resets the values back to the initial values the form was initialized with. Or empties all the values if the form was not initialized. If you provide `initialValues` they will be used as the new initial values.
