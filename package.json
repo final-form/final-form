@@ -1,6 +1,6 @@
 {
   "name": "final-form",
-  "version": "4.20.0",
+  "version": "4.20.1",
   "description": "🏁 Framework agnostic, high performance, subscription-based form state management",
   "main": "dist/final-form.cjs.js",
   "jsnext:main": "dist/final-form.es.js",
