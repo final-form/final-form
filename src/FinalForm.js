@@ -855,7 +855,9 @@ function createForm<FormValues: FormValuesShape>(
         }
         if (
           fieldConfig.initialValue !== undefined &&
-          getIn(state.formState.values, name) === undefined
+          (getIn(state.formState.values, name) === undefined ||
+            getIn(state.formState.values, name) ===
+              getIn(state.formState.initialValues, name))
           // only initialize if we don't yet have any value for this field
         ) {
           state.formState.initialValues = setIn(
