@@ -210,7 +210,7 @@ export interface FormApi<FormValues = Record<string, any>, InitialFormValues = P
   getFieldState: <F extends keyof FormValues>(
     field: F
   ) => FieldState<FormValues[F]> | undefined
-  getRegisteredFields: () => string[]
+  getRegisteredFields: () => Array<keyof FormValues>
   getState: () => FormState<FormValues, InitialFormValues>
   mutators: Record<string, (...args: any[]) => any>
   pauseValidation: () => void

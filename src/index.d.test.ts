@@ -1,5 +1,5 @@
 // tslint:disable no-console
-import { AnyObject, Config, createForm, Mutator } from './index'
+import { AnyObject, Config, createForm, Mutator, FormApi } from './index'
 
 interface FormValues {
   foo: string
@@ -143,3 +143,11 @@ form2 = createForm<FormValues2>({
 // Get form.mutators cast to Mutators
 const mutators: Mutators = form2.mutators as Mutators
 mutators.setValue('firstName', 'Kevin')
+
+// Test the formApi.getRegisteredFields function
+declare const formApi: FormApi<FormValues2>
+// This is a common pattern for operating on all the registered fields.
+formApi.getRegisteredFields().forEach(registeredField => {
+  // formApi.change accepts only the keys of FormValues.
+  formApi.change(registeredField, 'hello')
+})
