@@ -36,6 +36,12 @@
     "pinned": true
   },
   {
+    "name": "Salesforce",
+    "logo": "salesforce.svg",
+    "link": "https://www.salesforce.com/",
+    "pinned": true
+  },
+  {
     "name": "Cisco",
     "logo": "cisco.svg",
     "link": "https://www.cisco.com/",
@@ -103,8 +109,7 @@
   {
     "name": "Dick's Sporting Goods",
     "logo": "dicks.png",
-    "link": "https://www.dickssportinggoods.com",
-    "pinned": false
+    "link": "https://www.dickssportinggoods.com"
   },
   {
     "name": "Accenture",
