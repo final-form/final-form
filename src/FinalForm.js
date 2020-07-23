@@ -308,26 +308,26 @@ function createForm<FormValues: FormValuesShape>(
     }, [])
 
   const runFieldLevelValidation = (
-    field: InternalFieldState,
+    name: string,
     setError: (error: ?any) => void
   ): Promise<*>[] => {
     const promises = []
-    const validators = getValidators(field)
+    const validators = getValidators(state.fields[name])
     if (validators.length) {
       let error
       validators.forEach(validator => {
         const errorOrPromise = validator(
-          getIn(state.formState.values, field.name),
+          getIn(state.formState.values, name),
           state.formState.values,
           validator.length === 0 || validator.length === 3
-            ? publishFieldState(state.formState, state.fields[field.name])
+            ? publishFieldState(state.formState, state.fields[name])
             : undefined
         )
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          field.validating = true
+          state.fields[name].validating = true
           const promise = errorOrPromise.then(error => {
-            field.validating = false
+            state.fields[name].validating = false
             setError(error)
           }) // errors must be resolved, not rejected
           promises.push(promise)
@@ -384,7 +384,7 @@ function createForm<FormValues: FormValuesShape>(
       ...fieldKeys.reduce(
         (result, name) =>
           result.concat(
-            runFieldLevelValidation(fields[name], (error: ?any) => {
+            runFieldLevelValidation(name, (error: ?any) => {
               fieldLevelErrors[name] = error
             })
           ),
