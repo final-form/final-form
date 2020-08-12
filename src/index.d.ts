@@ -4,8 +4,8 @@ export type IsEqual = (a: any, b: any) => boolean
 export interface AnyObject {
   [key: string]: any
 }
-export interface ValidationErrors extends AnyObject {}
-export interface SubmissionErrors extends AnyObject {}
+export type ValidationErrors = AnyObject | undefined
+export type SubmissionErrors = AnyObject | undefined
 
 export interface FormSubscription {
   active?: boolean
@@ -282,12 +282,11 @@ export interface Config<FormValues = object, InitialFormValues = Partial<FormVal
     callback?: (errors?: SubmissionErrors) => void
   ) =>
     | SubmissionErrors
-    | Promise<SubmissionErrors | undefined>
-    | undefined
+    | Promise<SubmissionErrors>
     | void
   validate?: (
     values: FormValues
-  ) => ValidationErrors | Promise<ValidationErrors> | undefined
+  ) => ValidationErrors | Promise<ValidationErrors>
   validateOnBlur?: boolean
 }
 
