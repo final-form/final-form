@@ -225,6 +225,7 @@ export type FormApi<FormValues: FormValuesShape> = {
   registerField: RegisterField,
   reset: (initialValues?: Object) => void,
   resetFieldState: (name: string) => void,
+  restart: () => void,
   resumeValidation: () => void,
   setConfig: (name: ConfigKey, value: any) => void,
   submit: () => ?Promise<?Object>,
