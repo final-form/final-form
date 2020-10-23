@@ -936,7 +936,7 @@ function createForm<FormValues: FormValuesShape>(
 
     reset: (initialValues = state.formState.initialValues) => {
       if (state.formState.submitting) {
-        throw Error('Cannot reset() in onSubmit(), use setTimeout(form.reset)')
+        state.formState.resetWhileSubmitting = true;
       }
       state.formState.submitFailed = false
       state.formState.submitSucceeded = false
@@ -1093,6 +1093,10 @@ function createForm<FormValues: FormValuesShape>(
       let completeCalled = false
       const complete = (errors: ?Object) => {
         formState.submitting = false
+        const { resetWhileSubmitting } = formState
+        if (resetWhileSubmitting) {
+          delete formState.resetWhileSubmitting
+        }
         if (errors && hasAnyError(errors)) {
           formState.submitFailed = true
           formState.submitSucceeded = false
@@ -1100,8 +1104,10 @@ function createForm<FormValues: FormValuesShape>(
           formState.submitError = errors[FORM_ERROR]
           markAllFieldsTouched()
         } else {
-          formState.submitFailed = false
-          formState.submitSucceeded = true
+          if (!resetWhileSubmitting) {
+            formState.submitFailed = false
+            formState.submitSucceeded = true
+          }
           afterSubmit()
         }
         notifyFormListeners()

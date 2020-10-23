@@ -1094,10 +1094,10 @@ describe('FinalForm.submission', () => {
     expect(onSubmit).toHaveBeenCalledTimes(2)
   })
 
-  it('should NOT allow reset in onSubmit', async () => {
-    // https://github.com/final-form/final-form/issues/142#issuecomment-402296920
+  it('should allow reset in onSubmit', async () => {
     const onSubmit = (values, form) => {
       form.reset()
+      form.change('foo', 'bar');
     }
 
     const form = createForm({ onSubmit })
@@ -1110,7 +1110,14 @@ describe('FinalForm.submission', () => {
     field.mock.calls[0][0].change('bar')
     expect(field).toHaveBeenCalledTimes(2)
     expect(field.mock.calls[1][0].value).toBe('bar')
-    expect(() => form.submit()).toThrow(/Cannot reset\(\) in onSubmit\(\)/)
+
+    await form.submit()
+    expect(field).toHaveBeenCalledTimes(4)
+    expect(field.mock.calls[2][0].submitSucceeded).toBe(false)
+    expect(field.mock.calls[2][0].value).toBeUndefined()
+    expect(field.mock.calls[3][0].value).toBe('bar')
+    await sleep(1)
+    expect(field).toHaveBeenCalledTimes(4)
   })
 
   it('should allow setTimeout(reset) in onSubmit', async () => {
