@@ -4,8 +4,8 @@ export type IsEqual = (a: any, b: any) => boolean
 export interface AnyObject {
   [key: string]: any
 }
-export interface ValidationErrors extends AnyObject {}
-export interface SubmissionErrors extends AnyObject {}
+export type ValidationErrors = AnyObject | undefined
+export type SubmissionErrors = AnyObject | undefined
 
 export interface FormSubscription {
   active?: boolean
@@ -215,8 +215,9 @@ export interface FormApi<FormValues = Record<string, any>, InitialFormValues = P
   mutators: Record<string, (...args: any[]) => any>
   pauseValidation: () => void
   registerField: RegisterField<FormValues>
-  reset: (initialValues?: FormValues) => void
+  reset: (initialValues?: InitialFormValues) => void
   resetFieldState: (name: keyof FormValues) => void
+  restart: (initialValues?: FormValues) => void
   resumeValidation: () => void
   setConfig: <K extends ConfigKey>(
     name: K,
@@ -282,12 +283,11 @@ export interface Config<FormValues = object, InitialFormValues = Partial<FormVal
     callback?: (errors?: SubmissionErrors) => void
   ) =>
     | SubmissionErrors
-    | Promise<SubmissionErrors | undefined>
-    | undefined
+    | Promise<SubmissionErrors>
     | void
   validate?: (
     values: FormValues
-  ) => ValidationErrors | Promise<ValidationErrors> | undefined
+  ) => ValidationErrors | Promise<ValidationErrors>
   validateOnBlur?: boolean
 }
 

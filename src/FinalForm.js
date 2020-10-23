@@ -856,7 +856,10 @@ function createForm<FormValues: FormValuesShape>(
 
         const noValueInFormState = getIn(state.formState.values, name) === undefined
         if (
-          fieldConfig.initialValue !== undefined && noValueInFormState
+          fieldConfig.initialValue !== undefined && noValueInFormState &&
+          (getIn(state.formState.values, name) === undefined ||
+            getIn(state.formState.values, name) ===
+              getIn(state.formState.initialValues, name))
           // only initialize if we don't yet have any value for this field
         ) {
           state.formState.initialValues = setIn(
@@ -904,8 +907,12 @@ function createForm<FormValues: FormValuesShape>(
           )
           delete state.fields[name].validators[index]
         }
-        delete state.fieldSubscribers[name].entries[index]
-        let lastOne = !Object.keys(state.fieldSubscribers[name].entries).length
+        let hasFieldSubscribers = !!state.fieldSubscribers[name];
+        if (hasFieldSubscribers) {
+          // state.fieldSubscribers[name] may have been removed by a mutator
+          delete state.fieldSubscribers[name].entries[index]
+        }
+        let lastOne = hasFieldSubscribers && !Object.keys(state.fieldSubscribers[name].entries).length
         if (lastOne) {
           delete state.fieldSubscribers[name]
           delete state.fields[name]
@@ -934,7 +941,7 @@ function createForm<FormValues: FormValuesShape>(
 
     reset: (initialValues = state.formState.initialValues) => {
       if (state.formState.submitting) {
-        throw Error('Cannot reset() in onSubmit(), use setTimeout(form.reset)')
+        state.formState.resetWhileSubmitting = true;
       }
       state.formState.submitFailed = false
       state.formState.submitSucceeded = false
@@ -1091,6 +1098,10 @@ function createForm<FormValues: FormValuesShape>(
       let completeCalled = false
       const complete = (errors: ?Object) => {
         formState.submitting = false
+        const { resetWhileSubmitting } = formState
+        if (resetWhileSubmitting) {
+          delete formState.resetWhileSubmitting
+        }
         if (errors && hasAnyError(errors)) {
           formState.submitFailed = true
           formState.submitSucceeded = false
@@ -1098,8 +1109,10 @@ function createForm<FormValues: FormValuesShape>(
           formState.submitError = errors[FORM_ERROR]
           markAllFieldsTouched()
         } else {
-          formState.submitFailed = false
-          formState.submitSucceeded = true
+          if (!resetWhileSubmitting) {
+            formState.submitFailed = false
+            formState.submitSucceeded = true
+          }
           afterSubmit()
         }
         notifyFormListeners()

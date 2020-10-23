@@ -55,3 +55,5 @@ In the interest of making 🏁 Final Form the best library it can be, we'd love 
 ## [Companion Libraries](https://final-form.org/docs/final-form/companion-libraries)
 
 ## [Who's using Final Form?](https://final-form.org/users)
+
+<img src="https://static.scarf.sh/a.png?x-pxid=40db3a4c-1187-4b9e-b363-c059774fe5e1" />

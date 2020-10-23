@@ -144,4 +144,19 @@ describe('FinalForm.mutators', () => {
 
     expect(formListener).toHaveBeenCalledTimes(2)
   })
+
+  it('should not throw when renamed field is unregistered', () => {
+    const rename = jest.fn(([from, to], state, { renameField }) => {
+      renameField(state, from, to)
+    })
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      mutators: { rename }
+    })
+
+    const unregisterFoo = form.registerField('foo', () => {})
+    form.mutators.rename('foo', 'renamedFoo')
+    expect(() => unregisterFoo()).not.toThrowError()
+  })
 })
