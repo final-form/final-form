@@ -902,8 +902,12 @@ function createForm<FormValues: FormValuesShape>(
           )
           delete state.fields[name].validators[index]
         }
-        delete state.fieldSubscribers[name].entries[index]
-        let lastOne = !Object.keys(state.fieldSubscribers[name].entries).length
+        let hasFieldSubscribers = !!state.fieldSubscribers[name];
+        if (hasFieldSubscribers) {
+          // state.fieldSubscribers[name] may have been removed by a mutator
+          delete state.fieldSubscribers[name].entries[index]
+        }
+        let lastOne = hasFieldSubscribers && !Object.keys(state.fieldSubscribers[name].entries).length
         if (lastOne) {
           delete state.fieldSubscribers[name]
           delete state.fields[name]
