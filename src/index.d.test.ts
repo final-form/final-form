@@ -77,7 +77,7 @@ console.log(
   formState.error as string,
   formState.error as boolean
 )
-console.log(formState.errors as AnyObject, formState.errors.foo)
+console.log(formState.errors as AnyObject, formState.errors!.foo)
 console.log(formState.initialValues as AnyObject, formState.initialValues.foo)
 console.log(formState.invalid as boolean)
 console.log(formState.pristine as boolean)
@@ -86,7 +86,7 @@ console.log(
   formState.submitError as object,
   formState.submitError as undefined
 )
-console.log(formState.submitErrors as AnyObject, formState.submitErrors.foo)
+console.log(formState.submitErrors as AnyObject, formState.submitErrors!.foo)
 console.log(formState.submitFailed as boolean)
 console.log(formState.submitSucceeded as boolean)
 console.log(formState.submitSucceeded as boolean)

@@ -187,6 +187,7 @@ export interface InternalFormState {
   initialValues?: object
   lastSubmittedValues?: object
   pristine: boolean
+  resetWhileSubmitting: boolean
   submitError?: any
   submitErrors?: object
   submitFailed: boolean

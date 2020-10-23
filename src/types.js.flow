@@ -189,6 +189,7 @@ export type InternalFormState<FormValues: FormValuesShape> = {
   initialValues?: Object,
   lastSubmittedValues?: Object,
   pristine: boolean,
+  resetWhileSubmitting: boolean,
   submitError?: any,
   submitErrors?: Object,
   submitFailed: boolean,
