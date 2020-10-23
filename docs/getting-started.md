@@ -16,8 +16,6 @@ or
 yarn add final-form
 ```
 
-Final Form uses [scarf-js](https://www.npmjs.com/package/@scarf/scarf) to collect anonymized installation analytics. These analytics help support the maintainers of this library. However, if you'd like to opt out, you can do so by setting `scarfSettings.enabled = false` in your project's `package.json`. Alternatively, you can set the environment variable `SCARF_ANALYTICS=false` before you install.
-
 ## Usage
 
 The general idea is that you create a "form instance" with `createForm()`, which you can then `subscribe()` to as many times as you like, and then you can `registerField()` as many fields as your need, including registering more than once to the same field. You can then call `submit()` to call your `onSubmit` function with the values of the form.

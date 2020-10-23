@@ -310,26 +310,26 @@ function createForm<FormValues: FormValuesShape>(
     }, [])
 
   const runFieldLevelValidation = (
-    field: InternalFieldState,
+    name: string,
     setError: (error: ?any) => void
   ): Promise<*>[] => {
     const promises = []
-    const validators = getValidators(field)
+    const validators = getValidators(state.fields[name])
     if (validators.length) {
       let error
       validators.forEach(validator => {
         const errorOrPromise = validator(
-          getIn(state.formState.values, field.name),
+          getIn(state.formState.values, name),
           state.formState.values,
           validator.length === 0 || validator.length === 3
-            ? publishFieldState(state.formState, state.fields[field.name])
+            ? publishFieldState(state.formState, state.fields[name])
             : undefined
         )
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          field.validating = true
+          state.fields[name].validating = true
           const promise = errorOrPromise.then(error => {
-            field.validating = false
+            state.fields[name].validating = false
             setError(error)
           }) // errors must be resolved, not rejected
           promises.push(promise)
@@ -386,7 +386,7 @@ function createForm<FormValues: FormValuesShape>(
       ...fieldKeys.reduce(
         (result, name) =>
           result.concat(
-            runFieldLevelValidation(fields[name], (error: ?any) => {
+            runFieldLevelValidation(name, (error: ?any) => {
               fieldLevelErrors[name] = error
             })
           ),
@@ -873,7 +873,7 @@ function createForm<FormValues: FormValuesShape>(
       }
 
       // subscribe or don't
-      const unscribeToFieldState =
+      const unsubscribeToFieldState =
         subscriber &&
         subscribeToFieldState(name, subscriber, subscription, false)
 
@@ -894,9 +894,13 @@ function createForm<FormValues: FormValuesShape>(
         if (fieldConfig.getValidator) {
           state.fields[name].validators[index] = fieldConfig.getValidator
         }
+
+        const noValueInFormState = getIn(state.formState.values, name) === undefined
         if (
-          fieldConfig.initialValue !== undefined &&
-          getIn(state.formState.values, name) === undefined
+          fieldConfig.initialValue !== undefined && noValueInFormState &&
+          (getIn(state.formState.values, name) === undefined ||
+            getIn(state.formState.values, name) ===
+              getIn(state.formState.initialValues, name))
           // only initialize if we don't yet have any value for this field
         ) {
           state.formState.initialValues = setIn(
@@ -911,10 +915,13 @@ function createForm<FormValues: FormValuesShape>(
           )
           runValidation(undefined, notify)
         }
+
+        // only use defaultValue if we don't yet have any value for this field
         if (
           fieldConfig.defaultValue !== undefined &&
           fieldConfig.initialValue === undefined &&
-          getIn(state.formState.initialValues, name) === undefined
+          getIn(state.formState.initialValues, name) === undefined &&
+          noValueInFormState
         ) {
           state.formState.values = setIn(
             state.formState.values,
@@ -948,7 +955,7 @@ function createForm<FormValues: FormValuesShape>(
           )
           delete state.fields[name].validators[index]
         }
-        unscribeToFieldState && unscribeToFieldState()
+        if(unsubscribeToFieldState) unsubscribeToFieldState()
         let lastOne = --state.registeredFieldCounts[name] === 0
         if (lastOne) {
           delete state.registeredFieldCounts[name]
@@ -979,7 +986,7 @@ function createForm<FormValues: FormValuesShape>(
 
     reset: (initialValues = state.formState.initialValues) => {
       if (state.formState.submitting) {
-        throw Error('Cannot reset() in onSubmit(), use setTimeout(form.reset)')
+        state.formState.resetWhileSubmitting = true;
       }
       state.formState.submitFailed = false
       state.formState.submitSucceeded = false
@@ -1106,6 +1113,10 @@ function createForm<FormValues: FormValuesShape>(
         return
       }
 
+      delete formState.submitErrors
+      delete formState.submitError
+      formState.lastSubmittedValues = { ...formState.values }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched()
         state.formState.submitFailed = true
@@ -1132,6 +1143,10 @@ function createForm<FormValues: FormValuesShape>(
       let completeCalled = false
       const complete = (errors: ?Object) => {
         formState.submitting = false
+        const { resetWhileSubmitting } = formState
+        if (resetWhileSubmitting) {
+          delete formState.resetWhileSubmitting
+        }
         if (errors && hasAnyError(errors)) {
           formState.submitFailed = true
           formState.submitSucceeded = false
@@ -1139,8 +1154,10 @@ function createForm<FormValues: FormValuesShape>(
           formState.submitError = errors[FORM_ERROR]
           markAllFieldsTouched()
         } else {
-          formState.submitFailed = false
-          formState.submitSucceeded = true
+          if (!resetWhileSubmitting) {
+            formState.submitFailed = false
+            formState.submitSucceeded = true
+          }
           afterSubmit()
         }
         notifyFormListeners()
@@ -1152,8 +1169,6 @@ function createForm<FormValues: FormValuesShape>(
         return errors
       }
 
-      delete formState.submitErrors
-      delete formState.submitError
       formState.submitting = true
       formState.submitFailed = false
       formState.submitSucceeded = false

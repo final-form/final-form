@@ -28,6 +28,14 @@
 
 ---
 
+[<img align="right" src="docs/sencha.svg" height="100"/>](https://www.sencha.com/)
+
+### Final Form is sponsored by [Sencha](https://www.sencha.com/).
+
+Comprehensive JS framework and UI components for building enterprise-grade web apps.
+
+---
+
 ## 💬 [Give Feedback on Final Form](https://goo.gl/forms/dxdfxKNy64DLb99z2) 💬
 
 In the interest of making 🏁 Final Form the best library it can be, we'd love your thoughts and feedback.
@@ -47,3 +55,5 @@ In the interest of making 🏁 Final Form the best library it can be, we'd love 
 ## [Companion Libraries](https://final-form.org/docs/final-form/companion-libraries)
 
 ## [Who's using Final Form?](https://final-form.org/users)
+
+<img src="https://static.scarf.sh/a.png?x-pxid=40db3a4c-1187-4b9e-b363-c059774fe5e1" />

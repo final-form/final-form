@@ -1,5 +1,29 @@
 [
   {
+    "name": "Amazon",
+    "logo": "amazon.svg",
+    "link": "https://www.amazon.com",
+    "pinned": true
+  },
+  {
+    "name": "Apple",
+    "logo": "apple.svg",
+    "link": "https://www.apple.com",
+    "pinned": true
+  },
+  {
+    "name": "Google",
+    "logo": "google.svg",
+    "link": "https://www.google.com",
+    "pinned": true
+  },
+  {
+    "name": "Microsoft",
+    "logo": "microsoft.svg",
+    "link": "https://www.microsoft.com",
+    "pinned": true
+  },
+  {
     "name": "Atlassian",
     "logo": "atlassian.svg",
     "link": "https://www.atlassian.com",
@@ -9,6 +33,12 @@
     "name": "Netflix",
     "logo": "netflix.svg",
     "link": "https://www.netflix.com/",
+    "pinned": true
+  },
+  {
+    "name": "Salesforce",
+    "logo": "salesforce.svg",
+    "link": "https://www.salesforce.com/",
     "pinned": true
   },
   {
@@ -54,10 +84,37 @@
     "pinned": true
   },
   {
+    "name": "Xfinity",
+    "logo": "xfinity.svg",
+    "link": "https://www.xfinity.com",
+    "pinned": true
+  },
+  {
+    "name": "Yandex",
+    "logo": "yandex.svg",
+    "link": "https://www.yandex.com",
+    "pinned": true
+  },
+  {
     "name": "Konica Minolta",
     "logo": "konicaminolta.svg",
-    "link": "https://www.konicaminolta.com",
+    "link": "https://www.konicaminolta.com"
+  },
+  {
+    "name": "World Food Programme",
+    "logo": "world-food-programme.svg",
+    "link": "https://wfp.org",
     "pinned": true
+  },
+  {
+    "name": "Dick's Sporting Goods",
+    "logo": "dicks.png",
+    "link": "https://www.dickssportinggoods.com"
+  },
+  {
+    "name": "Accenture",
+    "logo": "accenture.svg",
+    "link": "https://www.accenture.com/"
   },
   {
     "name": "Trend Micro",
@@ -78,7 +135,7 @@
     "name": "HalcyonMobile",
     "logo": "halcyonmobile.svg",
     "link": "https://halcyonmobile.com/",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Discogs",
@@ -145,6 +202,6 @@
     "name": "Simpplr",
     "logo": "simpplr.svg",
     "link": "https://www.simpplr.com/",
-    "pinned": true
+    "pinned": false
   }
 ]

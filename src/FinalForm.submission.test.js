@@ -583,6 +583,51 @@ describe('FinalForm.submission', () => {
     await submissionPromise
   })
 
+  it('should clear submitError & submitErrors when submit gets called, but validation fails', () => {
+    const submitErrorText = 'You shall not pass'
+    const fooSubmitErrorText = 'Foo shall not pass'
+
+    const form = createForm({
+      onSubmit: () => ({
+        [FORM_ERROR]: submitErrorText,
+        foo: fooSubmitErrorText,
+      }),
+      initialValues: { foo: 'bar' },
+      validate: values => {
+        const errors = {};
+        if (values.foo !== 'bar') {
+          errors.foo = 'Sorry, only "bar" can pass this step';
+        }
+        return errors;
+      },
+    })
+    form.registerField('foo', () => {})
+
+    const spy = jest.fn()
+    form.subscribe(spy, {
+      submitError: true,
+      submitErrors: true,
+    })
+
+    form.submit()
+
+    expect(spy).toHaveBeenLastCalledWith({
+      submitError: submitErrorText,
+      submitErrors: {
+        [FORM_ERROR]: submitErrorText,
+        foo: fooSubmitErrorText,
+      },
+    })
+
+    form.change('foo', 'baz')
+    form.submit()
+
+    expect(spy).toHaveBeenLastCalledWith({
+      submitError: undefined,
+      submitErrors: undefined,
+    })
+  })
+
   it('should maintain field-level and form-level dirtySinceLastSubmit', () => {
     const onSubmit = jest.fn((values, form) => {
       const errors = {}
@@ -1049,10 +1094,10 @@ describe('FinalForm.submission', () => {
     expect(onSubmit).toHaveBeenCalledTimes(2)
   })
 
-  it('should NOT allow reset in onSubmit', async () => {
-    // https://github.com/final-form/final-form/issues/142#issuecomment-402296920
+  it('should allow reset in onSubmit', async () => {
     const onSubmit = (values, form) => {
       form.reset()
+      form.change('foo', 'bar');
     }
 
     const form = createForm({ onSubmit })
@@ -1065,7 +1110,14 @@ describe('FinalForm.submission', () => {
     field.mock.calls[0][0].change('bar')
     expect(field).toHaveBeenCalledTimes(2)
     expect(field.mock.calls[1][0].value).toBe('bar')
-    expect(() => form.submit()).toThrow(/Cannot reset\(\) in onSubmit\(\)/)
+
+    await form.submit()
+    expect(field).toHaveBeenCalledTimes(4)
+    expect(field.mock.calls[2][0].submitSucceeded).toBe(false)
+    expect(field.mock.calls[2][0].value).toBeUndefined()
+    expect(field.mock.calls[3][0].value).toBe('bar')
+    await sleep(1)
+    expect(field).toHaveBeenCalledTimes(4)
   })
 
   it('should allow setTimeout(reset) in onSubmit', async () => {
