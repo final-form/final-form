@@ -196,6 +196,7 @@ function createForm<FormValues: FormValuesShape>(
       submitting: false,
       submitFailed: false,
       submitSucceeded: false,
+      resetWhileSubmitting: false,
       valid: true,
       validating: 0,
       values: initialValues ? { ...initialValues } : (({}: any): FormValues)
@@ -1100,7 +1101,7 @@ function createForm<FormValues: FormValuesShape>(
         formState.submitting = false
         const { resetWhileSubmitting } = formState
         if (resetWhileSubmitting) {
-          delete formState.resetWhileSubmitting
+          formState.resetWhileSubmitting = false
         }
         if (errors && hasAnyError(errors)) {
           formState.submitFailed = true
