@@ -206,6 +206,7 @@ function createForm<FormValues: FormValuesShape>(
   let inBatch = 0
   let validationPaused = false
   let validationBlocked = false
+  let preventNotificationWhileValidationPaused = false
   let nextAsyncValidationKey = 0
   const asyncValidationPromises: { [number]: Promise<*> } = {}
   const clearAsyncValidationPromise = key => result => {
@@ -619,7 +620,7 @@ function createForm<FormValues: FormValuesShape>(
     } else {
       notifying = true
       callDebug()
-      if (!inBatch && !validationPaused) {
+      if (!inBatch && !(validationPaused && preventNotificationWhileValidationPaused)) {
         const { lastFormState } = state
         const nextFormState = calculateNextFormState()
         if (nextFormState !== lastFormState) {
@@ -792,8 +793,9 @@ function createForm<FormValues: FormValuesShape>(
 
     isValidationPaused: () => validationPaused,
 
-    pauseValidation: () => {
+    pauseValidation: (preventNotification: boolean = true) => {
       validationPaused = true
+      preventNotificationWhileValidationPaused = preventNotification
     },
 
     registerField: (
@@ -1003,6 +1005,7 @@ function createForm<FormValues: FormValuesShape>(
 
     resumeValidation: () => {
       validationPaused = false
+      preventNotificationWhileValidationPaused = false
       if (validationBlocked) {
         // validation was attempted while it was paused, so run it now
         runValidation(undefined, () => {

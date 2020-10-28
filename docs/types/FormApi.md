@@ -108,10 +108,12 @@ The state-bound versions of the mutators provided to [`Config`](Config#mutators)
 ## `pauseValidation`
 
 ```ts
-() => void
+(preventNotification: boolean = true) => void
 ```
 
 If called, validation will be paused until `resumeValidation()` is called.
+
+By default, `pauseValidation` also prevents all notifications being fired to their subscribers. This is done performance reasons. However, if notifications are still needed while validation is paused, you can pass `false` to `pauseValidation`.
 
 ## `registerField`
 
