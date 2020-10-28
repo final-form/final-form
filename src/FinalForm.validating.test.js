@@ -985,6 +985,39 @@ describe('Field.validation', () => {
     expect(bazValidate).toHaveBeenCalledTimes(1)
   })
 
+  it('should allow validation to be paused and notifications still fired', () => {
+    const validate = jest.fn()
+    const form = createForm({ onSubmit: onSubmitMock, validate })
+    expect(validate).toHaveBeenCalledTimes(1)
+
+    expect(form.isValidationPaused()).toBe(false)
+    form.pauseValidation()
+    expect(form.isValidationPaused()).toBe(true)
+
+    const fooValidate = jest.fn()
+    const fooSubscriber = jest.fn()
+
+    form.registerField(
+      'foo',
+      fooSubscriber,
+      { error: true, value: true },
+      { getValidator: () => fooValidate }
+    )
+
+    expect(fooSubscriber).toHaveBeenCalledTimes(1)
+
+    form.change('foo', 'Hello')
+
+    expect(validate).toHaveBeenCalledTimes(1)
+    expect(fooValidate).not.toHaveBeenCalled()
+    expect(fooSubscriber).toHaveBeenCalledTimes(2)
+
+    form.resumeValidation()
+    expect(form.isValidationPaused()).toBe(false)
+    expect(validate).toHaveBeenCalledTimes(2)
+    expect(fooValidate).toHaveBeenCalledTimes(1)
+  })
+
   it('should not fire validation on resume if it is not needed', () => {
     const validate = jest.fn()
     const form = createForm({ onSubmit: onSubmitMock, validate })
