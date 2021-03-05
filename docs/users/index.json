@@ -203,5 +203,11 @@
     "logo": "simpplr.svg",
     "link": "https://www.simpplr.com/",
     "pinned": false
+  },
+  {
+    "name": "Gems Essence",
+    "logo": "gemsessence.png",
+    "link": "https://www.gemsessence.com/",
+    "pinned": true
   }
 ]
