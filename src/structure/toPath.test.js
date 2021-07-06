@@ -38,4 +38,7 @@ describe('structure.toPath', () => {
       'cow'
     ])
   })
+  it('should support string properties that are not valid JS identifiers', () => {
+    expect(toPath('foo["bar.baz\\"["]')).toEqual(['foo', 'bar.baz"['])
+  })
 })
