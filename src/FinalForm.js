@@ -859,8 +859,8 @@ function createForm<FormValues: FormValuesShape>(
 
         const noValueInFormState = getIn(state.formState.values, name) === undefined
         if (
-          fieldConfig.initialValue !== undefined && noValueInFormState &&
-          (getIn(state.formState.values, name) === undefined ||
+          fieldConfig.initialValue !== undefined &&
+          (noValueInFormState ||
             getIn(state.formState.values, name) ===
               getIn(state.formState.initialValues, name))
           // only initialize if we don't yet have any value for this field
