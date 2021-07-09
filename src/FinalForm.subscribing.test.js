@@ -917,6 +917,41 @@ describe('FinalForm.subscribing', () => {
     expect(spy.mock.calls[3][0].values).toEqual({})
   })
 
+  it('should allow subscribing to form values with complex projection', () => {
+    const form = createForm({ onSubmit: onSubmitMock })
+    const spy = jest.fn()
+    form.subscribe(spy, {
+      values: {
+        name: true,
+        email: true
+      }
+    })
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0][0]).toEqual({
+      values: {}
+    })
+
+    form.registerField('name', () => {}, {})
+    form.registerField('email', () => {}, {})
+    form.registerField('phone', () => {}, {})
+
+    form.change('name', 'erikras')
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[1][0]).toEqual({
+      values: { name: 'erikras' }
+    })
+
+    form.change('phone', '867-5309')
+    expect(spy).toHaveBeenCalledTimes(2)
+
+    form.change('email', 'erikras@final-form.org') // not real, nosy!
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy.mock.calls[2][0]).toEqual({
+      values: { name: 'erikras', email: 'erikras@final-form.org' }
+    })
+  })
+  
   it('should allow subscribing to active in form', () => {
     const { spy, focus, blur } = prepareFormSubscriber('foo', {
       active: true
