@@ -722,6 +722,37 @@ describe('Field.validation', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('should be submittable if a field has been unregistered during async validation', async () => {
+    const delay = 2
+    const onSubmitSpy = jest.fn();
+    const form = createForm({ onSubmit: onSubmitSpy })
+
+    const spy = jest.fn()
+    const unregister = form.registerField(
+      'username',
+      spy,
+      { error: true },
+      {
+        getValidator: () => async (value, allErrors) => {
+          const error = value === 'erikras' ? 'Username taken' : undefined
+          await sleep(delay)
+          return error
+        }
+      }
+    )
+
+    form.change('username', 'user')
+    unregister()
+
+    await sleep(delay * 2)
+
+    form.submit()
+
+    await sleep(delay * 2)
+
+    expect(onSubmitSpy).toHaveBeenCalledTimes(1)
+  })
+
   it('should remove field-level validation errors when a field is unregistered', () => {
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()
