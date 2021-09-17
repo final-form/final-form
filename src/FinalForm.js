@@ -448,15 +448,18 @@ function createForm<FormValues: FormValuesShape>(
       formState.error = recordLevelErrors[FORM_ERROR]
     }
 
+    if (hasAsyncValidations) {
+      // async validations are running, ensure validating is true before notifying
+      state.formState.validating++
+      callback()
+    }
+
     // process sync errors
     processErrors()
     // sync errors have been set. notify listeners while we wait for others
     callback()
 
     if (hasAsyncValidations) {
-      state.formState.validating++
-      callback()
-
       const afterPromise = () => {
         state.formState.validating--
         callback()
