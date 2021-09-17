@@ -1326,10 +1326,10 @@ describe('Field.validation', () => {
     expect(foo.mock.calls[2][0].invalid).toBe(false)
   })
 
-  it('should have validating true until the promise rejects', async () => {
+  it('should have validating true until the promise resolves or rejects', async () => {
     const form = createForm({ onSubmit: onSubmitMock })
     const spy = jest.fn()
-    form.subscribe(spy, { validating: true })
+    form.subscribe(spy, { validating: true, values: true, valid: true })
     expect(spy).toHaveBeenCalled()
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].validating).toBe(false)
@@ -1343,7 +1343,9 @@ describe('Field.validation', () => {
         getValidator: () => value =>
           new Promise((resolve, reject) => {
             sleep(2).then(() => {
-              if (value) {
+              if (value === 'fail') {
+                resolve('Cannot fail')
+              } else if (value) {
                 resolve(undefined)
               } else {
                 reject('Required')
@@ -1369,15 +1371,41 @@ describe('Field.validation', () => {
 
     form.change('foo', 'hi')
 
-    expect(spy).toHaveBeenCalledTimes(4)
-    expect(spy.mock.calls[3][0].validating).toBe(true)
+    expect(spy).toHaveBeenCalledTimes(5) // one for values and one for validating
+    expect(spy.mock.calls[3][0].values.foo).toBe('hi')
+    expect(spy.mock.calls[3][0].validating).toBe(false) // <-- bad, still validating!
+    expect(spy.mock.calls[3][0].valid).toBe(true)
+    expect(spy.mock.calls[4][0].values.foo).toBe('hi')
+    expect(spy.mock.calls[4][0].validating).toBe(true)
+    expect(spy.mock.calls[4][0].valid).toBe(true)    
     expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
 
     await sleep(3)
 
-    expect(spy).toHaveBeenCalledTimes(5)
-    expect(spy.mock.calls[4][0].validating).toBe(false)
+    expect(spy).toHaveBeenCalledTimes(6)
+    expect(spy.mock.calls[5][0].values.foo).toBe('hi')
+    expect(spy.mock.calls[5][0].validating).toBe(false)
+    expect(spy.mock.calls[5][0].valid).toBe(true)
     expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
+
+    form.change('foo', 'fail')
+
+    expect(spy).toHaveBeenCalledTimes(8)
+
+    expect(spy.mock.calls[6][0].values.foo).toBe('fail')
+    expect(spy.mock.calls[6][0].validating).toBe(false) // <-- bad, still validating!
+    expect(spy.mock.calls[6][0].valid).toBe(true) // <-- incorrect valid:true when validating is false!
+    expect(spy.mock.calls[7][0].values.foo).toBe('fail')
+    expect(spy.mock.calls[7][0].validating).toBe(true)
+    expect(spy.mock.calls[7][0].valid).toBe(true) // valid from previous values, but validating is true so we know not to trust it
+    expect(foo).toHaveBeenCalledTimes(1) // error was not resolved
+
+    await sleep(3)
+    expect(spy).toHaveBeenCalledTimes(9)
+    expect(spy.mock.calls[8][0].values.foo).toBe('fail')
+    expect(spy.mock.calls[8][0].validating).toBe(false)
+    expect(spy.mock.calls[8][0].valid).toBe(false) // finally, correct state
+    expect(foo).toHaveBeenCalledTimes(2) // error was resolved
   })
 
   it('should notify all field subscribers when field validation result changes', () => {
