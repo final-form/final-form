@@ -69,6 +69,10 @@ createForm<FormValues>({ onSubmit }).initialize(formData => ({
   foo: undefined
 }))
 
+// restart
+createForm<FormValues>({ onSubmit }).restart({ foo: 'baz', bar: 11 })
+createForm<FormValues>({ onSubmit }).restart({ foo: undefined })
+
 console.log(formState.active as string, formState.active as undefined)
 console.log(formState.dirty as boolean)
 console.log(formState.dirtyFields as AnyObject, formState.dirtyFields)
