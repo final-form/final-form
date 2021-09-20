@@ -206,7 +206,7 @@ export interface FormApi<FormValues = Record<string, any>, InitialFormValues = P
   change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void
   destroyOnUnregister: boolean
   focus: (name: keyof FormValues) => void
-  initialize: (data: FormValues | ((values: FormValues) => FormValues)) => void
+  initialize: (data: InitialFormValues | ((values: FormValues) => InitialFormValues)) => void
   isValidationPaused: () => boolean
   getFieldState: <F extends keyof FormValues>(
     field: F
