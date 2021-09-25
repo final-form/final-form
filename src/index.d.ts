@@ -216,7 +216,7 @@ export interface FormApi<FormValues = Record<string, any>, InitialFormValues = P
   isValidationPaused: () => boolean;
   getFieldState: <F extends keyof FormValues>(
     field: F
-  ) => FieldState<FormValues[F]> | undefined;
+  ) => FieldState<FormValues[F]> | undefined
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
