@@ -83,7 +83,7 @@ module.exports = {
         "This runs several scripts to make sure things look good before committing or on clean install",
       default: concurrent.nps(
         "lint",
-        "flow",
+        // "flow",
         "typescript",
         "build.andTest",
         "test",
