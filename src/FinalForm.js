@@ -1,12 +1,12 @@
 // @flow
-import getIn from './structure/getIn'
-import setIn from './structure/setIn'
-import publishFieldState from './publishFieldState'
-import filterFieldState from './filterFieldState'
-import filterFormState from './filterFormState'
-import memoize from './memoize'
-import isPromise from './isPromise'
-import shallowEqual from './shallowEqual'
+import getIn from "./structure/getIn";
+import setIn from "./structure/setIn";
+import publishFieldState from "./publishFieldState";
+import filterFieldState from "./filterFieldState";
+import filterFormState from "./filterFormState";
+import memoize from "./memoize";
+import isPromise from "./isPromise";
+import shallowEqual from "./shallowEqual";
 import type {
   ChangeValue,
   Config,
@@ -28,51 +28,51 @@ import type {
   Subscriber,
   Subscribers,
   Subscription,
-  Unsubscribe
-} from './types'
-import { FORM_ERROR, ARRAY_ERROR } from './constants'
-export { version } from '../package.json'
+  Unsubscribe,
+} from "./types";
+import { FORM_ERROR, ARRAY_ERROR } from "./constants";
+export { version } from "../package.json";
 
 export const configOptions: ConfigKey[] = [
-  'debug',
-  'initialValues',
-  'keepDirtyOnReinitialize',
-  'mutators',
-  'onSubmit',
-  'validate',
-  'validateOnBlur'
-]
+  "debug",
+  "initialValues",
+  "keepDirtyOnReinitialize",
+  "mutators",
+  "onSubmit",
+  "validate",
+  "validateOnBlur",
+];
 
-const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b
+const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
 
 type InternalState<FormValues> = {
   subscribers: Subscribers<FormState<FormValues>>,
   lastFormState?: FormState<FormValues>,
   fields: {
-    [string]: InternalFieldState
+    [string]: InternalFieldState,
   },
   fieldSubscribers: { [string]: Subscribers<FieldState> },
-  formState: InternalFormState<FormValues>
-} & MutableState<FormValues>
+  formState: InternalFormState<FormValues>,
+} & MutableState<FormValues>;
 
 export type StateFilter<T> = (
   state: T,
   previousState: ?T,
   subscription: Subscription,
-  force: boolean
-) => ?T
+  force: boolean,
+) => ?T;
 
 const hasAnyError = (errors: Object): boolean => {
-  return Object.keys(errors).some(key => {
-    const value = errors[key]
+  return Object.keys(errors).some((key) => {
+    const value = errors[key];
 
-    if (value && typeof value === 'object' && !(value instanceof Error)) {
-      return hasAnyError(value)
+    if (value && typeof value === "object" && !(value instanceof Error)) {
+      return hasAnyError(value);
     }
 
-    return typeof value !== 'undefined'
-  })
-}
+    return typeof value !== "undefined";
+  });
+};
 
 function convertToExternalFormState<FormValues: FormValuesShape>({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
@@ -90,7 +90,7 @@ function convertToExternalFormState<FormValues: FormValuesShape>({
   submitErrors,
   valid,
   validating,
-  values
+  values,
 }: InternalFormState<FormValues>): FormState<FormValues> {
   return {
     active,
@@ -114,8 +114,8 @@ function convertToExternalFormState<FormValues: FormValuesShape>({
     submitErrors,
     valid,
     validating: validating > 0,
-    values
-  }
+    values,
+  };
 }
 
 function notifySubscriber<T: Object>(
@@ -124,14 +124,14 @@ function notifySubscriber<T: Object>(
   state: T,
   lastState: ?T,
   filter: StateFilter<T>,
-  force
+  force,
 ): boolean {
-  const notification: ?T = filter(state, lastState, subscription, force)
+  const notification: ?T = filter(state, lastState, subscription, force);
   if (notification) {
-    subscriber(notification)
-    return true
+    subscriber(notification);
+    return true;
   }
-  return false
+  return false;
 }
 
 function notify<T: Object>(
@@ -139,13 +139,13 @@ function notify<T: Object>(
   state: T,
   lastState: ?T,
   filter: StateFilter<T>,
-  force?: boolean
+  force?: boolean,
 ): void {
-  Object.keys(entries).forEach(key => {
-    const entry = entries[Number(key)]
+  Object.keys(entries).forEach((key) => {
+    const entry = entries[Number(key)];
     // istanbul ignore next
     if (entry) {
-      const { subscription, subscriber, notified } = entry
+      const { subscription, subscriber, notified } = entry;
       if (
         notifySubscriber(
           subscriber,
@@ -153,20 +153,20 @@ function notify<T: Object>(
           state,
           lastState,
           filter,
-          force || !notified
+          force || !notified,
         )
       ) {
-        entry.notified = true
+        entry.notified = true;
       }
     }
-  })
+  });
 }
 
 function createForm<FormValues: FormValuesShape>(
-  config: Config<FormValues>
+  config: Config<FormValues>,
 ): FormApi<FormValues> {
   if (!config) {
-    throw new Error('No config specified')
+    throw new Error("No config specified");
   }
   let {
     debug,
@@ -176,10 +176,10 @@ function createForm<FormValues: FormValuesShape>(
     mutators,
     onSubmit,
     validate,
-    validateOnBlur
-  } = config
+    validateOnBlur,
+  } = config;
   if (!onSubmit) {
-    throw new Error('No onSubmit function specified')
+    throw new Error("No onSubmit function specified");
   }
 
   const state: InternalState<FormValues> = {
@@ -199,26 +199,26 @@ function createForm<FormValues: FormValuesShape>(
       resetWhileSubmitting: false,
       valid: true,
       validating: 0,
-      values: initialValues ? { ...initialValues } : (({}: any): FormValues)
+      values: initialValues ? { ...initialValues } : (({}: any): FormValues),
     },
-    lastFormState: undefined
-  }
-  let inBatch = 0
-  let validationPaused = false
-  let validationBlocked = false
-  let preventNotificationWhileValidationPaused = false
-  let nextAsyncValidationKey = 0
-  const asyncValidationPromises: { [number]: Promise<*> } = {}
-  const clearAsyncValidationPromise = key => result => {
-    delete asyncValidationPromises[key]
-    return result
-  }
+    lastFormState: undefined,
+  };
+  let inBatch = 0;
+  let validationPaused = false;
+  let validationBlocked = false;
+  let preventNotificationWhileValidationPaused = false;
+  let nextAsyncValidationKey = 0;
+  const asyncValidationPromises: { [number]: Promise<*> } = {};
+  const clearAsyncValidationPromise = (key) => (result) => {
+    delete asyncValidationPromises[key];
+    return result;
+  };
 
   const changeValue: ChangeValue<FormValues> = (state, name, mutate) => {
-    const before = getIn(state.formState.values, name)
-    const after = mutate(before)
-    state.formState.values = setIn(state.formState.values, name, after) || {}
-  }
+    const before = getIn(state.formState.values, name);
+    const after = mutate(before);
+    state.formState.values = setIn(state.formState.values, name, after) || {};
+  };
   const renameField: RenameField<FormValues> = (state, from, to) => {
     if (state.fields[from]) {
       state.fields = {
@@ -228,27 +228,27 @@ function createForm<FormValues: FormValuesShape>(
           name: to,
           // rebind event handlers
           blur: () => api.blur(to),
-          change: value => api.change(to, value),
+          change: (value) => api.change(to, value),
           focus: () => api.focus(to),
-          lastFieldState: undefined
-        }
-      }
-      delete state.fields[from]
+          lastFieldState: undefined,
+        },
+      };
+      delete state.fields[from];
       state.fieldSubscribers = {
         ...state.fieldSubscribers,
-        [to]: state.fieldSubscribers[from]
-      }
-      delete state.fieldSubscribers[from]
-      const value = getIn(state.formState.values, from)
+        [to]: state.fieldSubscribers[from],
+      };
+      delete state.fieldSubscribers[from];
+      const value = getIn(state.formState.values, from);
       state.formState.values =
-        setIn(state.formState.values, from, undefined) || {}
-      state.formState.values = setIn(state.formState.values, to, value)
-      delete state.lastFormState
+        setIn(state.formState.values, from, undefined) || {};
+      state.formState.values = setIn(state.formState.values, to, value);
+      delete state.lastFormState;
     }
-  }
+  };
 
   // bind state to mutators
-  const getMutatorApi = key => (...args) => {
+  const getMutatorApi = (key) => (...args) => {
     // istanbul ignore next
     if (mutators) {
       // ^^ causes branch coverage warning, but needed to appease the Flow gods
@@ -256,494 +256,498 @@ function createForm<FormValues: FormValuesShape>(
         formState: state.formState,
         fields: state.fields,
         fieldSubscribers: state.fieldSubscribers,
-        lastFormState: state.lastFormState
-      }
+        lastFormState: state.lastFormState,
+      };
       const returnValue = mutators[key](args, mutatableState, {
         changeValue,
         getIn,
         renameField,
         resetFieldState: api.resetFieldState,
         setIn,
-        shallowEqual
-      })
-      state.formState = mutatableState.formState
-      state.fields = mutatableState.fields
-      state.fieldSubscribers = mutatableState.fieldSubscribers
-      state.lastFormState = mutatableState.lastFormState
+        shallowEqual,
+      });
+      state.formState = mutatableState.formState;
+      state.fields = mutatableState.fields;
+      state.fieldSubscribers = mutatableState.fieldSubscribers;
+      state.lastFormState = mutatableState.lastFormState;
       runValidation(undefined, () => {
-        notifyFieldListeners()
-        notifyFormListeners()
-      })
-      return returnValue
+        notifyFieldListeners();
+        notifyFormListeners();
+      });
+      return returnValue;
     }
-  }
+  };
 
   const mutatorsApi = mutators
     ? Object.keys(mutators).reduce((result, key) => {
-        result[key] = getMutatorApi(key)
-        return result
+        result[key] = getMutatorApi(key);
+        return result;
       }, {})
-    : {}
+    : {};
 
   const runRecordLevelValidation = (
-    setErrors: (errors: Object) => void
+    setErrors: (errors: Object) => void,
   ): Promise<*>[] => {
-    const promises = []
+    const promises = [];
     if (validate) {
-      const errorsOrPromise = validate({ ...state.formState.values }) // clone to avoid writing
+      const errorsOrPromise = validate({ ...state.formState.values }); // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
-        promises.push(errorsOrPromise.then(setErrors))
+        promises.push(errorsOrPromise.then(setErrors));
       } else {
-        setErrors(errorsOrPromise)
+        setErrors(errorsOrPromise);
       }
     }
-    return promises
-  }
+    return promises;
+  };
 
   const getValidators = (field: InternalFieldState) =>
     Object.keys(field.validators).reduce((result, index) => {
-      const validator = field.validators[Number(index)]()
+      const validator = field.validators[Number(index)]();
       if (validator) {
-        result.push(validator)
+        result.push(validator);
       }
-      return result
-    }, [])
+      return result;
+    }, []);
 
   const runFieldLevelValidation = (
     name: string,
-    setError: (error: ?any) => void
+    setError: (error: ?any) => void,
   ): Promise<*>[] => {
-    const promises = []
-    const validators = getValidators(state.fields[name])
+    const promises = [];
+    const validators = getValidators(state.fields[name]);
     if (validators.length) {
-      let error
-      validators.forEach(validator => {
+      let error;
+      validators.forEach((validator) => {
         const errorOrPromise = validator(
           getIn(state.formState.values, name),
           state.formState.values,
           validator.length === 0 || validator.length === 3
             ? publishFieldState(state.formState, state.fields[name])
-            : undefined
-        )
+            : undefined,
+        );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          state.fields[name].validating = true
-          const promise = errorOrPromise.then(error => {
-            state.fields[name].validating = false
-            setError(error)
-          }) // errors must be resolved, not rejected
-          promises.push(promise)
+          state.fields[name].validating = true;
+          const promise = errorOrPromise.then((error) => {
+            state.fields[name].validating = false;
+            setError(error);
+          }); // errors must be resolved, not rejected
+          promises.push(promise);
         } else if (!error) {
           // first registered validator wins
-          error = errorOrPromise
+          error = errorOrPromise;
         }
-      })
-      setError(error)
+      });
+      setError(error);
     }
-    return promises
-  }
+    return promises;
+  };
 
   const runValidation = (fieldChanged: ?string, callback: () => void) => {
     if (validationPaused) {
-      validationBlocked = true
-      callback()
-      return
+      validationBlocked = true;
+      callback();
+      return;
     }
 
-    const { fields, formState } = state
-    const safeFields = { ...fields }
-    let fieldKeys = Object.keys(safeFields)
+    const { fields, formState } = state;
+    const safeFields = { ...fields };
+    let fieldKeys = Object.keys(safeFields);
     if (
       !validate &&
-      !fieldKeys.some(key => getValidators(safeFields[key]).length)
+      !fieldKeys.some((key) => getValidators(safeFields[key]).length)
     ) {
-      callback()
-      return // no validation rules
+      callback();
+      return; // no validation rules
     }
 
     // pare down field keys to actually validate
-    let limitedFieldLevelValidation = false
+    let limitedFieldLevelValidation = false;
     if (fieldChanged) {
-      const changedField = safeFields[fieldChanged]
+      const changedField = safeFields[fieldChanged];
       if (changedField) {
-        const { validateFields } = changedField
+        const { validateFields } = changedField;
         if (validateFields) {
-          limitedFieldLevelValidation = true
+          limitedFieldLevelValidation = true;
           fieldKeys = validateFields.length
             ? validateFields.concat(fieldChanged)
-            : [fieldChanged]
+            : [fieldChanged];
         }
       }
     }
 
-    let recordLevelErrors: Object = {}
-    const fieldLevelErrors = {}
+    let recordLevelErrors: Object = {};
+    const fieldLevelErrors = {};
 
     const promises = [
-      ...runRecordLevelValidation(errors => {
-        recordLevelErrors = errors || {}
+      ...runRecordLevelValidation((errors) => {
+        recordLevelErrors = errors || {};
       }),
       ...fieldKeys.reduce(
         (result, name) =>
           result.concat(
             runFieldLevelValidation(name, (error: ?any) => {
-              fieldLevelErrors[name] = error
-            })
+              fieldLevelErrors[name] = error;
+            }),
           ),
-        []
-      )
-    ]
+        [],
+      ),
+    ];
 
-    const hasAsyncValidations = promises.length > 0
-    const asyncValidationPromiseKey = ++nextAsyncValidationKey
+    const hasAsyncValidations = promises.length > 0;
+    const asyncValidationPromiseKey = ++nextAsyncValidationKey;
     const promise = Promise.all(promises).then(
-      clearAsyncValidationPromise(asyncValidationPromiseKey)
-    )
+      clearAsyncValidationPromise(asyncValidationPromiseKey),
+    );
 
     // backwards-compat: add promise to submit-blocking promises iff there are any promises to await
     if (hasAsyncValidations) {
-      asyncValidationPromises[asyncValidationPromiseKey] = promise
+      asyncValidationPromises[asyncValidationPromiseKey] = promise;
     }
 
     const processErrors = () => {
       let merged = {
         ...(limitedFieldLevelValidation ? formState.errors : {}),
-        ...recordLevelErrors
-      }
+        ...recordLevelErrors,
+      };
       const forEachError = (fn: (name: string, error: any) => void) => {
-        fieldKeys.forEach(name => {
+        fieldKeys.forEach((name) => {
           if (fields[name]) {
             // make sure field is still registered
             // field-level errors take precedent over record-level errors
-            const recordLevelError = getIn(recordLevelErrors, name)
-            const errorFromParent = getIn(merged, name)
+            const recordLevelError = getIn(recordLevelErrors, name);
+            const errorFromParent = getIn(merged, name);
             const hasFieldLevelValidation = getValidators(safeFields[name])
-              .length
-            const fieldLevelError = fieldLevelErrors[name]
+              .length;
+            const fieldLevelError = fieldLevelErrors[name];
             fn(
               name,
               (hasFieldLevelValidation && fieldLevelError) ||
                 (validate && recordLevelError) ||
                 (!recordLevelError && !limitedFieldLevelValidation
                   ? errorFromParent
-                  : undefined)
-            )
+                  : undefined),
+            );
           }
-        })
-      }
+        });
+      };
       forEachError((name, error) => {
-        merged = setIn(merged, name, error) || {}
-      })
+        merged = setIn(merged, name, error) || {};
+      });
       forEachError((name, error) => {
         if (error && error[ARRAY_ERROR]) {
-          const existing = getIn(merged, name)
-          const copy: any = [...existing]
-          copy[ARRAY_ERROR] = error[ARRAY_ERROR]
-          merged = setIn(merged, name, copy)
+          const existing = getIn(merged, name);
+          const copy: any = [...existing];
+          copy[ARRAY_ERROR] = error[ARRAY_ERROR];
+          merged = setIn(merged, name, copy);
         }
-      })
+      });
       if (!shallowEqual(formState.errors, merged)) {
-        formState.errors = merged
+        formState.errors = merged;
       }
-      formState.error = recordLevelErrors[FORM_ERROR]
-    }
+      formState.error = recordLevelErrors[FORM_ERROR];
+    };
 
     // process sync errors
-    processErrors()
+    processErrors();
     // sync errors have been set. notify listeners while we wait for others
-    callback()
+    callback();
 
     if (hasAsyncValidations) {
-      state.formState.validating++
-      callback()
+      state.formState.validating++;
+      callback();
 
       const afterPromise = () => {
-        state.formState.validating--
-        callback()
-      }
+        state.formState.validating--;
+        callback();
+      };
 
       promise
         .then(() => {
           if (nextAsyncValidationKey > asyncValidationPromiseKey) {
             // if this async validator has been superseded by another, ignore its results
-            return
+            return;
           }
 
-          processErrors()
+          processErrors();
         })
-        .then(afterPromise, afterPromise)
+        .then(afterPromise, afterPromise);
     }
-  }
+  };
 
   const notifyFieldListeners = (name: ?string) => {
     if (inBatch) {
-      return
+      return;
     }
-    const { fields, fieldSubscribers, formState } = state
-    const safeFields = { ...fields }
+    const { fields, fieldSubscribers, formState } = state;
+    const safeFields = { ...fields };
     const notifyField = (name: string) => {
-      const field = safeFields[name]
-      const fieldState = publishFieldState(formState, field)
-      const { lastFieldState } = field
-      field.lastFieldState = fieldState
-      const fieldSubscriber = fieldSubscribers[name]
+      const field = safeFields[name];
+      const fieldState = publishFieldState(formState, field);
+      const { lastFieldState } = field;
+      field.lastFieldState = fieldState;
+      const fieldSubscriber = fieldSubscribers[name];
       if (fieldSubscriber) {
         notify(
           fieldSubscriber,
           fieldState,
           lastFieldState,
           filterFieldState,
-          lastFieldState === undefined
-        )
+          lastFieldState === undefined,
+        );
       }
-    }
+    };
     if (name) {
-      notifyField(name)
+      notifyField(name);
     } else {
-      Object.keys(safeFields).forEach(notifyField)
+      Object.keys(safeFields).forEach(notifyField);
     }
-  }
+  };
 
   const markAllFieldsTouched = (): void => {
-    Object.keys(state.fields).forEach(key => {
-      state.fields[key].touched = true
-    })
-  }
+    Object.keys(state.fields).forEach((key) => {
+      state.fields[key].touched = true;
+    });
+  };
 
   const hasSyncErrors = () =>
-    !!(state.formState.error || hasAnyError(state.formState.errors))
+    !!(state.formState.error || hasAnyError(state.formState.errors));
 
   const calculateNextFormState = (): FormState<FormValues> => {
-    const { fields, formState, lastFormState } = state
-    const safeFields = { ...fields }
-    const safeFieldKeys = Object.keys(safeFields)
+    const { fields, formState, lastFormState } = state;
+    const safeFields = { ...fields };
+    const safeFieldKeys = Object.keys(safeFields);
 
     // calculate dirty/pristine
-    let foundDirty = false
+    let foundDirty = false;
     const dirtyFields = safeFieldKeys.reduce((result, key) => {
       const dirty = !safeFields[key].isEqual(
         getIn(formState.values, key),
-        getIn(formState.initialValues || {}, key)
-      )
+        getIn(formState.initialValues || {}, key),
+      );
       if (dirty) {
-        foundDirty = true
-        result[key] = true
+        foundDirty = true;
+        result[key] = true;
       }
-      return result
-    }, {})
+      return result;
+    }, {});
     const dirtyFieldsSinceLastSubmit = safeFieldKeys.reduce((result, key) => {
       // istanbul ignore next
-      const nonNullLastSubmittedValues = formState.lastSubmittedValues || {} // || {} is for flow, but causes branch coverage complaint
+      const nonNullLastSubmittedValues = formState.lastSubmittedValues || {}; // || {} is for flow, but causes branch coverage complaint
       if (
         !safeFields[key].isEqual(
           getIn(formState.values, key),
-          getIn(nonNullLastSubmittedValues, key)
+          getIn(nonNullLastSubmittedValues, key),
         )
       ) {
-        result[key] = true
+        result[key] = true;
       }
-      return result
-    }, {})
-    formState.pristine = !foundDirty
+      return result;
+    }, {});
+    formState.pristine = !foundDirty;
     formState.dirtySinceLastSubmit = !!(
       formState.lastSubmittedValues &&
-      Object.values(dirtyFieldsSinceLastSubmit).some(value => value)
-    )
+      Object.values(dirtyFieldsSinceLastSubmit).some((value) => value)
+    );
     formState.modifiedSinceLastSubmit = !!(
       formState.lastSubmittedValues &&
       // Object.values would treat values as mixed (facebook/flow#2221)
       Object.keys(safeFields).some(
-        value => safeFields[value].modifiedSinceLastSubmit
+        (value) => safeFields[value].modifiedSinceLastSubmit,
       )
-    )
+    );
 
     formState.valid =
       !formState.error &&
       !formState.submitError &&
       !hasAnyError(formState.errors) &&
-      !(formState.submitErrors && hasAnyError(formState.submitErrors))
-    const nextFormState = convertToExternalFormState(formState)
+      !(formState.submitErrors && hasAnyError(formState.submitErrors));
+    const nextFormState = convertToExternalFormState(formState);
     const { modified, touched, visited } = safeFieldKeys.reduce(
       (result, key) => {
-        result.modified[key] = safeFields[key].modified
-        result.touched[key] = safeFields[key].touched
-        result.visited[key] = safeFields[key].visited
-        return result
+        result.modified[key] = safeFields[key].modified;
+        result.touched[key] = safeFields[key].touched;
+        result.visited[key] = safeFields[key].visited;
+        return result;
       },
-      { modified: {}, touched: {}, visited: {} }
-    )
+      { modified: {}, touched: {}, visited: {} },
+    );
     nextFormState.dirtyFields =
       lastFormState && shallowEqual(lastFormState.dirtyFields, dirtyFields)
         ? lastFormState.dirtyFields
-        : dirtyFields
+        : dirtyFields;
     nextFormState.dirtyFieldsSinceLastSubmit =
       lastFormState &&
       shallowEqual(
         lastFormState.dirtyFieldsSinceLastSubmit,
-        dirtyFieldsSinceLastSubmit
+        dirtyFieldsSinceLastSubmit,
       )
         ? lastFormState.dirtyFieldsSinceLastSubmit
-        : dirtyFieldsSinceLastSubmit
+        : dirtyFieldsSinceLastSubmit;
     nextFormState.modified =
       lastFormState && shallowEqual(lastFormState.modified, modified)
         ? lastFormState.modified
-        : modified
+        : modified;
     nextFormState.touched =
       lastFormState && shallowEqual(lastFormState.touched, touched)
         ? lastFormState.touched
-        : touched
+        : touched;
     nextFormState.visited =
       lastFormState && shallowEqual(lastFormState.visited, visited)
         ? lastFormState.visited
-        : visited
+        : visited;
     return lastFormState && shallowEqual(lastFormState, nextFormState)
       ? lastFormState
-      : nextFormState
-  }
+      : nextFormState;
+  };
 
   const callDebug = () =>
     debug &&
-    process.env.NODE_ENV !== 'production' &&
+    process.env.NODE_ENV !== "production" &&
     debug(
       calculateNextFormState(),
       Object.keys(state.fields).reduce((result, key: string) => {
-        result[key] = state.fields[key]
-        return result
-      }, {})
-    )
+        result[key] = state.fields[key];
+        return result;
+      }, {}),
+    );
 
-  let notifying: boolean = false
-  let scheduleNotification: boolean = false
+  let notifying: boolean = false;
+  let scheduleNotification: boolean = false;
   const notifyFormListeners = () => {
     if (notifying) {
-      scheduleNotification = true
+      scheduleNotification = true;
     } else {
-      notifying = true
-      callDebug()
-      if (!inBatch && !(validationPaused && preventNotificationWhileValidationPaused)) {
-        const { lastFormState } = state
-        const nextFormState = calculateNextFormState()
+      notifying = true;
+      callDebug();
+      if (
+        !inBatch &&
+        !(validationPaused && preventNotificationWhileValidationPaused)
+      ) {
+        const { lastFormState } = state;
+        const nextFormState = calculateNextFormState();
         if (nextFormState !== lastFormState) {
-          state.lastFormState = nextFormState
+          state.lastFormState = nextFormState;
           notify(
             state.subscribers,
             nextFormState,
             lastFormState,
-            filterFormState
-          )
+            filterFormState,
+          );
         }
       }
-      notifying = false
+      notifying = false;
       if (scheduleNotification) {
-        scheduleNotification = false
-        notifyFormListeners()
+        scheduleNotification = false;
+        notifyFormListeners();
       }
     }
-  }
+  };
 
   const beforeSubmit = (): boolean =>
     Object.keys(state.fields).some(
-      name =>
+      (name) =>
         state.fields[name].beforeSubmit &&
-        state.fields[name].beforeSubmit() === false
-    )
+        state.fields[name].beforeSubmit() === false,
+    );
 
   const afterSubmit = (): void =>
     Object.keys(state.fields).forEach(
-      name => state.fields[name].afterSubmit && state.fields[name].afterSubmit()
-    )
+      (name) =>
+        state.fields[name].afterSubmit && state.fields[name].afterSubmit(),
+    );
 
   const resetModifiedAfterSubmit = (): void =>
     Object.keys(state.fields).forEach(
-      key => (state.fields[key].modifiedSinceLastSubmit = false)
-    )
+      (key) => (state.fields[key].modifiedSinceLastSubmit = false),
+    );
 
   // generate initial errors
   runValidation(undefined, () => {
-    notifyFormListeners()
-  })
+    notifyFormListeners();
+  });
 
   const api: FormApi<FormValues> = {
     batch: (fn: () => void) => {
-      inBatch++
-      fn()
-      inBatch--
-      notifyFieldListeners()
-      notifyFormListeners()
+      inBatch++;
+      fn();
+      inBatch--;
+      notifyFieldListeners();
+      notifyFormListeners();
     },
 
     blur: (name: string) => {
-      const { fields, formState } = state
-      const previous = fields[name]
+      const { fields, formState } = state;
+      const previous = fields[name];
       if (previous) {
         // can only blur registered fields
-        delete formState.active
+        delete formState.active;
         fields[name] = {
           ...previous,
           active: false,
-          touched: true
-        }
+          touched: true,
+        };
         if (validateOnBlur) {
           runValidation(name, () => {
-            notifyFieldListeners()
-            notifyFormListeners()
-          })
+            notifyFieldListeners();
+            notifyFormListeners();
+          });
         } else {
-          notifyFieldListeners()
-          notifyFormListeners()
+          notifyFieldListeners();
+          notifyFormListeners();
         }
       }
     },
 
     change: (name: string, value: ?any) => {
-      const { fields, formState } = state
+      const { fields, formState } = state;
       if (getIn(formState.values, name) !== value) {
-        changeValue(state, name, () => value)
-        const previous = fields[name]
+        changeValue(state, name, () => value);
+        const previous = fields[name];
         if (previous) {
           // only track modified for registered fields
           fields[name] = {
             ...previous,
             modified: true,
-            modifiedSinceLastSubmit: !!formState.lastSubmittedValues
-          }
+            modifiedSinceLastSubmit: !!formState.lastSubmittedValues,
+          };
         }
         if (validateOnBlur) {
-          notifyFieldListeners()
-          notifyFormListeners()
+          notifyFieldListeners();
+          notifyFormListeners();
         } else {
           runValidation(name, () => {
-            notifyFieldListeners()
-            notifyFormListeners()
-          })
+            notifyFieldListeners();
+            notifyFormListeners();
+          });
         }
       }
     },
 
     get destroyOnUnregister() {
-      return !!destroyOnUnregister
+      return !!destroyOnUnregister;
     },
 
     set destroyOnUnregister(value: boolean) {
-      destroyOnUnregister = value
+      destroyOnUnregister = value;
     },
 
     focus: (name: string) => {
-      const field = state.fields[name]
+      const field = state.fields[name];
       if (field && !field.active) {
-        state.formState.active = name
-        field.active = true
-        field.visited = true
-        notifyFieldListeners()
-        notifyFormListeners()
+        state.formState.active = name;
+        field.active = true;
+        field.visited = true;
+        notifyFieldListeners();
+        notifyFormListeners();
       }
     },
 
     mutators: mutatorsApi,
 
-    getFieldState: name => {
-      const field = state.fields[name]
-      return field && field.lastFieldState
+    getFieldState: (name) => {
+      const field = state.fields[name];
+      return field && field.lastFieldState;
     },
 
     getRegisteredFields: () => Object.keys(state.fields),
@@ -751,11 +755,11 @@ function createForm<FormValues: FormValuesShape>(
     getState: () => calculateNextFormState(),
 
     initialize: (data: Object | ((values: Object) => Object)) => {
-      const { fields, formState } = state
-      const safeFields = { ...fields }
-      const values = typeof data === 'function' ? data(formState.values) : data
+      const { fields, formState } = state;
+      const safeFields = { ...fields };
+      const values = typeof data === "function" ? data(formState.values) : data;
       if (!keepDirtyOnReinitialize) {
-        formState.values = values
+        formState.values = values;
       }
       /**
        * Hello, inquisitive code reader! Thanks for taking the time to dig in!
@@ -767,54 +771,54 @@ function createForm<FormValues: FormValuesShape>(
       // save dirty values
       const savedDirtyValues = keepDirtyOnReinitialize
         ? Object.keys(safeFields).reduce((result, key) => {
-            const field = safeFields[key]
+            const field = safeFields[key];
             const pristine = field.isEqual(
               getIn(formState.values, key),
-              getIn(formState.initialValues || {}, key)
-            )
+              getIn(formState.initialValues || {}, key),
+            );
             if (!pristine) {
-              result[key] = getIn(formState.values, key)
+              result[key] = getIn(formState.values, key);
             }
-            return result
+            return result;
           }, {})
-        : {}
+        : {};
       // update initalValues and values
-      formState.initialValues = values
-      formState.values = values
+      formState.initialValues = values;
+      formState.values = values;
       // restore the dirty values
-      Object.keys(savedDirtyValues).forEach(key => {
-        formState.values = setIn(formState.values, key, savedDirtyValues[key])
-      })
+      Object.keys(savedDirtyValues).forEach((key) => {
+        formState.values = setIn(formState.values, key, savedDirtyValues[key]);
+      });
       runValidation(undefined, () => {
-        notifyFieldListeners()
-        notifyFormListeners()
-      })
+        notifyFieldListeners();
+        notifyFormListeners();
+      });
     },
 
     isValidationPaused: () => validationPaused,
 
     pauseValidation: (preventNotification: boolean = true) => {
-      validationPaused = true
-      preventNotificationWhileValidationPaused = preventNotification
+      validationPaused = true;
+      preventNotificationWhileValidationPaused = preventNotification;
     },
 
     registerField: (
       name: string,
       subscriber: FieldSubscriber,
       subscription: FieldSubscription = {},
-      fieldConfig?: FieldConfig
+      fieldConfig?: FieldConfig,
     ): Unsubscribe => {
       if (!state.fieldSubscribers[name]) {
-        state.fieldSubscribers[name] = { index: 0, entries: {} }
+        state.fieldSubscribers[name] = { index: 0, entries: {} };
       }
-      const index = state.fieldSubscribers[name].index++
+      const index = state.fieldSubscribers[name].index++;
 
       // save field subscriber callback
       state.fieldSubscribers[name].entries[index] = {
         subscriber: memoize(subscriber),
         subscription,
-        notified: false
-      }
+        notified: false,
+      };
 
       if (!state.fields[name]) {
         // create initial field state
@@ -823,7 +827,7 @@ function createForm<FormValues: FormValuesShape>(
           afterSubmit: fieldConfig && fieldConfig.afterSubmit,
           beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
           blur: () => api.blur(name),
-          change: value => api.change(name, value),
+          change: (value) => api.change(name, value),
           data: (fieldConfig && fieldConfig.data) || {},
           focus: () => api.focus(name),
           isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
@@ -836,28 +840,29 @@ function createForm<FormValues: FormValuesShape>(
           validateFields: fieldConfig && fieldConfig.validateFields,
           validators: {},
           validating: false,
-          visited: false
-        }
+          visited: false,
+        };
       }
-      let haveValidator = false
-      const silent = fieldConfig && fieldConfig.silent
+      let haveValidator = false;
+      const silent = fieldConfig && fieldConfig.silent;
       const notify = () => {
         if (silent) {
-          notifyFieldListeners(name)
+          notifyFieldListeners(name);
         } else {
-          notifyFormListeners()
-          notifyFieldListeners()
+          notifyFormListeners();
+          notifyFieldListeners();
         }
-      }
+      };
       if (fieldConfig) {
         haveValidator = !!(
           fieldConfig.getValidator && fieldConfig.getValidator()
-        )
+        );
         if (fieldConfig.getValidator) {
-          state.fields[name].validators[index] = fieldConfig.getValidator
+          state.fields[name].validators[index] = fieldConfig.getValidator;
         }
 
-        const noValueInFormState = getIn(state.formState.values, name) === undefined
+        const noValueInFormState =
+          getIn(state.formState.values, name) === undefined;
         if (
           fieldConfig.initialValue !== undefined &&
           (noValueInFormState ||
@@ -868,14 +873,14 @@ function createForm<FormValues: FormValuesShape>(
           state.formState.initialValues = setIn(
             state.formState.initialValues || {},
             name,
-            fieldConfig.initialValue
-          )
+            fieldConfig.initialValue,
+          );
           state.formState.values = setIn(
             state.formState.values,
             name,
-            fieldConfig.initialValue
-          )
-          runValidation(undefined, notify)
+            fieldConfig.initialValue,
+          );
+          runValidation(undefined, notify);
         }
 
         // only use defaultValue if we don't yet have any value for this field
@@ -888,70 +893,72 @@ function createForm<FormValues: FormValuesShape>(
           state.formState.values = setIn(
             state.formState.values,
             name,
-            fieldConfig.defaultValue
-          )
+            fieldConfig.defaultValue,
+          );
         }
       }
 
       if (haveValidator) {
-        runValidation(undefined, notify)
+        runValidation(undefined, notify);
       } else {
-        notify()
+        notify();
       }
 
       return () => {
-        let validatorRemoved = false
+        let validatorRemoved = false;
         // istanbul ignore next
         if (state.fields[name]) {
           // state.fields[name] may have been removed by a mutator
           validatorRemoved = !!(
             state.fields[name].validators[index] &&
             state.fields[name].validators[index]()
-          )
-          delete state.fields[name].validators[index]
+          );
+          delete state.fields[name].validators[index];
         }
         let hasFieldSubscribers = !!state.fieldSubscribers[name];
         if (hasFieldSubscribers) {
           // state.fieldSubscribers[name] may have been removed by a mutator
-          delete state.fieldSubscribers[name].entries[index]
+          delete state.fieldSubscribers[name].entries[index];
         }
-        let lastOne = hasFieldSubscribers && !Object.keys(state.fieldSubscribers[name].entries).length
+        let lastOne =
+          hasFieldSubscribers &&
+          !Object.keys(state.fieldSubscribers[name].entries).length;
         if (lastOne) {
-          delete state.fieldSubscribers[name]
-          delete state.fields[name]
+          delete state.fieldSubscribers[name];
+          delete state.fields[name];
           if (validatorRemoved) {
             state.formState.errors =
-              setIn(state.formState.errors, name, undefined) || {}
+              setIn(state.formState.errors, name, undefined) || {};
           }
           if (destroyOnUnregister) {
             state.formState.values =
-              setIn(state.formState.values, name, undefined, true) || {}
+              setIn(state.formState.values, name, undefined, true) || {};
           }
         }
         if (!silent) {
           if (validatorRemoved) {
             runValidation(undefined, () => {
-              notifyFormListeners()
-              notifyFieldListeners()
-            })
+              notifyFormListeners();
+              notifyFieldListeners();
+            });
           } else if (lastOne) {
             // values or errors may have changed
-            notifyFormListeners()
+            notifyFormListeners();
           }
         }
-      }
+      };
     },
 
     reset: (initialValues = state.formState.initialValues) => {
       if (state.formState.submitting) {
         state.formState.resetWhileSubmitting = true;
       }
-      state.formState.submitFailed = false
-      state.formState.submitSucceeded = false
-      delete state.formState.submitError
-      delete state.formState.submitErrors
-      delete state.formState.lastSubmittedValues
-      api.initialize(initialValues || {})
+      state.formState.submitFailed = false;
+      state.formState.submitSucceeded = false;
+      delete state.formState.submitError;
+      delete state.formState.submitErrors;
+      delete state.formState.lastSubmittedValues;
+      api.initialize(initialValues || {});
     },
 
     /**
@@ -967,13 +974,13 @@ function createForm<FormValues: FormValuesShape>(
           touched: false,
           valid: true,
           validating: false,
-          visited: false
-        }
-      }
+          visited: false,
+        },
+      };
       runValidation(undefined, () => {
-        notifyFieldListeners()
-        notifyFormListeners()
-      })
+        notifyFieldListeners();
+        notifyFormListeners();
+      });
     },
 
     /**
@@ -984,7 +991,7 @@ function createForm<FormValues: FormValuesShape>(
     restart: (initialValues = state.formState.initialValues) => {
       api.batch(() => {
         for (const name in state.fields) {
-          api.resetFieldState(name)
+          api.resetFieldState(name);
           state.fields[name] = {
             ...state.fields[name],
             ...{
@@ -995,206 +1002,206 @@ function createForm<FormValues: FormValuesShape>(
               touched: false,
               valid: true,
               validating: false,
-              visited: false
-            }
-          }
+              visited: false,
+            },
+          };
         }
-        api.reset(initialValues)
-      })
+        api.reset(initialValues);
+      });
     },
 
     resumeValidation: () => {
-      validationPaused = false
-      preventNotificationWhileValidationPaused = false
+      validationPaused = false;
+      preventNotificationWhileValidationPaused = false;
       if (validationBlocked) {
         // validation was attempted while it was paused, so run it now
         runValidation(undefined, () => {
-          notifyFieldListeners()
-          notifyFormListeners()
-        })
+          notifyFieldListeners();
+          notifyFormListeners();
+        });
       }
-      validationBlocked = false
+      validationBlocked = false;
     },
 
     setConfig: (name: string, value: any): void => {
       switch (name) {
-        case 'debug':
-          debug = value
-          break
-        case 'destroyOnUnregister':
-          destroyOnUnregister = value
-          break
-        case 'initialValues':
-          api.initialize(value)
-          break
-        case 'keepDirtyOnReinitialize':
-          keepDirtyOnReinitialize = value
-          break
-        case 'mutators':
-          mutators = value
+        case "debug":
+          debug = value;
+          break;
+        case "destroyOnUnregister":
+          destroyOnUnregister = value;
+          break;
+        case "initialValues":
+          api.initialize(value);
+          break;
+        case "keepDirtyOnReinitialize":
+          keepDirtyOnReinitialize = value;
+          break;
+        case "mutators":
+          mutators = value;
           if (value) {
-            Object.keys(mutatorsApi).forEach(key => {
+            Object.keys(mutatorsApi).forEach((key) => {
               if (!(key in value)) {
-                delete mutatorsApi[key]
+                delete mutatorsApi[key];
               }
-            })
-            Object.keys(value).forEach(key => {
-              mutatorsApi[key] = getMutatorApi(key)
-            })
+            });
+            Object.keys(value).forEach((key) => {
+              mutatorsApi[key] = getMutatorApi(key);
+            });
           } else {
-            Object.keys(mutatorsApi).forEach(key => {
-              delete mutatorsApi[key]
-            })
+            Object.keys(mutatorsApi).forEach((key) => {
+              delete mutatorsApi[key];
+            });
           }
-          break
-        case 'onSubmit':
-          onSubmit = value
-          break
-        case 'validate':
-          validate = value
+          break;
+        case "onSubmit":
+          onSubmit = value;
+          break;
+        case "validate":
+          validate = value;
           runValidation(undefined, () => {
-            notifyFieldListeners()
-            notifyFormListeners()
-          })
-          break
-        case 'validateOnBlur':
-          validateOnBlur = value
-          break
+            notifyFieldListeners();
+            notifyFormListeners();
+          });
+          break;
+        case "validateOnBlur":
+          validateOnBlur = value;
+          break;
         default:
-          throw new Error('Unrecognised option ' + name)
+          throw new Error("Unrecognised option " + name);
       }
     },
 
     submit: () => {
-      const { formState } = state
+      const { formState } = state;
 
       if (formState.submitting) {
-        return
+        return;
       }
 
-      delete formState.submitErrors
-      delete formState.submitError
-      formState.lastSubmittedValues = { ...formState.values }
+      delete formState.submitErrors;
+      delete formState.submitError;
+      formState.lastSubmittedValues = { ...formState.values };
 
       if (hasSyncErrors()) {
-        markAllFieldsTouched()
-        state.formState.submitFailed = true
-        notifyFormListeners()
-        notifyFieldListeners()
-        return // no submit for you!!
+        markAllFieldsTouched();
+        state.formState.submitFailed = true;
+        notifyFormListeners();
+        notifyFieldListeners();
+        return; // no submit for you!!
       }
-      const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises)
+      const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises);
       if (asyncValidationPromisesKeys.length) {
         // still waiting on async validation to complete...
         Promise.all(
           asyncValidationPromisesKeys.map(
-            key => asyncValidationPromises[Number(key)]
-          )
-        ).then(api.submit, console.error)
-        return
+            (key) => asyncValidationPromises[Number(key)],
+          ),
+        ).then(api.submit, console.error);
+        return;
       }
-      const submitIsBlocked = beforeSubmit()
+      const submitIsBlocked = beforeSubmit();
       if (submitIsBlocked) {
-        return
+        return;
       }
 
-      let resolvePromise
-      let completeCalled = false
+      let resolvePromise;
+      let completeCalled = false;
       const complete = (errors: ?Object) => {
-        formState.submitting = false
-        const { resetWhileSubmitting } = formState
+        formState.submitting = false;
+        const { resetWhileSubmitting } = formState;
         if (resetWhileSubmitting) {
-          formState.resetWhileSubmitting = false
+          formState.resetWhileSubmitting = false;
         }
         if (errors && hasAnyError(errors)) {
-          formState.submitFailed = true
-          formState.submitSucceeded = false
-          formState.submitErrors = errors
-          formState.submitError = errors[FORM_ERROR]
-          markAllFieldsTouched()
+          formState.submitFailed = true;
+          formState.submitSucceeded = false;
+          formState.submitErrors = errors;
+          formState.submitError = errors[FORM_ERROR];
+          markAllFieldsTouched();
         } else {
           if (!resetWhileSubmitting) {
-            formState.submitFailed = false
-            formState.submitSucceeded = true
+            formState.submitFailed = false;
+            formState.submitSucceeded = true;
           }
-          afterSubmit()
+          afterSubmit();
         }
-        notifyFormListeners()
-        notifyFieldListeners()
-        completeCalled = true
+        notifyFormListeners();
+        notifyFieldListeners();
+        completeCalled = true;
         if (resolvePromise) {
-          resolvePromise(errors)
+          resolvePromise(errors);
         }
-        return errors
-      }
+        return errors;
+      };
 
-      formState.submitting = true
-      formState.submitFailed = false
-      formState.submitSucceeded = false
-      formState.lastSubmittedValues = { ...formState.values }
-      resetModifiedAfterSubmit()
+      formState.submitting = true;
+      formState.submitFailed = false;
+      formState.submitSucceeded = false;
+      formState.lastSubmittedValues = { ...formState.values };
+      resetModifiedAfterSubmit();
 
       // onSubmit is either sync, callback or async with a Promise
-      const result = onSubmit(formState.values, api, complete)
+      const result = onSubmit(formState.values, api, complete);
 
       if (!completeCalled) {
         if (result && isPromise(result)) {
           // onSubmit is async with a Promise
-          notifyFormListeners() // let everyone know we are submitting
-          notifyFieldListeners() // notify fields also
-          return result.then(complete, error => {
-            complete()
-            throw error
-          })
+          notifyFormListeners(); // let everyone know we are submitting
+          notifyFieldListeners(); // notify fields also
+          return result.then(complete, (error) => {
+            complete();
+            throw error;
+          });
         } else if (onSubmit.length >= 3) {
           // must be async, so we should return a Promise
-          notifyFormListeners() // let everyone know we are submitting
-          notifyFieldListeners() // notify fields also
-          return new Promise(resolve => {
-            resolvePromise = resolve
-          })
+          notifyFormListeners(); // let everyone know we are submitting
+          notifyFieldListeners(); // notify fields also
+          return new Promise((resolve) => {
+            resolvePromise = resolve;
+          });
         } else {
           // onSubmit is sync
-          complete(result)
+          complete(result);
         }
       }
     },
 
     subscribe: (
       subscriber: FormSubscriber<FormValues>,
-      subscription: FormSubscription
+      subscription: FormSubscription,
     ): Unsubscribe => {
       if (!subscriber) {
-        throw new Error('No callback given.')
+        throw new Error("No callback given.");
       }
       if (!subscription) {
         throw new Error(
-          'No subscription provided. What values do you want to listen to?'
-        )
+          "No subscription provided. What values do you want to listen to?",
+        );
       }
-      const memoized = memoize(subscriber)
-      const { subscribers } = state
-      const index = subscribers.index++
+      const memoized = memoize(subscriber);
+      const { subscribers } = state;
+      const index = subscribers.index++;
       subscribers.entries[index] = {
         subscriber: memoized,
         subscription,
-        notified: false
-      }
-      const nextFormState = calculateNextFormState()
+        notified: false,
+      };
+      const nextFormState = calculateNextFormState();
       notifySubscriber(
         memoized,
         subscription,
         nextFormState,
         nextFormState,
         filterFormState,
-        true
-      )
+        true,
+      );
       return () => {
-        delete subscribers.entries[index]
-      }
-    }
-  }
-  return api
+        delete subscribers.entries[index];
+      };
+    },
+  };
+  return api;
 }
 
-export default createForm
+export default createForm;

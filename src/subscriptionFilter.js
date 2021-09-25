@@ -1,26 +1,26 @@
 // @flow
-import shallowEqual from './shallowEqual'
-export default function<T: { [string]: any }>(
+import shallowEqual from "./shallowEqual";
+export default function <T: { [string]: any }>(
   dest: T,
   src: T,
   previous: ?T,
   subscription: { [string]: boolean },
   keys: string[],
-  shallowEqualKeys: string[]
+  shallowEqualKeys: string[],
 ): boolean {
-  let different = false
-  keys.forEach(key => {
+  let different = false;
+  keys.forEach((key) => {
     if (subscription[key]) {
-      dest[key] = src[key]
+      dest[key] = src[key];
       if (
         !previous ||
         (~shallowEqualKeys.indexOf(key)
           ? !shallowEqual(src[key], previous[key])
           : src[key] !== previous[key])
       ) {
-        different = true
+        different = true;
       }
     }
-  })
-  return different
+  });
+  return different;
 }
