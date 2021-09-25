@@ -263,7 +263,7 @@ describe("FinalForm.creation", () => {
       {
         initialValue: "yellow",
         silent: true,
-        getValidator: () => (value) => (!value ? "Required" : undefined),
+        getValidator: () => (value) => !value ? "Required" : undefined,
       },
     )();
     expect(banana).toHaveBeenCalled();

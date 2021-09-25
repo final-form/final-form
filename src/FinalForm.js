@@ -248,35 +248,37 @@ function createForm<FormValues: FormValuesShape>(
   };
 
   // bind state to mutators
-  const getMutatorApi = (key) => (...args) => {
-    // istanbul ignore next
-    if (mutators) {
-      // ^^ causes branch coverage warning, but needed to appease the Flow gods
-      const mutatableState: MutableState<FormValues> = {
-        formState: state.formState,
-        fields: state.fields,
-        fieldSubscribers: state.fieldSubscribers,
-        lastFormState: state.lastFormState,
-      };
-      const returnValue = mutators[key](args, mutatableState, {
-        changeValue,
-        getIn,
-        renameField,
-        resetFieldState: api.resetFieldState,
-        setIn,
-        shallowEqual,
-      });
-      state.formState = mutatableState.formState;
-      state.fields = mutatableState.fields;
-      state.fieldSubscribers = mutatableState.fieldSubscribers;
-      state.lastFormState = mutatableState.lastFormState;
-      runValidation(undefined, () => {
-        notifyFieldListeners();
-        notifyFormListeners();
-      });
-      return returnValue;
-    }
-  };
+  const getMutatorApi =
+    (key) =>
+    (...args) => {
+      // istanbul ignore next
+      if (mutators) {
+        // ^^ causes branch coverage warning, but needed to appease the Flow gods
+        const mutatableState: MutableState<FormValues> = {
+          formState: state.formState,
+          fields: state.fields,
+          fieldSubscribers: state.fieldSubscribers,
+          lastFormState: state.lastFormState,
+        };
+        const returnValue = mutators[key](args, mutatableState, {
+          changeValue,
+          getIn,
+          renameField,
+          resetFieldState: api.resetFieldState,
+          setIn,
+          shallowEqual,
+        });
+        state.formState = mutatableState.formState;
+        state.fields = mutatableState.fields;
+        state.fieldSubscribers = mutatableState.fieldSubscribers;
+        state.lastFormState = mutatableState.lastFormState;
+        runValidation(undefined, () => {
+          notifyFieldListeners();
+          notifyFormListeners();
+        });
+        return returnValue;
+      }
+    };
 
   const mutatorsApi = mutators
     ? Object.keys(mutators).reduce((result, key) => {
@@ -419,8 +421,9 @@ function createForm<FormValues: FormValuesShape>(
             // field-level errors take precedent over record-level errors
             const recordLevelError = getIn(recordLevelErrors, name);
             const errorFromParent = getIn(merged, name);
-            const hasFieldLevelValidation = getValidators(safeFields[name])
-              .length;
+            const hasFieldLevelValidation = getValidators(
+              safeFields[name],
+            ).length;
             const fieldLevelError = fieldLevelErrors[name];
             fn(
               name,
