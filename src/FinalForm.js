@@ -323,17 +323,17 @@ function createForm<FormValues: FormValuesShape>(
           state.formState.values,
           validator.length === 0 || validator.length === 3
             ? publishFieldState(state.formState, state.fields[field.name])
-            : undefined
+            : undefined,
         );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
           field.validating = true;
-          const promise = errorOrPromise.then(error => {
+          const promise = errorOrPromise.then((error) => {
             if (state.fields[name]) {
               state.fields[name].validating = false;
               setError(error);
             }
-          }) // errors must be resolved, not rejected
+          }); // errors must be resolved, not rejected
           promises.push(promise);
         } else if (!error) {
           // first registered validator wins
@@ -452,8 +452,8 @@ function createForm<FormValues: FormValuesShape>(
 
     if (hasAsyncValidations) {
       // async validations are running, ensure validating is true before notifying
-      state.formState.validating++
-      callback()
+      state.formState.validating++;
+      callback();
     }
 
     // process sync errors
@@ -1090,6 +1090,7 @@ function createForm<FormValues: FormValuesShape>(
 
       if (hasSyncErrors()) {
         markAllFieldsTouched();
+        resetModifiedAfterSubmit();
         state.formState.submitFailed = true;
         notifyFormListeners();
         notifyFieldListeners();
