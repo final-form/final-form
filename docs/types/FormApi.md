@@ -80,7 +80,7 @@ A way to request the current state of the form without subscribing.
 ## `initialize`
 
 ```ts
-(data: FormValues | ((values: FormValues) => Object)) => void
+(data: InitialFormValues | ((values: FormValues) => InitialFormValues)) => void
 ```
 
 Initializes the form to the values provided. All the values will be set to these

@@ -1,68 +1,68 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React from 'react'
-import { render } from 'react-dom'
-import Styles from './Styles'
-import { createForm } from 'final-form'
+import React from "react";
+import { render } from "react-dom";
+import Styles from "./Styles";
+import { createForm } from "final-form";
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const onSubmit = async values => {
-  await sleep(300)
-  window.alert(JSON.stringify(values, 0, 2))
-}
+const onSubmit = async (values) => {
+  await sleep(300);
+  window.alert(JSON.stringify(values, 0, 2));
+};
 
 class Form extends React.Component {
   constructor() {
-    super()
-    const initialState = {}
-    let inConstructor = true
-    this.form = createForm({ onSubmit })
+    super();
+    const initialState = {};
+    let inConstructor = true;
+    this.form = createForm({ onSubmit });
 
     // subscribe to form changes
     this.unsubscribe = this.form.subscribe(
-      formState => {
+      (formState) => {
         // cannot call setState in constructor, but need to on subsequent notifications
         if (inConstructor) {
-          initialState.formState = formState
+          initialState.formState = formState;
         } else {
-          this.setState({ formState })
+          this.setState({ formState });
         }
       },
-      { active: true, pristine: true, submitting: true, values: true }
-    )
+      { active: true, pristine: true, submitting: true, values: true },
+    );
 
     // register fields
-    this.unsubscribeFields = ['firstName', 'lastName'].map(fieldName =>
+    this.unsubscribeFields = ["firstName", "lastName"].map((fieldName) =>
       this.form.registerField(
         fieldName,
-        fieldState => {
+        (fieldState) => {
           // cannot call setState in constructor, but need to on subsequent notifications
           if (inConstructor) {
-            initialState[fieldName] = fieldState
+            initialState[fieldName] = fieldState;
           } else {
-            this.setState({ [fieldName]: fieldState })
+            this.setState({ [fieldName]: fieldState });
           }
         },
-        { value: true }
-      )
-    )
+        { value: true },
+      ),
+    );
 
-    this.state = initialState
-    inConstructor = false
+    this.state = initialState;
+    inConstructor = false;
   }
 
   componentWillUnmount() {
-    this.unsubscribe()
-    this.unsubscribeFields.forEach(unsubscribe => unsubscribe())
+    this.unsubscribe();
+    this.unsubscribeFields.forEach((unsubscribe) => unsubscribe());
   }
 
-  handleSubmit = event => {
-    event.preventDefault()
-    this.form.submit()
-  }
+  handleSubmit = (event) => {
+    event.preventDefault();
+    this.form.submit();
+  };
 
   render() {
-    const { formState, firstName, lastName } = this.state
+    const { formState, firstName, lastName } = this.state;
     return (
       <Styles>
         <h1>🏁 Final Form - Simple React Example</h1>
@@ -71,7 +71,7 @@ class Form extends React.Component {
         </a>
         <p>
           This is primarily for educational purposes. If you are using React,
-          you should <em>probably</em> be using{' '}
+          you should <em>probably</em> be using{" "}
           <a href="https://github.com/erikras/react-final-form#-react-final-form">
             🏁 React Final Form
           </a>
@@ -83,11 +83,11 @@ class Form extends React.Component {
             <input
               name="firstName"
               onBlur={() => firstName.blur()}
-              onChange={event =>
+              onChange={(event) =>
                 firstName.change(event.target.value || undefined)
               }
               onFocus={() => firstName.focus()}
-              value={firstName.value || ''}
+              value={firstName.value || ""}
               placeholder="First Name"
             />
           </div>
@@ -96,11 +96,11 @@ class Form extends React.Component {
             <input
               name="firstName"
               onBlur={() => lastName.blur()}
-              onChange={event =>
+              onChange={(event) =>
                 lastName.change(event.target.value || undefined)
               }
               onFocus={() => lastName.focus()}
-              value={lastName.value || ''}
+              value={lastName.value || ""}
               placeholder="Last Name"
             />
           </div>
@@ -119,8 +119,8 @@ class Form extends React.Component {
           <pre>{JSON.stringify(this.state, 0, 2)}</pre>
         </form>
       </Styles>
-    )
+    );
   }
 }
 
-render(<Form />, document.getElementById('root'))
+render(<Form />, document.getElementById("root"));

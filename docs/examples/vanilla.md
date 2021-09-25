@@ -4,4 +4,4 @@
 
 You don't need any javascript framework to use Final Form's powerful subscription-based form state management. You can attach it directly to the DOM inputs.
 
-[![Edit final-form-vanilla-js-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/final-form/final-form/tree/master/examples/vanilla?fontsize=14)
+[![Edit final-form-vanilla-js-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/final-form/final-form/tree/main/examples/vanilla?fontsize=14)
