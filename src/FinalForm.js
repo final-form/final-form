@@ -329,8 +329,10 @@ function createForm<FormValues: FormValuesShape>(
         if (errorOrPromise && isPromise(errorOrPromise)) {
           field.validating = true;
           const promise = errorOrPromise.then(error => {
-            field.validating = false;
-            setError(error);
+            if (state.fields[name]) {
+              state.fields[name].validating = false;
+              setError(error);
+            }
           }) // errors must be resolved, not rejected
           promises.push(promise);
         } else if (!error) {
