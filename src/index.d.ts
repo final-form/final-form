@@ -206,19 +206,16 @@ export interface InternalFormState {
 
 type ConfigKey = keyof Config;
 
-export interface FormApi<
-  FormValues = Record<string, any>,
-  InitialFormValues = Partial<FormValues>
-> {
+export interface FormApi<FormValues = Record<string, any>, InitialFormValues = Partial<FormValues>> {
   batch: (fn: () => void) => void;
-  blur: (name: keyof FormValues) => void;
+  blur: (name: keyof FormValues) => void
   change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void;
   destroyOnUnregister: boolean;
   focus: (name: keyof FormValues) => void;
-  initialize: (data: FormValues | ((values: FormValues) => FormValues)) => void;
+  initialize: (data: InitialFormValues | ((values: FormValues) => InitialFormValues)) => void;
   isValidationPaused: () => boolean;
   getFieldState: <F extends keyof FormValues>(
-    field: F,
+    field: F
   ) => FieldState<FormValues[F]> | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
@@ -227,7 +224,7 @@ export interface FormApi<
   registerField: RegisterField<FormValues>;
   reset: (initialValues?: InitialFormValues) => void;
   resetFieldState: (name: keyof FormValues) => void;
-  restart: (initialValues?: FormValues) => void;
+  restart: (initialValues?: InitialFormValues) => void;
   resumeValidation: () => void;
   setConfig: <K extends ConfigKey>(
     name: K,
