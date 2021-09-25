@@ -61,20 +61,20 @@ if (submitPromise) {
 }
 
 // initialize
-createForm<FormValues>({ onSubmit }).initialize({ foo: 'baz', bar: 11 })
-createForm<FormValues>({ onSubmit }).initialize({ foo: undefined })
-createForm<FormValues>({ onSubmit }).initialize(formData => ({
+createForm<FormValues>({ onSubmit }).initialize({ foo: "baz", bar: 11 });
+createForm<FormValues>({ onSubmit }).initialize({ foo: undefined });
+createForm<FormValues>({ onSubmit }).initialize((formData) => ({
   ...formData,
   bar: 12,
-}))
-createForm<FormValues>({ onSubmit }).initialize(formData => ({
+}));
+createForm<FormValues>({ onSubmit }).initialize((formData) => ({
   ...formData,
   foo: undefined,
-}))
+}));
 
 // restart
-createForm<FormValues>({ onSubmit }).restart({ foo: 'baz', bar: 11 })
-createForm<FormValues>({ onSubmit }).restart({ foo: undefined })
+createForm<FormValues>({ onSubmit }).restart({ foo: "baz", bar: 11 });
+createForm<FormValues>({ onSubmit }).restart({ foo: undefined });
 
 console.log(formState.active as string, formState.active as undefined);
 console.log(formState.dirty as boolean);

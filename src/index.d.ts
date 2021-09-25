@@ -36,7 +36,7 @@ export interface FormSubscription {
 
 export interface FormState<
   FormValues,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > {
   // by default: all values are subscribed. if subscription is specified, some values may be undefined
   active: undefined | keyof FormValues;
@@ -67,7 +67,7 @@ export interface FormState<
 
 export type FormSubscriber<
   FormValues,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > = Subscriber<FormState<FormValues, InitialFormValues>>;
 
 export interface FieldState<FieldValue> {
@@ -206,17 +206,22 @@ export interface InternalFormState {
 
 type ConfigKey = keyof Config;
 
-export interface FormApi<FormValues = Record<string, any>, InitialFormValues = Partial<FormValues>> {
+export interface FormApi<
+  FormValues = Record<string, any>,
+  InitialFormValues = Partial<FormValues>,
+> {
   batch: (fn: () => void) => void;
-  blur: (name: keyof FormValues) => void
+  blur: (name: keyof FormValues) => void;
   change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void;
   destroyOnUnregister: boolean;
   focus: (name: keyof FormValues) => void;
-  initialize: (data: InitialFormValues | ((values: FormValues) => InitialFormValues)) => void;
+  initialize: (
+    data: InitialFormValues | ((values: FormValues) => InitialFormValues),
+  ) => void;
   isValidationPaused: () => boolean;
   getFieldState: <F extends keyof FormValues>(
-    field: F
-  ) => FieldState<FormValues[F]> | undefined
+    field: F,
+  ) => FieldState<FormValues[F]> | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
@@ -239,7 +244,7 @@ export interface FormApi<FormValues = Record<string, any>, InitialFormValues = P
 
 export type DebugFunction<
   FormValues,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > = (
   state: FormState<FormValues, InitialFormValues>,
   fieldStates: { [key: string]: FieldState<any> },
@@ -247,7 +252,7 @@ export type DebugFunction<
 
 export interface MutableState<
   FormValues,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > {
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
   fields: {
@@ -261,7 +266,7 @@ export type GetIn = (state: object, complexKey: string) => any;
 export type SetIn = (state: object, key: string, value: any) => object;
 export type ChangeValue<
   FormValues = object,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > = (
   state: MutableState<FormValues, InitialFormValues>,
   name: string,
@@ -269,7 +274,7 @@ export type ChangeValue<
 ) => void;
 export type RenameField<
   FormValues = object,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > = (
   state: MutableState<FormValues, InitialFormValues>,
   from: string,
@@ -286,7 +291,7 @@ export interface Tools<FormValues, InitialFormValues = Partial<FormValues>> {
 
 export type Mutator<
   FormValues = object,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > = (
   args: any,
   state: MutableState<FormValues, InitialFormValues>,
@@ -295,7 +300,7 @@ export type Mutator<
 
 export interface Config<
   FormValues = object,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > {
   debug?: DebugFunction<FormValues, InitialFormValues>;
   destroyOnUnregister?: boolean;
@@ -315,7 +320,7 @@ export interface Config<
 
 export type Decorator<
   FormValues = object,
-  InitialFormValues = Partial<FormValues>
+  InitialFormValues = Partial<FormValues>,
 > = (form: FormApi<FormValues, InitialFormValues>) => Unsubscribe;
 
 export function createForm<FormValues, InitialFormValues = Partial<FormValues>>(
