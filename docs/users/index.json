@@ -42,6 +42,12 @@
     "pinned": true
   },
   {
+    "name": "NASA",
+    "logo": "nasa.svg",
+    "link": "https://www.nasa.gov/",
+    "pinned": true
+  },
+  {
     "name": "Cisco",
     "logo": "cisco.svg",
     "link": "https://www.cisco.com/",
@@ -195,13 +201,11 @@
   {
     "name": "TinaCMS",
     "logo": "tinacms.svg",
-    "link": "https://tinacms.org",
-    "pinned": true
+    "link": "https://tinacms.org"
   },
   {
     "name": "Simpplr",
     "logo": "simpplr.svg",
-    "link": "https://www.simpplr.com/",
-    "pinned": false
+    "link": "https://www.simpplr.com/"
   }
 ]

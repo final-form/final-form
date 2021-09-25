@@ -40,7 +40,7 @@ const unsubscribe = form.subscribe(
     valid: true,
     values: true
   }
-})
+)
 
 // Subscribe to field state updates
 const unregisterField = form.registerField(
