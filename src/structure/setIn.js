@@ -1,21 +1,21 @@
 // @flow
-import toPath from './toPath'
-import type { SetIn } from '../types'
+import toPath from "./toPath";
+import type { SetIn } from "../types";
 
-type State = Object | Array<*> | void
+type State = Object | Array<*> | void;
 
 const setInRecursor = (
   current: State,
   index: number,
   path: string[],
   value: any,
-  destroyArrays: boolean
+  destroyArrays: boolean,
 ): State => {
   if (index >= path.length) {
     // end of recursion
-    return value
+    return value;
   }
-  const key = path[index]
+  const key = path[index];
 
   // determine type of key
   if (isNaN(key)) {
@@ -27,14 +27,14 @@ const setInRecursor = (
         index + 1,
         path,
         value,
-        destroyArrays
-      )
+        destroyArrays,
+      );
 
       // delete or create an object
-      return result === undefined ? undefined : { [key]: result }
+      return result === undefined ? undefined : { [key]: result };
     }
     if (Array.isArray(current)) {
-      throw new Error('Cannot set a non-numeric property on an array')
+      throw new Error("Cannot set a non-numeric property on an array");
     }
     // current exists, so make a copy of all its values, and add/update the new one
     const result = setInRecursor(
@@ -42,34 +42,34 @@ const setInRecursor = (
       index + 1,
       path,
       value,
-      destroyArrays
-    )
+      destroyArrays,
+    );
     if (result === undefined) {
-      const numKeys = Object.keys(current).length
+      const numKeys = Object.keys(current).length;
       if (current[key] === undefined && numKeys === 0) {
         // object was already empty
-        return undefined
+        return undefined;
       }
       if (current[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
         if (!isNaN(path[index - 1]) && !destroyArrays) {
           // we are in an array, so return an empty object
-          return {}
+          return {};
         } else {
-          return undefined
+          return undefined;
         }
       }
-      const { [key]: _removed, ...final } = current
-      return final
+      const { [key]: _removed, ...final } = current;
+      return final;
     }
     // set result in key
     return {
       ...current,
-      [key]: result
-    }
+      [key]: result,
+    };
   }
   // array set
-  const numericKey = Number(key)
+  const numericKey = Number(key);
   if (current === undefined || current === null) {
     // recurse
     const result = setInRecursor(
@@ -77,56 +77,56 @@ const setInRecursor = (
       index + 1,
       path,
       value,
-      destroyArrays
-    )
+      destroyArrays,
+    );
 
     // if nothing returned, delete it
     if (result === undefined) {
-      return undefined
+      return undefined;
     }
 
     // create an array
-    const array = []
-    array[numericKey] = result
-    return (array: Array<*>)
+    const array = [];
+    array[numericKey] = result;
+    return (array: Array<*>);
   }
   if (!Array.isArray(current)) {
-    throw new Error('Cannot set a numeric property on an object')
+    throw new Error("Cannot set a numeric property on an object");
   }
   // recurse
-  const existingValue = current[numericKey]
+  const existingValue = current[numericKey];
   const result = setInRecursor(
     existingValue,
     index + 1,
     path,
     value,
-    destroyArrays
-  )
+    destroyArrays,
+  );
 
   // current exists, so make a copy of all its values, and add/update the new one
-  const array = [...current]
+  const array = [...current];
   if (destroyArrays && result === undefined) {
-    array.splice(numericKey, 1)
+    array.splice(numericKey, 1);
     if (array.length === 0) {
-      return undefined
+      return undefined;
     }
   } else {
-    array[numericKey] = result
+    array[numericKey] = result;
   }
-  return array
-}
+  return array;
+};
 
 const setIn: SetIn = (
   state: Object,
   key: string,
   value: any,
-  destroyArrays?: boolean = false
+  destroyArrays?: boolean = false,
 ): Object => {
   if (state === undefined || state === null) {
-    throw new Error(`Cannot call setIn() with ${String(state)} state`)
+    throw new Error(`Cannot call setIn() with ${String(state)} state`);
   }
   if (key === undefined || key === null) {
-    throw new Error(`Cannot call setIn() with ${String(key)} key`)
+    throw new Error(`Cannot call setIn() with ${String(key)} key`);
   }
   // Recursive function needs to accept and return State, but public API should
   // only deal with Objects
@@ -135,8 +135,8 @@ const setIn: SetIn = (
     0,
     toPath(key),
     value,
-    destroyArrays
-  ): any): Object)
-}
+    destroyArrays,
+  ): any): Object);
+};
 
-export default setIn
+export default setIn;
