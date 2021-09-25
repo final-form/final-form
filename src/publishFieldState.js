@@ -1,15 +1,15 @@
 // @flow
-import type { InternalFieldState, InternalFormState } from './types'
-import type { FieldState, FormValuesShape } from './types'
-import getIn from './structure/getIn'
-import { ARRAY_ERROR } from './constants'
+import type { InternalFieldState, InternalFormState } from "./types";
+import type { FieldState, FormValuesShape } from "./types";
+import getIn from "./structure/getIn";
+import { ARRAY_ERROR } from "./constants";
 
 /**
  * Converts internal field state to published field state
  */
 function publishFieldState<FormValues: FormValuesShape>(
   formState: InternalFormState<FormValues>,
-  field: InternalFieldState
+  field: InternalFieldState,
 ): FieldState {
   const {
     errors,
@@ -19,8 +19,8 @@ function publishFieldState<FormValues: FormValuesShape>(
     submitFailed,
     submitSucceeded,
     submitting,
-    values
-  } = formState
+    values,
+  } = formState;
   const {
     active,
     blur,
@@ -32,21 +32,21 @@ function publishFieldState<FormValues: FormValuesShape>(
     name,
     touched,
     validating,
-    visited
-  } = field
-  const value = getIn(values, name)
-  let error = getIn(errors, name)
+    visited,
+  } = field;
+  const value = getIn(values, name);
+  let error = getIn(errors, name);
   if (error && error[ARRAY_ERROR]) {
-    error = error[ARRAY_ERROR]
+    error = error[ARRAY_ERROR];
   }
-  const submitError = submitErrors && getIn((submitErrors: Object), name)
-  const initial = initialValues && getIn(initialValues, name)
-  const pristine = field.isEqual(initial, value)
+  const submitError = submitErrors && getIn((submitErrors: Object), name);
+  const initial = initialValues && getIn(initialValues, name);
+  const pristine = field.isEqual(initial, value);
   const dirtySinceLastSubmit = !!(
     lastSubmittedValues &&
     !field.isEqual(getIn(lastSubmittedValues, name), value)
-  )
-  const valid = !error && !submitError
+  );
+  const valid = !error && !submitError;
   return {
     active,
     blur,
@@ -71,8 +71,8 @@ function publishFieldState<FormValues: FormValuesShape>(
     valid,
     value,
     visited,
-    validating
-  }
+    validating,
+  };
 }
 
-export default publishFieldState
+export default publishFieldState;
