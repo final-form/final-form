@@ -1,4 +1,3 @@
-import resolve from "rollup-plugin-node-resolve";
 import babel from "rollup-plugin-babel";
 import json from "rollup-plugin-json";
 import flow from "rollup-plugin-flow";
@@ -60,7 +59,6 @@ export default {
         ],
   ),
   plugins: [
-    resolve({ jsnext: true, main: true }),
     json(),
     flow(),
     commonjs({ include: "node_modules/**" }),
@@ -83,18 +81,6 @@ export default {
         "@babel/plugin-transform-flow-strip-types",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-syntax-import-meta",
-        "@babel/plugin-proposal-class-properties",
-        "@babel/plugin-proposal-json-strings",
-        [
-          "@babel/plugin-proposal-decorators",
-          {
-            legacy: true,
-          },
-        ],
-        "@babel/plugin-proposal-function-sent",
-        "@babel/plugin-proposal-export-namespace-from",
-        "@babel/plugin-proposal-numeric-separator",
-        "@babel/plugin-proposal-throw-expressions",
       ],
     }),
     umd || es
