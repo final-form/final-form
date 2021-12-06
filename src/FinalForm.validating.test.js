@@ -406,7 +406,7 @@ describe("Field.validation", () => {
   });
 
   it("should not reset record-level async validation results until they have been replaced", async () => {
-    const delay = 50;
+    const delay = 10;
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: async (values) => {
