@@ -348,7 +348,7 @@ describe("Field.validation", () => {
   });
 
   it("should allow record-level async validation via promises", async () => {
-    const delay = 2;
+    const delay = 10;
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: async (values) => {
