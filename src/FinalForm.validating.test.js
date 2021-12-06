@@ -348,7 +348,7 @@ describe("Field.validation", () => {
   });
 
   it("should allow record-level async validation via promises", async () => {
-    const delay = 2;
+    const delay = 10;
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: async (values) => {
@@ -393,19 +393,20 @@ describe("Field.validation", () => {
 
     change("another");
 
-    // spy called because sync validation passed
-    expect(spy).toHaveBeenCalledTimes(3);
-    expect(spy.mock.calls[2][0].error).toBeUndefined();
+    await sleep(delay / 2);
 
-    // wait for validation to return
+    // spy not called because async validation not yet done
+    expect(spy).toHaveBeenCalledTimes(2);
+
     await sleep(delay * 2);
 
-    // spy not called because sync validation already cleared error
+    // spy called because async validation completed
     expect(spy).toHaveBeenCalledTimes(3);
+    expect(spy.mock.calls[2][0].error).toBeUndefined();
   });
 
-  it.only("should not reset record-level async validation results until they have been replaced", async () => {
-    const delay = 50;
+  it("should not reset record-level async validation results until they have been replaced", async () => {
+    const delay = 10;
     const form = createForm({
       onSubmit: onSubmitMock,
       validate: async (values) => {
@@ -441,6 +442,8 @@ describe("Field.validation", () => {
     expect(spy.mock.calls[1][0].error).toBe("Username taken");
 
     change("erikrasm"); // too long
+    change("erikrasmu"); // too long
+    change("erikrasmus"); // too long
 
     await sleep(delay / 2);
 
@@ -464,7 +467,7 @@ describe("Field.validation", () => {
     // wait for validation to return
     await sleep(delay * 2);
 
-    // spy called because sync validation passed
+    // spy called because async validation passed
     expect(spy).toHaveBeenCalledTimes(4);
     expect(spy.mock.calls[3][0].error).toBeUndefined();
 
