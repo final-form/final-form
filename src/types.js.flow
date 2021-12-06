@@ -182,6 +182,7 @@ export type InternalFieldState = {
 
 export type InternalFormState<FormValues: FormValuesShape> = {
   active?: string,
+  asyncErrors: Object,
   dirtySinceLastSubmit: boolean,
   modifiedSinceLastSubmit: boolean,
   error?: any,
