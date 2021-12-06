@@ -187,6 +187,7 @@ function createForm<FormValues: FormValuesShape>(
     fieldSubscribers: {},
     fields: {},
     formState: {
+      asyncErrors: {},
       dirtySinceLastSubmit: false,
       modifiedSinceLastSubmit: false,
       errors: {},
@@ -288,15 +289,17 @@ function createForm<FormValues: FormValuesShape>(
     : {};
 
   const runRecordLevelValidation = (
-    setErrors: (errors: Object) => void,
+    setErrors: (errors: Object, async: boolean) => void,
   ): Promise<*>[] => {
     const promises = [];
     if (validate) {
       const errorsOrPromise = validate({ ...state.formState.values }); // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
-        promises.push(errorsOrPromise.then(setErrors));
+        promises.push(
+          errorsOrPromise.then((errors) => setErrors(errors, true)),
+        );
       } else {
-        setErrors(errorsOrPromise);
+        setErrors(errorsOrPromise, false);
       }
     }
     return promises;
@@ -381,11 +384,16 @@ function createForm<FormValues: FormValuesShape>(
     }
 
     let recordLevelErrors: Object = {};
+    let asyncRecordLevelErrors: Object = {};
     const fieldLevelErrors = {};
 
     const promises = [
-      ...runRecordLevelValidation((errors) => {
-        recordLevelErrors = errors || {};
+      ...runRecordLevelValidation((errors, wasAsync) => {
+        if (wasAsync) {
+          asyncRecordLevelErrors = errors || {};
+        } else {
+          recordLevelErrors = errors || {};
+        }
       }),
       ...fieldKeys.reduce(
         (result, name) =>
@@ -413,6 +421,8 @@ function createForm<FormValues: FormValuesShape>(
       let merged = {
         ...(limitedFieldLevelValidation ? formState.errors : {}),
         ...recordLevelErrors,
+        ...formState.asyncErrors, // previous async errors
+        ...asyncRecordLevelErrors, // new async errors
       };
       const forEachError = (fn: (name: string, error: any) => void) => {
         fieldKeys.forEach((name) => {
@@ -450,6 +460,7 @@ function createForm<FormValues: FormValuesShape>(
       if (!shallowEqual(formState.errors, merged)) {
         formState.errors = merged;
       }
+      formState.asyncErrors = asyncRecordLevelErrors;
       formState.error = recordLevelErrors[FORM_ERROR];
     };
 

@@ -356,7 +356,7 @@ describe("Field.validation", () => {
         if (values.username === "erikras") {
           errors.username = "Username taken";
         }
-        sleep(delay);
+        await sleep(delay);
         return errors;
       },
     });
@@ -402,6 +402,77 @@ describe("Field.validation", () => {
 
     // spy not called because sync validation already cleared error
     expect(spy).toHaveBeenCalledTimes(3);
+  });
+
+  it.only("should not reset record-level async validation results until they have been replaced", async () => {
+    const delay = 50;
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate: async (values) => {
+        const errors = {};
+        if (values.username === "erikras") {
+          errors.username = "Username taken";
+        }
+        if (values.username?.length > 7) {
+          errors.username = "Too long";
+        }
+        await sleep(delay);
+        return errors;
+      },
+    });
+    const spy = jest.fn();
+    form.registerField("username", spy, { error: true });
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0].error).toBeUndefined();
+
+    const { change } = spy.mock.calls[0][0];
+
+    await sleep(delay * 2);
+
+    // error hasn't changed
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    change("erikras"); // username taken
+
+    await sleep(delay * 2);
+
+    // we have an error now
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls[1][0].error).toBe("Username taken");
+
+    change("erikrasm"); // too long
+
+    await sleep(delay / 2);
+
+    // should not call spy again until validation has completed
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    // wait for validation to return
+    await sleep(delay * 2);
+
+    // New error!
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(spy.mock.calls[2][0].error).toBe("Too long");
+
+    change("okay");
+
+    await sleep(delay / 2);
+
+    // should not call spy again until validation has completed
+    expect(spy).toHaveBeenCalledTimes(3);
+
+    // wait for validation to return
+    await sleep(delay * 2);
+
+    // spy called because sync validation passed
+    expect(spy).toHaveBeenCalledTimes(4);
+    expect(spy.mock.calls[3][0].error).toBeUndefined();
+
+    // wait again just for good measure
+    await sleep(delay * 2);
+
+    // spy not called because sync validation already cleared error
+    expect(spy).toHaveBeenCalledTimes(4);
   });
 
   it("should ignore old validation promise results", async () => {
