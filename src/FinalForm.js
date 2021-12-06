@@ -417,12 +417,13 @@ function createForm<FormValues: FormValuesShape>(
       asyncValidationPromises[asyncValidationPromiseKey] = promise;
     }
 
-    const processErrors = () => {
+    const processErrors = (afterAsync: boolean) => {
       let merged = {
         ...(limitedFieldLevelValidation ? formState.errors : {}),
         ...recordLevelErrors,
-        ...formState.asyncErrors, // previous async errors
-        ...asyncRecordLevelErrors, // new async errors
+        ...(afterAsync
+          ? asyncRecordLevelErrors // new async errors
+          : formState.asyncErrors), // previous async errors
       };
       const forEachError = (fn: (name: string, error: any) => void) => {
         fieldKeys.forEach((name) => {
@@ -460,7 +461,9 @@ function createForm<FormValues: FormValuesShape>(
       if (!shallowEqual(formState.errors, merged)) {
         formState.errors = merged;
       }
-      formState.asyncErrors = asyncRecordLevelErrors;
+      if (afterAsync) {
+        formState.asyncErrors = asyncRecordLevelErrors;
+      }
       formState.error = recordLevelErrors[FORM_ERROR];
     };
 
@@ -471,7 +474,7 @@ function createForm<FormValues: FormValuesShape>(
     }
 
     // process sync errors
-    processErrors();
+    processErrors(false);
     // sync errors have been set. notify listeners while we wait for others
     callback();
 
@@ -488,7 +491,7 @@ function createForm<FormValues: FormValuesShape>(
             return;
           }
 
-          processErrors();
+          processErrors(true);
         })
         .then(afterPromise, afterPromise);
     }
