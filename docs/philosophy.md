@@ -34,8 +34,6 @@ Also, this allows for...
 
 ### Minimal Bundle Size
 
-Just because some forms can be complex doesn't mean that your users should need to download all that code for a simple form! Final Form breaks out complex functionality into separate packages, so the form state management core doesn't get bloated by complicated use cases.
-
 Final Form also has _zero dependencies_. A form library shouldn't require that you install `lodash`.
 
 ### High Performance
