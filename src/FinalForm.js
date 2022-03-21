@@ -809,7 +809,7 @@ function createForm<FormValues: FormValuesShape>(
       formState.values = values;
       // restore the dirty values
       Object.keys(savedDirtyValues).forEach((key) => {
-        formState.values = setIn(formState.values, key, savedDirtyValues[key]);
+        formState.values = setIn(formState.values, key, savedDirtyValues[key]) || {};
       });
       runValidation(undefined, () => {
         notifyFieldListeners();
