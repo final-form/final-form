@@ -21,6 +21,6 @@ Please format the code before submitting your pull request by running:
 npm run precommit
 ```
 
-https://github.com/final-form/final-form/blob/master/.github/CONTRIBUTING.md
+https://github.com/final-form/final-form/blob/main/.github/CONTRIBUTING.md
 
 -->
