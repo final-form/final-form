@@ -1,5 +1,3 @@
-// @flow
-
 const charCodeOfDot = ".".charCodeAt(0);
 const reEscapeChar = /\\(\\)?/g;
 const rePropName = RegExp(
@@ -44,7 +42,9 @@ const stringToPath = (string) => {
   return result;
 };
 
-const keysCache: { [string]: string[] } = {};
+const keysCache: {
+  [key: string]: string[]
+} = {};
 
 const toPath = (key: string): string[] => {
   if (key === null || key === undefined || !key.length) {

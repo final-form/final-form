@@ -1,14 +1,18 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.mutators", () => {
   it("should allow mutators to mutate state", () => {
-    const clear = jest.fn(([name], state, { changeValue }) => {
+    const clear = jest.fn(([name]: [any], state: any, {
+      changeValue,
+    }: any) => {
       changeValue(state, name, () => undefined);
     });
-    const upper = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, (value) => value && value.toUpperCase());
+    const upper = jest.fn(([name]: [any], state: any, {
+      changeValue,
+    }: any) => {
+      changeValue(state, name, (value: any) => value && value.toUpperCase());
     });
 
     const form = createForm({
@@ -45,8 +49,10 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow changeValue to modify a non-registered field", () => {
-    const upper = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, (value) => value && value.toUpperCase());
+    const upper = jest.fn(([name]: [any], state: any, {
+      changeValue,
+    }: any) => {
+      changeValue(state, name, (value: any) => value && value.toUpperCase());
     });
 
     const form = createForm({
@@ -75,7 +81,9 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow renameField to rename a registered field", () => {
-    const rename = jest.fn(([from, to], state, { renameField }) => {
+    const rename = jest.fn(([from, to]: [any, any], state: any, {
+      renameField,
+    }: any) => {
       renameField(state, from, to);
     });
 
@@ -120,7 +128,9 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should do nothing when renameField called with nonexistent field", () => {
-    const rename = jest.fn(([from, to], state, { renameField }) => {
+    const rename = jest.fn(([from, to]: [any, any], state: any, {
+      renameField,
+    }: any) => {
       renameField(state, from, to);
     });
 
@@ -146,7 +156,9 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should not throw when renamed field is unregistered", () => {
-    const rename = jest.fn(([from, to], state, { renameField }) => {
+    const rename = jest.fn(([from, to]: [any, any], state: any, {
+      renameField,
+    }: any) => {
       renameField(state, from, to);
     });
 

@@ -32,7 +32,7 @@ describe("shallowEqual", () => {
   });
 
   it("returns true if values are not primitives but are ===", () => {
-    let obj = {};
+    let obj: Record<string, any> = {};
     expect(shallowEqual({ a: 1, b: 2, c: obj }, { a: 1, b: 2, c: obj })).toBe(
       true,
     );
@@ -50,7 +50,7 @@ describe("shallowEqual", () => {
     }
     Foo.prototype.constructor = null;
 
-    const object2 = { a: 1 };
+    const object2 = { a: 1 } as const;
     expect(shallowEqual(new Foo(), object2)).toBe(true);
 
     const object1 = Object.create(null);

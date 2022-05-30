@@ -1,8 +1,7 @@
-// @flow
 import toPath from "./toPath";
 import type { SetIn } from "../types";
 
-type State = Object | Array<*> | void;
+type State = any | Array<any> | undefined;
 
 const setInRecursor = (
   current: State,
@@ -88,7 +87,7 @@ const setInRecursor = (
     // create an array
     const array = [];
     array[numericKey] = result;
-    return (array: Array<*>);
+    return array as Array<any>;
   }
   if (!Array.isArray(current)) {
     throw new Error("Cannot set a numeric property on an object");
@@ -116,12 +115,7 @@ const setInRecursor = (
   return array;
 };
 
-const setIn: SetIn = (
-  state: Object,
-  key: string,
-  value: any,
-  destroyArrays?: boolean = false,
-): Object => {
+const setIn: SetIn = (state: any, key: string, value: any, destroyArrays: boolean = false): any => {
   if (state === undefined || state === null) {
     throw new Error(`Cannot call setIn() with ${String(state)} state`);
   }
@@ -130,13 +124,13 @@ const setIn: SetIn = (
   }
   // Recursive function needs to accept and return State, but public API should
   // only deal with Objects
-  return ((setInRecursor(
+  return setInRecursor(
     state,
     0,
     toPath(key),
     value,
     destroyArrays,
-  ): any): Object);
+  ) as any;
 };
 
 export default setIn;

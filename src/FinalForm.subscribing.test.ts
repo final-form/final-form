@@ -1,23 +1,23 @@
 import createForm from "./FinalForm";
 import { FORM_ERROR } from "./constants";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const onSubmitMock = (values, callback) => {};
+const sleep = (ms: any) => new Promise((resolve: any) => setTimeout(resolve, ms));
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.subscribing", () => {
-  const prepareFormSubscriber = (fieldName, subscription, config = {}) => {
+  const prepareFormSubscriber = (fieldName: any, subscription: any, config = {}) => {
     const form = createForm({ onSubmit: onSubmitMock, ...config });
     const spy = jest.fn();
     form.subscribe(spy, subscription);
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
 
-    let blur;
-    let change;
-    let focus;
+    let blur: any;
+    let change: any;
+    let focus: any;
     form.registerField(
       fieldName,
-      (fieldState) => {
+      (fieldState: any) => {
         blur = fieldState.blur;
         change = fieldState.change;
         focus = fieldState.focus;
@@ -257,8 +257,8 @@ describe("FinalForm.subscribing", () => {
     const form = createForm({
       onSubmit: () => {},
       initialValues: { foo: "bar" },
-      validate: (values) => {
-        const errors = {};
+      validate: (values: any) => {
+        const errors: Record<string, any> = {};
         if (values.foo !== "bar") {
           errors.foo = 'Sorry, only "bar" can pass this step';
         }
@@ -416,8 +416,8 @@ describe("FinalForm.subscribing", () => {
         error: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors[FORM_ERROR] = "Why no foo?";
           }
@@ -454,8 +454,8 @@ describe("FinalForm.subscribing", () => {
         errors: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Why no foo?";
           }
@@ -493,8 +493,8 @@ describe("FinalForm.subscribing", () => {
         hasValidationErrors: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Why no foo?";
           }
@@ -526,8 +526,8 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should allow subscribing to all submit errors", () => {
-    const onSubmit = jest.fn((values) => {
-      const errors = {};
+    const onSubmit = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
       if (!values.foo) {
         errors.foo = "Why no foo?";
       }
@@ -549,8 +549,8 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should allow subscribing to hasSubmitErrors", () => {
-    const onSubmit = jest.fn((values) => {
-      const errors = {};
+    const onSubmit = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
       if (!values.foo) {
         errors.foo = "Why no foo?";
       }
@@ -578,7 +578,7 @@ describe("FinalForm.subscribing", () => {
         error: true,
       },
       {
-        validate: (values) => {},
+        validate: (values: any) => {},
       },
     );
 
@@ -614,8 +614,8 @@ describe("FinalForm.subscribing", () => {
         invalid: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors[FORM_ERROR] = "Why no foo?";
           }
@@ -653,8 +653,8 @@ describe("FinalForm.subscribing", () => {
         invalid: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -685,7 +685,7 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should allow subscribing to form submitting", async () => {
-    const onSubmit = async (values) => await sleep(2);
+    const onSubmit = async (values: any) => await sleep(2);
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
@@ -720,7 +720,7 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should allow subscribing to form submitFailed", () => {
-    const onSubmit = (values) => ({ foo: "Bad foo" });
+    const onSubmit = (values: any) => ({ foo: "Bad foo" });
     const form = createForm({ onSubmit });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
@@ -784,8 +784,8 @@ describe("FinalForm.subscribing", () => {
         valid: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors[FORM_ERROR] = "Why no foo?";
           }
@@ -823,8 +823,8 @@ describe("FinalForm.subscribing", () => {
         valid: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -856,9 +856,9 @@ describe("FinalForm.subscribing", () => {
 
   it("should allow subscribing to validating", async () => {
     const delay = 2;
-    const validate = jest.fn(async (values) => {
+    const validate = jest.fn(async (values: any) => {
       await sleep(delay);
-      const errors = {};
+      const errors: Record<string, any> = {};
       if (values.foo > 3) {
         errors.foo = "Too many";
       }
@@ -976,8 +976,8 @@ describe("FinalForm.subscribing", () => {
         valid: true,
       },
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.anotherField) {
             errors.anotherField = "Some error";
           }
@@ -992,7 +992,9 @@ describe("FinalForm.subscribing", () => {
 
   it("should schedule form notifications for after current notifications are complete", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    const subscriber1 = jest.fn(({ values }) => {
+    const subscriber1 = jest.fn(({
+      values,
+    }: any) => {
       if (values.foo && values.foo % 2 === 1) {
         // increment foo to make it even
         form.change("foo", values.foo + 1);
@@ -1021,9 +1023,11 @@ describe("FinalForm.subscribing", () => {
   });
 
   it("should not mind if a field gets unregistered by a field notification", () => {
-    let unregisterBar;
+    let unregisterBar: any;
     const form = createForm({ onSubmit: onSubmitMock });
-    const foo = jest.fn(({ value }) => {
+    const foo = jest.fn(({
+      value,
+    }: any) => {
       if (value === 42) {
         unregisterBar();
         form.reset();

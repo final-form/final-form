@@ -1,6 +1,6 @@
 import createForm, { version } from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.creation", () => {
   it("should export version", () => {
@@ -25,7 +25,7 @@ describe("FinalForm.creation", () => {
     const initialValues = {
       foo: "bar",
       cat: 42,
-    };
+    } as const;
     const form = createForm({ onSubmit: onSubmitMock, initialValues });
     expect(form.getState().initialValues).not.toBe(initialValues);
     expect(form.getState().initialValues).toEqual(initialValues);
@@ -263,7 +263,7 @@ describe("FinalForm.creation", () => {
       {
         initialValue: "yellow",
         silent: true,
-        getValidator: () => (value) => !value ? "Required" : undefined,
+        getValidator: () => (value: any) => !value ? "Required" : undefined,
       },
     )();
     expect(banana).toHaveBeenCalled();

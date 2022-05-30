@@ -17,9 +17,9 @@ describe("filterFormState", () => {
     validating: false,
     values: { foo: "bar" },
     visited: { foo: true, bar: false },
-  };
+  } as const;
 
-  const testValue = (key, state, newValue) => {
+  const testValue = (key: any, state: any, newValue: any) => {
     it(`should not notify when ${key} doesn't change`, () => {
       const result = filterFormState(state, state, { [key]: true });
       expect(result).toBeUndefined();

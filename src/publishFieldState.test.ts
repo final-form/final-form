@@ -1,16 +1,16 @@
 import publishFieldState from "./publishFieldState";
 
-const check = (error, initial, value, submitError) => {
+const check = (error: any, initial: any, value: any, submitError: any) => {
   // mock placeholder values to check ===
-  const active = {};
-  const blur = {};
-  const change = {};
-  const data = {};
-  const focus = {};
+  const active: Record<string, any> = {};
+  const blur: Record<string, any> = {};
+  const change: Record<string, any> = {};
+  const data: Record<string, any> = {};
+  const focus: Record<string, any> = {};
   const name = "foo";
-  const submitFailed = {};
-  const submitSucceeded = {};
-  const submitting = {};
+  const submitFailed: Record<string, any> = {};
+  const submitSucceeded: Record<string, any> = {};
+  const submitting: Record<string, any> = {};
   const result = publishFieldState(
     {
       initialValues: {
@@ -36,7 +36,7 @@ const check = (error, initial, value, submitError) => {
       data,
       focus,
       initial,
-      isEqual: (a, b) => a === b,
+      isEqual: (a: any, b: any) => a === b,
       name,
       value,
     },

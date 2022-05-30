@@ -9,7 +9,7 @@ const form = createForm({
     color: "#0000FF",
   },
   validate: (values) => {
-    const errors = {};
+    const errors: Record<string, any> = {};
     if (!values.firstName) {
       errors.firstName = "Required";
     }
@@ -29,7 +29,7 @@ document.getElementById("form").addEventListener("submit", (event) => {
 });
 document.getElementById("reset").addEventListener("click", () => form.reset());
 
-const registered = {};
+const registered: Record<string, any> = {};
 
 function registerField(input) {
   const { name } = input;

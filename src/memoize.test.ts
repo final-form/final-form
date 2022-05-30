@@ -1,6 +1,6 @@
 import memoize from "./memoize";
 
-const add = (...args) => args.reduce((sum, addend) => sum + addend, 0);
+const add = (...args: any) => args.reduce((sum: any, addend: any) => sum + addend, 0);
 
 describe("memoize", () => {
   it("should NOT call with same args", () => {
@@ -50,12 +50,12 @@ describe("memoize", () => {
   });
 
   it("should use shallowEqual to determine argument changes", () => {
-    const spy = jest.fn((a, b) => a.value + b.value);
+    const spy = jest.fn((a: any, b: any) => a.value + b.value);
     const fn = memoize(spy);
 
-    const one = { value: 1 };
-    const two = { value: 2 };
-    const anotherTwo = { value: 2 };
+    const one = { value: 1 } as const;
+    const two = { value: 2 } as const;
+    const anotherTwo = { value: 2 } as const;
 
     expect(spy).not.toHaveBeenCalled();
     expect(fn(one, two)).toBe(3);
@@ -67,12 +67,12 @@ describe("memoize", () => {
   });
 
   it("should not go deeper than a shallowEqual to determine argument changes", () => {
-    const spy = jest.fn((a, b) => a.deeper.value + b.deeper.value);
+    const spy = jest.fn((a: any, b: any) => a.deeper.value + b.deeper.value);
     const fn = memoize(spy);
 
-    const one = { deeper: { value: 1 } };
-    const two = { deeper: { value: 2 } };
-    const anotherTwo = { deeper: { value: 2 } };
+    const one = { deeper: { value: 1 } } as const;
+    const two = { deeper: { value: 2 } } as const;
+    const anotherTwo = { deeper: { value: 2 } } as const;
 
     expect(spy).not.toHaveBeenCalled();
     expect(fn(one, two)).toBe(3);

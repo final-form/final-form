@@ -14,7 +14,7 @@ const onSubmit = async (values) => {
 class Form extends React.Component {
   constructor() {
     super();
-    const initialState = {};
+    const initialState: Record<string, any> = {};
     let inConstructor = true;
     this.form = createForm({ onSubmit });
 

@@ -35,12 +35,12 @@ describe("structure.setIn", () => {
   });
 
   it("should set new simple object keys using new structure, but same instances of other values", () => {
-    const a = {};
-    const b = {};
-    const c = {};
-    const d = {};
-    const e = {};
-    const input = { a, b, c, d };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const c: Record<string, any> = {};
+    const d: Record<string, any> = {};
+    const e: Record<string, any> = {};
+    const input = { a, b, c, d } as const;
     const output = setIn(input, "e", e);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -51,11 +51,11 @@ describe("structure.setIn", () => {
   });
 
   it("should set new simple array keys using new structure, but same instances of other values", () => {
-    const a = {};
-    const b = {};
-    const c = {};
-    const d = {};
-    const e = {};
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const c: Record<string, any> = {};
+    const d: Record<string, any> = {};
+    const e: Record<string, any> = {};
     const input = [a, b, c, d];
     const output = setIn(input, "4", e);
     expect(input).not.toBe(output);
@@ -67,12 +67,12 @@ describe("structure.setIn", () => {
   });
 
   it("should update existing simple object keys using existing structure, but same instances of other values", () => {
-    const a = {};
-    const b = {};
-    const c = {};
-    const d = {};
-    const newC = {};
-    const input = { a, b, c, d };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const c: Record<string, any> = {};
+    const d: Record<string, any> = {};
+    const newC: Record<string, any> = {};
+    const input = { a, b, c, d } as const;
     const output = setIn(input, "c", newC);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -82,11 +82,11 @@ describe("structure.setIn", () => {
   });
 
   it("should update existing simple array keys using existing structure, but same instances of other values", () => {
-    const a = {};
-    const b = {};
-    const c = {};
-    const d = {};
-    const newC = {};
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const c: Record<string, any> = {};
+    const d: Record<string, any> = {};
+    const newC: Record<string, any> = {};
     const input = [a, b, c, d];
     const output = setIn(input, "2", newC);
     expect(input).not.toBe(output);
@@ -97,10 +97,10 @@ describe("structure.setIn", () => {
   });
 
   it("should create a new object structure when it needs to", () => {
-    const a = {};
-    const b = {};
-    const deepCDE = {};
-    const input = { a, b };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const deepCDE: Record<string, any> = {};
+    const input = { a, b } as const;
     const output = setIn(input, "c.d.e", deepCDE);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -111,10 +111,10 @@ describe("structure.setIn", () => {
   });
 
   it("should create a new array structure when it needs to", () => {
-    const a = {};
-    const b = {};
-    const deepValue = {};
-    const input = { a, b };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const deepValue: Record<string, any> = {};
+    const input = { a, b } as const;
     const output = setIn(input, "c[2].d[0][1]", deepValue);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -130,9 +130,9 @@ describe("structure.setIn", () => {
   });
 
   it("should delete structure when setting undefined", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b, dog: { cat: { rat: "foo" } } };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b, dog: { cat: { rat: "foo" } } } as const;
     const output = setIn(input, "dog.cat.rat", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -141,9 +141,9 @@ describe("structure.setIn", () => {
   });
 
   it("should delete structure when setting undefined on non-existing key", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b, dog: {} };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b, dog: {} } as const;
     const output = setIn(input, "dog.cat", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -152,9 +152,9 @@ describe("structure.setIn", () => {
   });
 
   it("should remove property when setting its value to undefined", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b, dog: {} };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b, dog: {} } as const;
     const output = setIn(input, "dog", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -163,9 +163,9 @@ describe("structure.setIn", () => {
   });
 
   it("should not delete structure when setting undefined and other keys exist", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b } as const;
     const output = setIn(input, "b", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -173,17 +173,17 @@ describe("structure.setIn", () => {
   });
 
   it("should not delete structure when setting undefined to a nonexistent key and other keys exist", () => {
-    const a = {};
-    const input = { a };
+    const a: Record<string, any> = {};
+    const input = { a } as const;
     const output = setIn(input, "b", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
   });
 
   it("should not delete array structure when setting undefined (and destroyArrays is false)", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b, dog: [{ rat: "foo" }] };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b, dog: [{ rat: "foo" }] } as const;
     const output = setIn(input, "dog[0].rat", undefined, false);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -195,9 +195,9 @@ describe("structure.setIn", () => {
   });
 
   it("should delete array structure when setting undefined (and destroyArrays is true)", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b, dog: [{ rat: "foo" }] };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b, dog: [{ rat: "foo" }] } as const;
     const output = setIn(input, "dog[0].rat", undefined, true);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -206,9 +206,9 @@ describe("structure.setIn", () => {
   });
 
   it("should not delete array structure when setting undefined to one value of many (and destroyArrays is true)", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b, dog: [{ rat: "foo" }, { rat: "bar" }] };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b, dog: [{ rat: "foo" }, { rat: "bar" }] } as const;
     const output = setIn(input, "dog[0].rat", undefined, true);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -218,11 +218,11 @@ describe("structure.setIn", () => {
   });
 
   it("should not delete array structure when setting undefined and other items exist", () => {
-    const a = {};
-    const b = {};
-    const c = {};
-    const d = {};
-    const input = { a, b, dog: [c, d] };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const c: Record<string, any> = {};
+    const d: Record<string, any> = {};
+    const input = { a, b, dog: [c, d] } as const;
     const output = setIn(input, "dog[1]", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -233,10 +233,10 @@ describe("structure.setIn", () => {
   });
 
   it("should delete array structure when setting undefined to a nonexistent key and other keys exist", () => {
-    const a = {};
-    const b = {};
-    const c = {};
-    const input = { a, b, dog: [c] };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const c: Record<string, any> = {};
+    const input = { a, b, dog: [c] } as const;
     const output = setIn(input, "dog[1]", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);
@@ -247,9 +247,9 @@ describe("structure.setIn", () => {
   });
 
   it("should not create an array structure when setting undefined", () => {
-    const a = {};
-    const b = {};
-    const input = { a, b };
+    const a: Record<string, any> = {};
+    const b: Record<string, any> = {};
+    const input = { a, b } as const;
     const output = setIn(input, "dog[0].rat", undefined);
     expect(input).not.toBe(output);
     expect(output.a).toBe(a);

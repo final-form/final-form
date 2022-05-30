@@ -16,9 +16,9 @@ describe("filterFieldState", () => {
     valid: true,
     value: "cat",
     visited: true,
-  };
+  } as const;
 
-  const testValue = (key, state, newValue) => {
+  const testValue = (key: any, state: any, newValue: any) => {
     it(`should not notify when ${key} doesn't change`, () => {
       const result = filterFieldState(state, state, { [key]: true });
       expect(result).toBeUndefined();

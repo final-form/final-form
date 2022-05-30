@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.debugging", () => {
   it("should allow debug callback on every change", () => {

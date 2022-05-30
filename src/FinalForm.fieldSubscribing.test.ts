@@ -1,11 +1,11 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("Field.subscribing", () => {
   const prepareFieldSubscribers = (
-    formSubscription,
-    fieldSubscriptions,
+    formSubscription: any,
+    fieldSubscriptions: any,
     fieldConfig = {},
     config = {},
   ) => {
@@ -17,7 +17,7 @@ describe("Field.subscribing", () => {
     expect(formSpy.mock.calls[0][0].values).toBeUndefined();
 
     return {
-      ...Object.keys(fieldSubscriptions).reduce((result, name) => {
+      ...Object.keys(fieldSubscriptions).reduce<Record<string, any>>((result: any, name: any) => {
         const spy = jest.fn();
         form.registerField(
           name,
@@ -133,8 +133,8 @@ describe("Field.subscribing", () => {
       },
       {},
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -175,7 +175,7 @@ describe("Field.subscribing", () => {
       },
       {
         foo: {
-          getValidator: () => (value) => value ? undefined : "Required",
+          getValidator: () => (value: any) => value ? undefined : "Required",
         },
       },
     );
@@ -261,7 +261,7 @@ describe("Field.subscribing", () => {
     // same initial value, duh
     expect(spy).toHaveBeenCalledTimes(1);
 
-    form.initialize((values) => ({ foo: values.foo + "buzz" }));
+    form.initialize((values: any) => ({ foo: values.foo + "buzz" }));
 
     // new initial value
     expect(spy).toHaveBeenCalledTimes(2);
@@ -336,8 +336,8 @@ describe("Field.subscribing", () => {
       },
       {},
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -378,7 +378,7 @@ describe("Field.subscribing", () => {
       },
       {
         foo: {
-          getValidator: () => (value) => value ? undefined : "Required",
+          getValidator: () => (value: any) => value ? undefined : "Required",
         },
       },
     );
@@ -572,8 +572,8 @@ describe("Field.subscribing", () => {
       },
       {},
       {
-        validate: (values) => {
-          const errors = {};
+        validate: (values: any) => {
+          const errors: Record<string, any> = {};
           if (!values.foo) {
             errors.foo = "Required";
           }
@@ -614,7 +614,7 @@ describe("Field.subscribing", () => {
       },
       {
         foo: {
-          getValidator: () => (value) => value ? undefined : "Required",
+          getValidator: () => (value: any) => value ? undefined : "Required",
         },
       },
     );
@@ -715,7 +715,7 @@ describe("Field.subscribing", () => {
       field,
       { dirty: true, pristine: true },
       {
-        isEqual: (a, b) => (a && a.toUpperCase()) === (b && b.toUpperCase()),
+        isEqual: (a: any, b: any) => (a && a.toUpperCase()) === (b && b.toUpperCase()),
       },
     );
 

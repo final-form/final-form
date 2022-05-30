@@ -1,4 +1,3 @@
-// @flow
 import fieldSubscriptionItems from "./fieldSubscriptionItems";
 import subscriptionFilter from "./subscriptionFilter";
 import type { StateFilter } from "./FinalForm";
@@ -11,10 +10,10 @@ const shallowEqualKeys = ["data"];
  */
 const filterFieldState: StateFilter<FieldState> = (
   state: FieldState,
-  previousState: ?FieldState,
+  previousState: FieldState | null | undefined,
   subscription: FieldSubscription,
   force: boolean,
-): ?FieldState => {
+): FieldState | null | undefined => {
   const result: FieldState = {
     blur: state.blur,
     change: state.change,

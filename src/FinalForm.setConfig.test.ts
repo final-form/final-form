@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.setConfig", () => {
   it('should update debug callback on setConfig("debug", fn)', () => {
@@ -56,11 +56,15 @@ describe("FinalForm.setConfig", () => {
   });
 
   it('should update mutators on setConfig("mutators", mutators)', () => {
-    const clear = jest.fn(([name], state, { changeValue }) => {
+    const clear = jest.fn(([name]: [any], state: any, {
+      changeValue,
+    }: any) => {
       changeValue(state, name, () => undefined);
     });
-    const upper = jest.fn(([name], state, { changeValue }) => {
-      changeValue(state, name, (value) => value && value.toUpperCase());
+    const upper = jest.fn(([name]: [any], state: any, {
+      changeValue,
+    }: any) => {
+      changeValue(state, name, (value: any) => value && value.toUpperCase());
     });
 
     const form = createForm({
@@ -132,8 +136,8 @@ describe("FinalForm.setConfig", () => {
     const onSubmit = jest.fn();
     const form = createForm({
       onSubmit,
-      validate: (values) => {
-        const errors = {};
+      validate: (values: any) => {
+        const errors: Record<string, any> = {};
         if (!values.username) {
           errors.username = "Required";
         }
@@ -163,8 +167,8 @@ describe("FinalForm.setConfig", () => {
   });
 
   it('should replace validateOnBlur on setConfig("validateOnBlur", value)', () => {
-    const validate = jest.fn((values) => {
-      const errors = {};
+    const validate = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
       if (!values.foo) {
         errors.foo = "Required";
       }

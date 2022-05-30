@@ -1,13 +1,13 @@
 import createForm from "./FinalForm";
 import { ARRAY_ERROR } from "./constants";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const onSubmitMock = (values, callback) => {};
+const sleep = (ms: any) => new Promise((resolve: any) => setTimeout(resolve, ms));
+const onSubmitMock = (values: any, callback: any) => {};
 
 describe("Field.validation", () => {
   it("should validate on change when validateOnBlur is false", () => {
-    const validate = jest.fn((values) => {
-      const errors = {};
+    const validate = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
       if (!values.foo) {
         errors.foo = "Required";
       }
@@ -66,8 +66,8 @@ describe("Field.validation", () => {
   });
 
   it("should validate on blur when validateOnBlur is true", () => {
-    const validate = jest.fn((values) => {
-      const errors = {};
+    const validate = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
       if (!values.foo) {
         errors.foo = "Required";
       }
@@ -134,7 +134,7 @@ describe("Field.validation", () => {
       "foo",
       spy1,
       { error: true },
-      { getValidator: () => (value) => value ? undefined : "Required" },
+      { getValidator: () => (value: any) => value ? undefined : "Required" },
     );
 
     const spy2 = jest.fn();
@@ -143,7 +143,7 @@ describe("Field.validation", () => {
       spy2,
       { error: true },
       {
-        getValidator: () => (value) =>
+        getValidator: () => (value: any) =>
           value !== "correct" ? "Incorrect value" : undefined,
       },
     );
@@ -191,8 +191,8 @@ describe("Field.validation", () => {
   it("should update a field's error if it was changed by another field's value change (record-level)", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: (values) => {
-        const errors = {};
+      validate: (values: any) => {
+        const errors: Record<string, any> = {};
         if (values.password !== values.confirm) {
           errors.confirm = "Does not match";
         }
@@ -249,7 +249,7 @@ describe("Field.validation", () => {
       confirm,
       { error: true },
       {
-        getValidator: () => (value, allValues) =>
+        getValidator: () => (value: any, allValues: any) =>
           value === allValues.password ? undefined : "Does not match",
       },
     );
@@ -307,8 +307,8 @@ describe("Field.validation", () => {
   it("should use field level error over record level error", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: (values) => {
-        const errors = {};
+      validate: (values: any) => {
+        const errors: Record<string, any> = {};
         if (!values.foo || values.foo.length < 3) {
           errors.foo = "Too short";
         }
@@ -320,7 +320,7 @@ describe("Field.validation", () => {
       "foo",
       spy,
       { error: true },
-      { getValidator: () => (value) => value ? undefined : "Required" },
+      { getValidator: () => (value: any) => value ? undefined : "Required" },
     );
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -351,8 +351,8 @@ describe("Field.validation", () => {
     const delay = 10;
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: async (values) => {
-        const errors = {};
+      validate: async (values: any) => {
+        const errors: Record<string, any> = {};
         if (values.username === "erikras") {
           errors.username = "Username taken";
         }
@@ -409,8 +409,8 @@ describe("Field.validation", () => {
     const delay = 10;
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: async (values) => {
-        const errors = {};
+      validate: async (values: any) => {
+        const errors: Record<string, any> = {};
         if (values.username === "erikras") {
           errors.username = "Username taken";
         }
@@ -480,8 +480,8 @@ describe("Field.validation", () => {
 
   it("should ignore old validation promise results", async () => {
     const delay = 10;
-    const validate = jest.fn((values) => {
-      const errors = {};
+    const validate = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
       if (values.username === "erikras") {
         errors.username = "Username taken";
         return errors;
@@ -520,7 +520,7 @@ describe("Field.validation", () => {
       spy,
       { validating: true },
       {
-        getValidator: () => (value, allErrors) => {
+        getValidator: () => (value: any, allErrors: any) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           return error;
         },
@@ -539,7 +539,7 @@ describe("Field.validation", () => {
       spy,
       { error: true, validating: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value: any, allErrors: any) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -595,7 +595,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value: any, allErrors: any) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -653,7 +653,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors, fieldState) => {
+        getValidator: () => async (value: any, allErrors: any, fieldState: any) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           expect(fieldState).toBeDefined();
           await sleep(delay);
@@ -712,7 +712,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value: any, allErrors: any) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -751,7 +751,7 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value, allErrors) => {
+        getValidator: () => async (value: any, allErrors: any) => {
           const error = value === "erikras" ? "Username taken" : undefined;
           await sleep(delay);
           return error;
@@ -784,7 +784,7 @@ describe("Field.validation", () => {
       () => {},
       { errors: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value: any) => value ? undefined : "Required",
       },
     );
     expect(spy).toHaveBeenCalledTimes(2);
@@ -799,7 +799,7 @@ describe("Field.validation", () => {
   it("should not remove record-level validation errors when a field is unregistered", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: (values) => ({ username: "Required by record-level" }),
+      validate: (values: any) => ({ username: "Required by record-level" }),
     });
     const spy = jest.fn();
     form.subscribe(spy, { errors: 1 });
@@ -814,7 +814,7 @@ describe("Field.validation", () => {
       () => {},
       { errors: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value: any) => value ? undefined : "Required",
       },
     );
     expect(spy).toHaveBeenCalledTimes(2);
@@ -832,10 +832,10 @@ describe("Field.validation", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const array = jest.fn();
     const validate = jest.fn(
-      (value) =>
+      (value: any) =>
         value &&
-        value.map((customer) => {
-          const errors = {};
+        value.map((customer: any) => {
+          const errors: Record<string, any> = {};
           if (!customer.firstName) {
             errors.firstName = "Required";
           }
@@ -929,7 +929,7 @@ describe("Field.validation", () => {
     const foo = jest.fn();
     const bar = jest.fn();
     const baz = jest.fn();
-    const required = (value) => (value ? undefined : false);
+    const required = (value: any) => (value ? undefined : false);
     const validateFoo = jest.fn(required);
     const validateBar = jest.fn(required);
     const validateBaz = jest.fn(required);
@@ -990,7 +990,7 @@ describe("Field.validation", () => {
     const foo = jest.fn();
     const bar = jest.fn();
     const baz = jest.fn();
-    const required = (value) => (value ? undefined : false);
+    const required = (value: any) => (value ? undefined : false);
     const validateFoo = jest.fn(required);
     const validateBar = jest.fn(required);
     const validateBaz = jest.fn(required);
@@ -1148,9 +1148,9 @@ describe("Field.validation", () => {
   });
 
   it("should allow for array fields to both have errors and for the array itself to have an error", () => {
-    const validate = jest.fn((values) => {
-      const errors = {};
-      errors.items = values.items.map((value) =>
+    const validate = jest.fn((values: any) => {
+      const errors: Record<string, any> = {};
+      errors.items = values.items.map((value: any) =>
         value ? undefined : "Required",
       );
       errors.items[ARRAY_ERROR] = "Need more items";
@@ -1198,9 +1198,9 @@ describe("Field.validation", () => {
     // https://github.com/final-form/final-form/issues/75
     const form = createForm({ onSubmit: onSubmitMock });
     const config = {
-      getValidator: () => (value) => value ? undefined : "Required",
+      getValidator: () => (value: any) => value ? undefined : "Required",
       validateFields: [],
-    };
+    } as const;
 
     const foo = jest.fn();
     const bar = jest.fn();
@@ -1225,9 +1225,9 @@ describe("Field.validation", () => {
   it("should mark the form as valid when all required fields are completed", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const config = {
-      getValidator: () => (value) => value ? undefined : "Required",
+      getValidator: () => (value: any) => value ? undefined : "Required",
       validateFields: [],
-    };
+    } as const;
 
     const foo = jest.fn();
     const bar = jest.fn();
@@ -1257,7 +1257,7 @@ describe("Field.validation", () => {
       foo,
       { error: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value: any) => value ? undefined : "Required",
         validateFields: ["baz"],
       },
     );
@@ -1266,7 +1266,7 @@ describe("Field.validation", () => {
       bar,
       { error: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value: any) => value ? undefined : "Required",
         validateFields: ["baz"],
       },
     );
@@ -1301,7 +1301,7 @@ describe("Field.validation", () => {
       "foo",
       foo,
       { error: true, invalid: true },
-      { getValidator: () => (value) => value ? undefined : "Required" },
+      { getValidator: () => (value: any) => value ? undefined : "Required" },
     );
 
     expect(spy).toHaveBeenCalledTimes(2);
@@ -1334,7 +1334,7 @@ describe("Field.validation", () => {
       foo,
       { error: true, invalid: true },
       {
-        getValidator: () => async (value) => {
+        getValidator: () => async (value: any) => {
           await sleep(2);
           return value ? undefined : "Required";
         },
@@ -1391,8 +1391,8 @@ describe("Field.validation", () => {
       foo,
       { error: true, invalid: true },
       {
-        getValidator: () => (value) =>
-          new Promise((resolve, reject) => {
+        getValidator: () => (value: any) =>
+          new Promise((resolve: any, reject: any) => {
             sleep(2).then(() => {
               if (value === "fail") {
                 resolve("Cannot fail");
@@ -1479,7 +1479,7 @@ describe("Field.validation", () => {
       foo3,
       { error: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value: any) => value ? undefined : "Required",
       },
     );
     expect(foo3).toHaveBeenCalledTimes(1);
@@ -1542,8 +1542,8 @@ describe("Field.validation", () => {
   it("should mark the form as valid when required fields are initialized with a value", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
-      validate: (values) => {
-        const errors = {};
+      validate: (values: any) => {
+        const errors: Record<string, any> = {};
         if (!values.foo) {
           errors.foo = "Required";
         }
@@ -1583,9 +1583,9 @@ describe("Field.validation", () => {
     const form = createForm({
       onSubmit: onSubmitMock,
     });
-    const oneArg = jest.fn((val) => {});
-    const twoArg = jest.fn((val, all) => {});
-    const threeArg = jest.fn((val, all, meta) => {});
+    const oneArg = jest.fn((val: any) => {});
+    const twoArg = jest.fn((val: any, all: any) => {});
+    const threeArg = jest.fn((val: any, all: any, meta: any) => {});
 
     form.registerField(
       "foo",

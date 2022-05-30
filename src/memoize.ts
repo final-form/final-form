@@ -1,7 +1,6 @@
-// @flow
 import shallowEqual from "./shallowEqual";
 
-const memoize = (fn: Function): Function => {
+const memoize = (fn: any): any => {
   let lastArgs;
   let lastResult;
   return (...args) => {
