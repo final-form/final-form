@@ -1,4 +1,6 @@
-export default [
+import { FieldProp } from "./types";
+
+const fieldSubscriptionItems: FieldProp[] =  [
   "active",
   "data",
   "dirty",
@@ -20,3 +22,5 @@ export default [
   "visited",
   "validating",
 ];
+
+export default fieldSubscriptionItems

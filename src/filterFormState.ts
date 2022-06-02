@@ -1,8 +1,13 @@
 import formSubscriptionItems from "./formSubscriptionItems";
 import subscriptionFilter from "./subscriptionFilter";
-import type { FormState, FormSubscription, FormValuesShape } from "./types";
+import type {
+  FormProp,
+  FormState,
+  FormSubscription,
+  FormValuesShape,
+} from "./types";
 
-const shallowEqualKeys = ["touched", "visited"];
+const shallowEqualKeys: FormProp[] = ["touched", "visited"];
 
 /**
  * Filters items in a FormState based on a FormSubscription

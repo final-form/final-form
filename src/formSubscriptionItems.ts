@@ -1,4 +1,6 @@
-export default [
+import { FormProp } from "./types";
+
+const formSubscriptionItems:FormProp[] =  [
   "active",
   "dirty",
   "dirtyFields",
@@ -23,4 +25,6 @@ export default [
   "validating",
   "values",
   "visited",
-];
+]
+
+export default formSubscriptionItems

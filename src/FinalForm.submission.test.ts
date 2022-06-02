@@ -2,7 +2,8 @@ import { FORM_ERROR } from ".";
 import createForm from "./FinalForm";
 
 const last = (arr: any) => (arr.length ? arr[arr.length - 1] : null);
-const sleep = (ms: any) => new Promise((resolve: any) => setTimeout(resolve, ms));
+const sleep = (ms: any) =>
+  new Promise((resolve: any) => setTimeout(resolve, ms));
 
 describe("FinalForm.submission", () => {
   it("should not submit if form has validation errors", () => {
@@ -89,8 +90,8 @@ describe("FinalForm.submission", () => {
   it("should call onSubmit when form.submit() is called", () => {
     const onSubmit = jest.fn();
     const form = createForm({ onSubmit });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     form.change("foo", "bar");
     form.change("foo2", "baz");
@@ -116,8 +117,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -175,8 +176,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -231,14 +232,16 @@ describe("FinalForm.submission", () => {
       }
       return errors;
     };
+    // @ts-ignore
     const form = createForm({ onSubmit, validate });
     const spy = jest.fn();
     expect(spy).not.toHaveBeenCalled();
+    // @ts-ignore
     spy.iAmTheSpySubscriber = true;
     form.subscribe(spy, {
       modifiedSinceLastSubmit: true,
     });
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -286,8 +289,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -355,8 +358,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -647,7 +650,7 @@ describe("FinalForm.submission", () => {
         return errors;
       },
     });
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
 
     const spy = jest.fn();
     form.subscribe(spy, {
@@ -932,7 +935,9 @@ describe("FinalForm.submission", () => {
     const fieldSubscriptionSpy = jest.fn();
     form.registerField("username", fieldSubscriptionSpy, { submitting: true });
 
-    form.submit().catch((error: any) => expect(error).toBe("No submit for you!"));
+    form
+      .submit()
+      ?.catch((error: any) => expect(error).toBe("No submit for you!"));
     expect(formSubscriptionSpy).toHaveBeenCalledTimes(2);
     expect(formSubscriptionSpy.mock.calls[1][0]).toEqual({ submitting: true });
     expect(fieldSubscriptionSpy).toHaveBeenCalledTimes(2);
@@ -964,7 +969,7 @@ describe("FinalForm.submission", () => {
 
     form
       .submit()
-      .catch((error: any) => expect(error.message).toBe("No submit for you!"));
+      ?.catch((error: any) => expect(error.message).toBe("No submit for you!"));
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls[1][0]).toEqual({ submitting: true });
     await sleep(10);
@@ -1085,6 +1090,7 @@ describe("FinalForm.submission", () => {
       () => {},
       {},
       {
+        // @ts-ignore
         beforeSubmit: passwordBeforeSubmit,
       },
     );
@@ -1202,7 +1208,7 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -1243,8 +1249,8 @@ describe("FinalForm.submission", () => {
           throw validationError;
         },
       });
-      form.registerField("foo", () => {});
-      form.registerField("foo2", () => {});
+      form.registerField("foo", () => {}, {});
+      form.registerField("foo2", () => {}, {});
 
       form.change("foo", "bar");
       form.change("foo2", "baz");
@@ -1254,6 +1260,7 @@ describe("FinalForm.submission", () => {
       await new Promise((resolve: any) => setTimeout(resolve, 100));
       expect(onSubmit).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(validationError);
+      // @ts-ignore
       console.error.mockRestore();
     });
   });

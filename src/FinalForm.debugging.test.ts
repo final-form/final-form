@@ -7,7 +7,7 @@ describe("FinalForm.debugging", () => {
     const debug = jest.fn();
     const form = createForm({ onSubmit: onSubmitMock, debug });
 
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
     expect(debug).toHaveBeenCalledTimes(2);
 
     form.change("foo", "bar");

@@ -21,11 +21,13 @@ describe("filterFormState", () => {
 
   const testValue = (key: any, state: any, newValue: any) => {
     it(`should not notify when ${key} doesn't change`, () => {
+      // @ts-ignore
       const result = filterFormState(state, state, { [key]: true });
       expect(result).toBeUndefined();
     });
 
     it(`should not notify when ${key} changes`, () => {
+      // @ts-ignore
       const result = filterFormState({ ...state, [key]: newValue }, state, {
         [key]: true,
       });

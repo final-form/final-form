@@ -46,12 +46,13 @@ describe("shallowEqual", () => {
 
   it("should treat objects created by `Object.create(null)` like any other plain object", () => {
     function Foo() {
+      // @ts-ignore
       this.a = 1;
     }
     Foo.prototype.constructor = null;
 
     const object2 = { a: 1 } as const;
-    expect(shallowEqual(new Foo(), object2)).toBe(true);
+    expect(shallowEqual(new (Foo as any)(), object2)).toBe(true);
 
     const object1 = Object.create(null);
     object1.a = 1;

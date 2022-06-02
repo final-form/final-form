@@ -11,7 +11,7 @@ const getIn: GetIn = (state: any, complexKey: string): any => {
       current === undefined ||
       current === null ||
       typeof current !== "object" ||
-      (Array.isArray(current) && isNaN(key))
+      (Array.isArray(current) && isNaN(key as any))
     ) {
       return undefined;
     }

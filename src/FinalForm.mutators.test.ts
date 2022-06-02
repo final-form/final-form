@@ -4,19 +4,16 @@ const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.mutators", () => {
   it("should allow mutators to mutate state", () => {
-    const clear = jest.fn(([name]: [any], state: any, {
-      changeValue,
-    }: any) => {
+    const clear = jest.fn(([name]: [any], state: any, { changeValue }: any) => {
       changeValue(state, name, () => undefined);
     });
-    const upper = jest.fn(([name]: [any], state: any, {
-      changeValue,
-    }: any) => {
+    const upper = jest.fn(([name]: [any], state: any, { changeValue }: any) => {
       changeValue(state, name, (value: any) => value && value.toUpperCase());
     });
 
     const form = createForm({
       onSubmit: onSubmitMock,
+      // @ts-ignore
       mutators: { clear, upper },
     });
     expect(form.mutators).toBeDefined();
@@ -49,14 +46,13 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow changeValue to modify a non-registered field", () => {
-    const upper = jest.fn(([name]: [any], state: any, {
-      changeValue,
-    }: any) => {
+    const upper = jest.fn(([name]: [any], state: any, { changeValue }: any) => {
       changeValue(state, name, (value: any) => value && value.toUpperCase());
     });
 
     const form = createForm({
       onSubmit: onSubmitMock,
+      // @ts-ignore
       mutators: { upper },
     });
     const formListener = jest.fn();
@@ -81,14 +77,15 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should allow renameField to rename a registered field", () => {
-    const rename = jest.fn(([from, to]: [any, any], state: any, {
-      renameField,
-    }: any) => {
-      renameField(state, from, to);
-    });
+    const rename = jest.fn(
+      ([from, to]: [any, any], state: any, { renameField }: any) => {
+        renameField(state, from, to);
+      },
+    );
 
     const form = createForm({
       onSubmit: onSubmitMock,
+      // @ts-ignore
       mutators: { rename },
     });
     const formListener = jest.fn();
@@ -128,14 +125,15 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should do nothing when renameField called with nonexistent field", () => {
-    const rename = jest.fn(([from, to]: [any, any], state: any, {
-      renameField,
-    }: any) => {
-      renameField(state, from, to);
-    });
+    const rename = jest.fn(
+      ([from, to]: [any, any], state: any, { renameField }: any) => {
+        renameField(state, from, to);
+      },
+    );
 
     const form = createForm({
       onSubmit: onSubmitMock,
+      // @ts-ignore
       mutators: { rename },
     });
     const formListener = jest.fn();
@@ -156,18 +154,19 @@ describe("FinalForm.mutators", () => {
   });
 
   it("should not throw when renamed field is unregistered", () => {
-    const rename = jest.fn(([from, to]: [any, any], state: any, {
-      renameField,
-    }: any) => {
-      renameField(state, from, to);
-    });
+    const rename = jest.fn(
+      ([from, to]: [any, any], state: any, { renameField }: any) => {
+        renameField(state, from, to);
+      },
+    );
 
     const form = createForm({
       onSubmit: onSubmitMock,
+      // @ts-ignore
       mutators: { rename },
     });
 
-    const unregisterFoo = form.registerField("foo", () => {});
+    const unregisterFoo = form.registerField("foo", () => {}, {});
     form.mutators.rename("foo", "renamedFoo");
     expect(() => unregisterFoo()).not.toThrowError();
   });

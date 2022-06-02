@@ -1,9 +1,9 @@
 import fieldSubscriptionItems from "./fieldSubscriptionItems";
 import subscriptionFilter from "./subscriptionFilter";
 import type { StateFilter } from "./FinalForm";
-import type { FieldState, FieldSubscription } from "./types";
+import type { FieldProp, FieldState, FieldSubscription } from "./types";
 
-const shallowEqualKeys = ["data"];
+const shallowEqualKeys: FieldProp[] = ["data"];
 
 /**
  * Filters items in a FieldState based on a FieldSubscription

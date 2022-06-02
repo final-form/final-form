@@ -25,7 +25,7 @@ const rePropName = RegExp(
  * @param {string} string The string to convert.
  * @returns {Array} Returns the property path array.
  */
-const stringToPath = (string) => {
+const stringToPath = (string: string) => {
   const result = [];
   if (string.charCodeAt(0) === charCodeOfDot) {
     result.push("");
@@ -38,12 +38,13 @@ const stringToPath = (string) => {
       key = expression.trim();
     }
     result.push(key);
+    return "";
   });
   return result;
 };
 
 const keysCache: {
-  [key: string]: string[]
+  [key: string]: string[];
 } = {};
 
 const toPath = (key: string): string[] => {

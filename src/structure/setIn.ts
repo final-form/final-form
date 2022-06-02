@@ -17,7 +17,7 @@ const setInRecursor = (
   const key = path[index];
 
   // determine type of key
-  if (isNaN(key)) {
+  if (isNaN(key as any)) {
     // object set
     if (current === undefined || current === null) {
       // recurse
@@ -51,7 +51,7 @@ const setInRecursor = (
       }
       if (current[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
-        if (!isNaN(path[index - 1]) && !destroyArrays) {
+        if (!isNaN(path[index - 1] as any) && !destroyArrays) {
           // we are in an array, so return an empty object
           return {};
         } else {

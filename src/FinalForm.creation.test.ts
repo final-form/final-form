@@ -8,10 +8,12 @@ describe("FinalForm.creation", () => {
   });
 
   it("should throw an error if no config is provided", () => {
+    // @ts-ignore
     expect(() => createForm()).toThrowError(/No config/);
   });
 
   it("should throw an error if no onSubmit is provided", () => {
+    // @ts-ignore
     expect(() => createForm({})).toThrowError(/No onSubmit/);
   });
 
@@ -40,6 +42,7 @@ describe("FinalForm.creation", () => {
   });
 
   it("should allow a change to an not-yet-registered field when validation is present", () => {
+    // @ts-ignore
     const form = createForm({ onSubmit: onSubmitMock, validate: () => {} });
     form.registerField("whatever", () => {}, { value: true });
     form.change("foo", "bar");
@@ -186,14 +189,14 @@ describe("FinalForm.creation", () => {
       { pristine: true, data: true },
       { data: { foo: "bar" } },
     );
-    expect(form.getFieldState("foo").data).toEqual({ foo: "bar" });
+    expect(form.getFieldState("foo")?.data).toEqual({ foo: "bar" });
     form.registerField(
       "cat",
       cat,
       { pristine: true, data: true },
       { data: { foo: "fubar" } },
     );
-    expect(form.getFieldState("cat").data).toEqual({ foo: "fubar" });
+    expect(form.getFieldState("cat")?.data).toEqual({ foo: "fubar" });
 
     expect(foo).toHaveBeenCalledTimes(1);
     expect(foo.mock.calls[0][0]).toMatchObject({

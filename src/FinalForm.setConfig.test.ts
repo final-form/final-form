@@ -7,7 +7,7 @@ describe("FinalForm.setConfig", () => {
     const debug = jest.fn();
     const form = createForm({ onSubmit: onSubmitMock });
 
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
     expect(debug).toHaveBeenCalledTimes(0);
 
     form.change("foo", "bar");
@@ -56,19 +56,16 @@ describe("FinalForm.setConfig", () => {
   });
 
   it('should update mutators on setConfig("mutators", mutators)', () => {
-    const clear = jest.fn(([name]: [any], state: any, {
-      changeValue,
-    }: any) => {
+    const clear = jest.fn(([name]: [any], state: any, { changeValue }: any) => {
       changeValue(state, name, () => undefined);
     });
-    const upper = jest.fn(([name]: [any], state: any, {
-      changeValue,
-    }: any) => {
+    const upper = jest.fn(([name]: [any], state: any, { changeValue }: any) => {
       changeValue(state, name, (value: any) => value && value.toUpperCase());
     });
 
     const form = createForm({
       onSubmit: onSubmitMock,
+      // @ts-ignore
       mutators: { clear },
     });
     expect(form.mutators).toBeDefined();
@@ -114,8 +111,8 @@ describe("FinalForm.setConfig", () => {
   it('should replace onSubmit on setConfig("onSubmit", fn)', () => {
     const onSubmit = jest.fn();
     const form = createForm({ onSubmit });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     form.change("foo", "bar");
     form.change("foo2", "baz");
@@ -220,6 +217,7 @@ describe("FinalForm.setConfig", () => {
       onSubmit: onSubmitMock,
     });
     expect(() => {
+      // @ts-ignore
       form.setConfig("whatever", false);
     }).toThrowError("Unrecognised option whatever");
   });

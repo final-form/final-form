@@ -3,13 +3,16 @@ import createForm from "./FinalForm";
 const onSubmitMock = (values: any, callback: any) => {};
 
 describe("Field.subscribing", () => {
-  const prepareFieldSubscribers = (
+  const prepareFieldSubscribers = <T>(
     formSubscription: any,
-    fieldSubscriptions: any,
-    fieldConfig = {},
+    fieldSubscriptions: { [P in keyof T]: any },
+    fieldConfig: { [P in keyof T]?: any } = {},
     config = {},
   ) => {
-    const form = createForm({ onSubmit: onSubmitMock, ...config });
+    const form = createForm<{ [P in keyof T]?: any }>({
+      onSubmit: onSubmitMock,
+      ...config,
+    });
     const formSpy = jest.fn();
     form.subscribe(formSpy, formSubscription);
     expect(formSpy).toHaveBeenCalled();
@@ -17,20 +20,23 @@ describe("Field.subscribing", () => {
     expect(formSpy.mock.calls[0][0].values).toBeUndefined();
 
     return {
-      ...Object.keys(fieldSubscriptions).reduce<Record<string, any>>((result: any, name: any) => {
-        const spy = jest.fn();
-        form.registerField(
-          name,
-          spy,
-          fieldSubscriptions[name],
-          fieldConfig[name],
-        );
-        expect(spy).toHaveBeenCalled();
-        expect(spy).toHaveBeenCalledTimes(1);
-        const { blur, change, focus } = spy.mock.calls[0][0];
-        result[name] = { blur, change, focus, spy };
-        return result;
-      }, {}),
+      ...Object.keys(fieldSubscriptions).reduce<{ [P in keyof T]?: any }>(
+        (result, name) => {
+          const spy = jest.fn();
+          form.registerField(
+            name,
+            spy,
+            fieldSubscriptions[name as keyof T],
+            fieldConfig[name as keyof T],
+          );
+          expect(spy).toHaveBeenCalled();
+          expect(spy).toHaveBeenCalledTimes(1);
+          const { blur, change, focus } = spy.mock.calls[0][0];
+          result[name as keyof T] = { blur, change, focus, spy };
+          return result;
+        },
+        {},
+      ),
       form,
       formSpy,
     };
@@ -50,7 +56,7 @@ describe("Field.subscribing", () => {
     form.registerField("bar", () => {}, {});
     form.registerField("baz", () => {}, {});
     expect(form.getFieldState("foo")).toBeDefined();
-    expect(form.getFieldState("foo").name).toBe("foo");
+    expect(form.getFieldState("foo")?.name).toBe("foo");
     expect(form.getFieldState("notafield")).toBeUndefined();
   });
 
@@ -715,7 +721,8 @@ describe("Field.subscribing", () => {
       field,
       { dirty: true, pristine: true },
       {
-        isEqual: (a: any, b: any) => (a && a.toUpperCase()) === (b && b.toUpperCase()),
+        isEqual: (a: any, b: any) =>
+          (a && a.toUpperCase()) === (b && b.toUpperCase()),
       },
     );
 

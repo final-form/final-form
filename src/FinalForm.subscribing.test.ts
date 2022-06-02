@@ -1,11 +1,16 @@
 import createForm from "./FinalForm";
 import { FORM_ERROR } from "./constants";
 
-const sleep = (ms: any) => new Promise((resolve: any) => setTimeout(resolve, ms));
+const sleep = (ms: any) =>
+  new Promise((resolve: any) => setTimeout(resolve, ms));
 const onSubmitMock = (values: any, callback: any) => {};
 
 describe("FinalForm.subscribing", () => {
-  const prepareFormSubscriber = (fieldName: any, subscription: any, config = {}) => {
+  const prepareFormSubscriber = (
+    fieldName: any,
+    subscription: any,
+    config = {},
+  ) => {
     const form = createForm({ onSubmit: onSubmitMock, ...config });
     const spy = jest.fn();
     form.subscribe(spy, subscription);
@@ -29,11 +34,13 @@ describe("FinalForm.subscribing", () => {
 
   it("should throw an error if no callback is given", () => {
     const form = createForm({ onSubmit: onSubmitMock });
+    // @ts-ignore
     expect(() => form.subscribe()).toThrowError(/No callback/);
   });
 
   it("should throw an error if no subscription is given", () => {
     const form = createForm({ onSubmit: onSubmitMock });
+    // @ts-ignore
     expect(() => form.subscribe(() => {})).toThrowError(/No subscription/);
   });
 
@@ -692,7 +699,7 @@ describe("FinalForm.subscribing", () => {
     form.subscribe(spy, {
       submitting: true,
     });
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -727,7 +734,7 @@ describe("FinalForm.subscribing", () => {
     form.subscribe(spy, {
       submitFailed: true,
     });
-    form.registerField("foo", () => {});
+    form.registerField("foo", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -755,8 +762,8 @@ describe("FinalForm.subscribing", () => {
     form.subscribe(spy, {
       submitSucceeded: true,
     });
-    form.registerField("foo", () => {});
-    form.registerField("foo2", () => {});
+    form.registerField("foo", () => {}, {});
+    form.registerField("foo2", () => {}, {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -992,9 +999,7 @@ describe("FinalForm.subscribing", () => {
 
   it("should schedule form notifications for after current notifications are complete", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    const subscriber1 = jest.fn(({
-      values,
-    }: any) => {
+    const subscriber1 = jest.fn(({ values }: any) => {
       if (values.foo && values.foo % 2 === 1) {
         // increment foo to make it even
         form.change("foo", values.foo + 1);
@@ -1025,9 +1030,7 @@ describe("FinalForm.subscribing", () => {
   it("should not mind if a field gets unregistered by a field notification", () => {
     let unregisterBar: any;
     const form = createForm({ onSubmit: onSubmitMock });
-    const foo = jest.fn(({
-      value,
-    }: any) => {
+    const foo = jest.fn(({ value }: any) => {
       if (value === 42) {
         unregisterBar();
         form.reset();

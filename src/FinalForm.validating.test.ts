@@ -1,7 +1,8 @@
 import createForm from "./FinalForm";
 import { ARRAY_ERROR } from "./constants";
 
-const sleep = (ms: any) => new Promise((resolve: any) => setTimeout(resolve, ms));
+const sleep = (ms: any) =>
+  new Promise((resolve: any) => setTimeout(resolve, ms));
 const onSubmitMock = (values: any, callback: any) => {};
 
 describe("Field.validation", () => {
@@ -200,7 +201,7 @@ describe("Field.validation", () => {
       },
     });
     const password = jest.fn();
-    form.registerField("password", password);
+    form.registerField("password", password, {});
     const confirm = jest.fn();
     form.registerField("confirm", confirm, { error: true });
 
@@ -242,7 +243,7 @@ describe("Field.validation", () => {
   it("should update a field's error if it was changed by another field's value change (field-level)", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const password = jest.fn();
-    form.registerField("password", password);
+    form.registerField("password", password, {});
     const confirm = jest.fn();
     form.registerField(
       "confirm",
@@ -544,6 +545,7 @@ describe("Field.validation", () => {
           await sleep(delay);
           return error;
         },
+        // @ts-ignore NOTE: I don't think this property is used in anywhere
         subscribeToEachFieldsPromise: true,
       },
     );
@@ -653,12 +655,13 @@ describe("Field.validation", () => {
       spy,
       { error: true },
       {
-        getValidator: () => async (value: any, allErrors: any, fieldState: any) => {
-          const error = value === "erikras" ? "Username taken" : undefined;
-          expect(fieldState).toBeDefined();
-          await sleep(delay);
-          return error;
-        },
+        getValidator:
+          () => async (value: any, allErrors: any, fieldState: any) => {
+            const error = value === "erikras" ? "Username taken" : undefined;
+            expect(fieldState).toBeDefined();
+            await sleep(delay);
+            return error;
+          },
       },
     );
     expect(spy).toHaveBeenCalledTimes(1);
@@ -774,6 +777,7 @@ describe("Field.validation", () => {
   it("should remove field-level validation errors when a field is unregistered", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const spy = jest.fn();
+    // @ts-ignore
     form.subscribe(spy, { errors: 1 });
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -782,6 +786,7 @@ describe("Field.validation", () => {
     const unregister = form.registerField(
       "username",
       () => {},
+      // @ts-ignore
       { errors: true },
       {
         getValidator: () => (value: any) => value ? undefined : "Required",
@@ -802,6 +807,7 @@ describe("Field.validation", () => {
       validate: (values: any) => ({ username: "Required by record-level" }),
     });
     const spy = jest.fn();
+    // @ts-ignore
     form.subscribe(spy, { errors: 1 });
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -812,6 +818,7 @@ describe("Field.validation", () => {
     const unregister = form.registerField(
       "username",
       () => {},
+      // @ts-ignore
       { errors: true },
       {
         getValidator: () => (value: any) => value ? undefined : "Required",
@@ -1204,7 +1211,9 @@ describe("Field.validation", () => {
 
     const foo = jest.fn();
     const bar = jest.fn();
+    // @ts-ignore
     form.registerField("foo", foo, { error: true }, config);
+    // @ts-ignore
     form.registerField("bar", bar, { error: true }, config);
 
     expect(foo).toHaveBeenCalled();
@@ -1231,7 +1240,7 @@ describe("Field.validation", () => {
 
     const foo = jest.fn();
     const bar = jest.fn();
-
+    // @ts-ignore
     form.registerField("foo", foo, { error: true }, config);
     form.registerField("bar", bar, { error: true });
 
@@ -1607,8 +1616,9 @@ describe("Field.validation", () => {
     );
 
     const meta = form.getFieldState("baz");
-
+    // @ts-ignore
     expect(oneArg.mock.calls[0][2]).toBeUndefined();
+    // @ts-ignore
     expect(twoArg.mock.calls[0][2]).toBeUndefined();
     expect(threeArg.mock.calls[0][2]).toEqual(meta);
   });

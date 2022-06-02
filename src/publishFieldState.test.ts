@@ -1,6 +1,6 @@
 import publishFieldState from "./publishFieldState";
 
-const check = (error: any, initial: any, value: any, submitError: any) => {
+const check = (error: any, initial: any, value: any, submitError?: any) => {
   // mock placeholder values to check ===
   const active: Record<string, any> = {};
   const blur: Record<string, any> = {};
@@ -22,8 +22,11 @@ const check = (error: any, initial: any, value: any, submitError: any) => {
       submitErrors: {
         foo: submitError,
       },
+      // @ts-ignore HELP: why object is passed here?
       submitFailed,
+      // @ts-ignore HELP: why object is passed here?
       submitSucceeded,
+      // @ts-ignore HELP: why object is passed here?
       submitting,
       values: {
         foo: value,

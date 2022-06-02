@@ -1,9 +1,9 @@
 import shallowEqual from "./shallowEqual";
 
 const memoize = (fn: any): any => {
-  let lastArgs;
-  let lastResult;
-  return (...args) => {
+  let lastArgs: Array<any>;
+  let lastResult: any;
+  return (...args: Array<any>) => {
     if (
       !lastArgs ||
       args.length !== lastArgs.length ||

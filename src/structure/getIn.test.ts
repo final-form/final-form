@@ -1,3 +1,4 @@
+// @ts-nocheck
 import getIn from "./getIn";
 
 describe("structure.getIn", () => {

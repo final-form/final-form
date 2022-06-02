@@ -1,5 +1,5 @@
 import filterFieldState from "./filterFieldState";
-import createForm from "./FinalForm.js";
+import createForm from "./FinalForm";
 
 describe("filterFieldState", () => {
   const name = "foo";
@@ -20,11 +20,13 @@ describe("filterFieldState", () => {
 
   const testValue = (key: any, state: any, newValue: any) => {
     it(`should not notify when ${key} doesn't change`, () => {
+      // @ts-ignore
       const result = filterFieldState(state, state, { [key]: true });
       expect(result).toBeUndefined();
     });
 
     it(`should not notify when ${key} changes`, () => {
+      // @ts-ignore
       const result = filterFieldState({ ...state, [key]: newValue }, state, {
         [key]: true,
       });
@@ -84,6 +86,11 @@ describe("filterFieldState", () => {
   });
 
   describe("filterFieldState.visited", () => {
+    function Foo() {
+      // @ts-ignore
+      this.a = null;
+    }
+
     testValue("visited", state, !state.visited);
   });
 });
@@ -95,13 +102,16 @@ describe("restart", () => {
     const form = createForm({
       onSubmit: () => {},
     });
+    // @ts-ignore
     form.registerField(fieldName, () => {});
 
     function isTouched() {
+      // @ts-ignore
       return form.getState().touched[fieldName];
     }
 
     function value() {
+      // @ts-ignore
       return form.getState().values[fieldName];
     }
 

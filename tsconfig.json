@@ -2,7 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "target": "ES5",
+    "resolveJsonModule": true
   },
   "include": ["./src/**/*"]
 }
