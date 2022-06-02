@@ -18,6 +18,21 @@ jobs:
       - name: Run linter
         run: yarn start lint
 
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Prepare env
+        run: yarn install --ignore-scripts --frozen-lockfile
+      - name: Run type-check
+        run: yarn start typescript
+
   prettier:
     name: Prettier Check
     runs-on: ubuntu-latest

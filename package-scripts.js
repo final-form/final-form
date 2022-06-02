@@ -76,7 +76,7 @@ module.exports = {
     },
     typescript: {
       description: "typescript check the entire project",
-      script: "tsc",
+      script: "tsc --noEmit",
     },
     validate: {
       description:

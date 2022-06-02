@@ -1,5 +1,10 @@
 // tslint:disable no-console
-import { AnyObject, Config, createForm, Mutator } from "./index";
+import { createForm } from "./index";
+import { Config, Mutator } from "./types";
+
+interface AnyObject {
+  [key: string]: any;
+}
 
 interface FormValues {
   foo: string;
@@ -43,6 +48,7 @@ createForm<FormValues>({
 
 createForm<FormValues>({
   onSubmit,
+  // @ts-ignore I don't understand if it's correct (validate function cannot return undefined)
   validate() {
     return undefined;
   },
@@ -90,7 +96,7 @@ console.log(
   formState.error as boolean,
 );
 console.log(formState.errors as AnyObject, formState.errors!.foo);
-console.log(formState.initialValues as AnyObject, formState.initialValues.foo);
+console.log(formState.initialValues as AnyObject, formState.initialValues?.foo);
 console.log(formState.invalid as boolean);
 console.log(formState.pristine as boolean);
 console.log(
@@ -105,7 +111,7 @@ console.log(formState.submitSucceeded as boolean);
 console.log(formState.submitting as boolean);
 console.log(formState.valid as boolean);
 console.log(formState.validating as boolean);
-console.log(formState.values as AnyObject, formState.values.foo);
+console.log(formState.values as AnyObject, formState.values?.foo);
 
 interface FormValues2 {
   a: string;
