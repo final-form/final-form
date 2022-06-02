@@ -8,7 +8,7 @@
         }
       }
     ],
-    "@babel/preset-flow"
+    "@babel/preset-typescript"
   ],
   "plugins": [
     "@babel/plugin-transform-flow-strip-types",

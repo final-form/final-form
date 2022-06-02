@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "outDir": "./dist",
     "noEmit": true,
     "strict": true,
     "target": "ES5",
-    "resolveJsonModule": true
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["./src/**/*"]
 }

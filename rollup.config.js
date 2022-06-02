@@ -1,3 +1,4 @@
+import typescript from "rollup-plugin-typescript2";
 import babel from "rollup-plugin-babel";
 import json from "rollup-plugin-json";
 import flow from "rollup-plugin-flow";
@@ -42,7 +43,7 @@ if (es) {
 }
 
 export default {
-  input: "src/index.js",
+  input: "src/index.ts",
   output: Object.assign(
     {
       name: "final-form",
@@ -59,30 +60,12 @@ export default {
         ],
   ),
   plugins: [
-    json(),
-    flow(),
-    commonjs({ include: "node_modules/**" }),
-    babel({
-      exclude: "node_modules/**",
-      babelrc: false,
-      runtimeHelpers: true,
-      presets: [
-        [
-          "@babel/preset-env",
-          {
-            modules: false,
-            loose: true,
-          },
-        ],
-        "@babel/preset-flow",
-      ],
-      plugins: [
-        ["@babel/plugin-transform-runtime", { useESModules: !cjs }],
-        "@babel/plugin-transform-flow-strip-types",
-        "@babel/plugin-syntax-dynamic-import",
-        "@babel/plugin-syntax-import-meta",
-      ],
+    typescript({
+      outputToFilesystem: true,
+      tsconfig: "./tsconfig.json",
     }),
+    json(),
+    commonjs({ include: "node_modules/**" }),
     umd || es
       ? replace({
           "process.env.NODE_ENV": JSON.stringify(
