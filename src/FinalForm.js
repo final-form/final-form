@@ -77,6 +77,7 @@ const hasAnyError = (errors: Object): boolean => {
 function convertToExternalFormState<FormValues: FormValuesShape>({
   // kind of silly, but it ensures type safety ¯\_(ツ)_/¯
   active,
+  data,
   dirtySinceLastSubmit,
   modifiedSinceLastSubmit,
   error,
@@ -94,6 +95,7 @@ function convertToExternalFormState<FormValues: FormValuesShape>({
 }: InternalFormState<FormValues>): FormState<FormValues> {
   return {
     active,
+    data,
     dirty: !pristine,
     dirtySinceLastSubmit,
     modifiedSinceLastSubmit,
@@ -169,6 +171,7 @@ function createForm<FormValues: FormValuesShape>(
     throw new Error("No config specified");
   }
   let {
+    data,
     debug,
     destroyOnUnregister,
     keepDirtyOnReinitialize,
@@ -188,6 +191,7 @@ function createForm<FormValues: FormValuesShape>(
     fields: {},
     formState: {
       asyncErrors: {},
+      data: data || {},
       dirtySinceLastSubmit: false,
       modifiedSinceLastSubmit: false,
       errors: {},

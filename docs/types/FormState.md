@@ -12,6 +12,14 @@ string
 
 The name of the currently active field. `undefined` if none are active.
 
+## `data`
+
+```ts
+Object
+```
+
+A place for arbitrary values to be placed by mutators.
+
 ## `dirty`
 
 ```ts

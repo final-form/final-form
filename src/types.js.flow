@@ -9,6 +9,7 @@ export type FormValuesShape = {
 
 export type FormSubscription = {
   active?: boolean,
+  data?: boolean,
   dirty?: boolean,
   dirtyFields?: boolean,
   dirtyFieldsSinceLastSubmit?: boolean,
@@ -37,6 +38,7 @@ export type FormSubscription = {
 export type FormState<FormValues: FormValuesShape> = {
   // all values are optional because they must be subscribed to
   active?: string,
+  data?: Object,
   dirty?: boolean,
   dirtyFields?: { [string]: boolean },
   dirtyFieldsSinceLastSubmit?: { [string]: boolean },
@@ -182,6 +184,7 @@ export type InternalFieldState = {
 
 export type InternalFormState<FormValues: FormValuesShape> = {
   active?: string,
+  data: Object,
   asyncErrors: Object,
   dirtySinceLastSubmit: boolean,
   modifiedSinceLastSubmit: boolean,
