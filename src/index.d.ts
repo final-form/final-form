@@ -107,7 +107,7 @@ export interface FieldSubscription {
   invalid?: boolean;
   length?: boolean;
   modified?: boolean;
-  modifiedSinceLastSubmit?: false;
+  modifiedSinceLastSubmit?: boolean;
   pristine?: boolean;
   submitError?: boolean;
   submitFailed?: boolean;
