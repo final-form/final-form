@@ -76,7 +76,7 @@ boolean
 `true` if the form values are the same as the initial values. `false` otherwise.
 Comparison is done with shallow-equals.
 
-reverse of [dirty](#dirty). (`pristine === !dirty`)
+`pristine === !dirty`
 
 ### `dirty`
 
