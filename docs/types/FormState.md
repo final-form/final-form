@@ -30,6 +30,44 @@ An object full of booleans, with a boolean value for each field name denoting wh
 
 An object full of booleans, with a boolean value for each field name denoting whether that field is `touched` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `touched` value for that field will be available under `touched['addresses.shipping.street']`.
 
+## About modifiedness
+
+### `modified`
+
+```ts
+{ [string]: boolean }
+```
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `modified` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `modified` value for that field will be available under `modified['addresses.shipping.street']`.
+
+### `modifiedSinceLastSubmit`
+
+```ts
+boolean
+```
+
+true if the form values have ever been changed since the last submission. false otherwise.
+
+
+## About values
+
+### `values`
+
+```ts
+FormValues
+```
+
+The current values of the form.
+
+### `initialValues`
+
+```ts
+FormValues
+```
+
+The values the form was initialized with. `undefined` if the form was never
+initialized.
+
 ## About dirtyness
 
 ### `pristine`
