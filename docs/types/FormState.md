@@ -151,7 +151,7 @@ boolean
 
 `true` when the form currently has validation errors. Useful for distinguishing _why_ `invalid` is `true`. For example, if your form is `invalid` because of a submit error, you might also want to disable the submit button if user's changes to fix the submit errors causes the form to have sync validation errors.
 
-`hasValidationErrors === error || hasAnyError(errors)`
+`hasValidationErrors === !!error || hasAnyError(errors)`
 
 #### `error`
 
@@ -177,6 +177,8 @@ boolean
 ```
 
 `true` when the form currently has submit errors. Useful for distinguishing _why_ `invalid` is `true`.
+
+`hasSubmitErrors === !!submitError || hasAnyError(submitErrors)`
 
 #### `submitError`
 
