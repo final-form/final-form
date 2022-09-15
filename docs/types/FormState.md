@@ -65,7 +65,7 @@ boolean
 
 true if the form values have ever been changed since the last submission. false otherwise.
 
-## Properties about *dirtyness*
+## About dirtyness
 
 ### `pristine`
 
@@ -110,7 +110,7 @@ boolean
 
 An object full of booleans, with a value of `true` for each field that has a different value from the one when the form was last submitted. _Pristine (since last submit) fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirtySinceLastSubmit` value for that field will be available under `dirty['addresses.shipping.street']`.
 
-## Properties about form validness
+## About validness
 
 ### `valid`
 
