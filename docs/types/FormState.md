@@ -57,7 +57,50 @@ boolean
 
 An object full of booleans, with a value of `true` for each field that has a different value from the one when the form was last submitted. _Pristine (since last submit) fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirtySinceLastSubmit` value for that field will be available under `dirty['addresses.shipping.street']`.
 
-## `error`
+## Properties about form validness
+
+### `valid`
+
+```ts
+boolean
+```
+
+`true` if neither the form nor any of its fields has a validation or submission
+error. `false` otherwise. Note that a form can be invalid even if the errors do
+not belong to any currently registered fields.
+
+`valid === !invalid`
+
+### `invalid`
+
+```ts
+boolean
+```
+
+`true` if any of the fields or the form has a validation or submission error.
+`false` otherwise. Note that a form can be invalid even if the errors do not
+belong to any currently registered fields.
+
+### `validating`
+
+```ts
+boolean
+```
+
+`true` if the form is currently being validated asynchronously. `false`
+otherwise.
+
+### `hasValidationErrors`
+
+```ts
+boolean
+```
+
+`true` when the form currently has validation errors. Useful for distinguishing _why_ `invalid` is `true`. For example, if your form is `invalid` because of a submit error, you might also want to disable the submit button if user's changes to fix the submit errors causes the form to have sync validation errors.
+
+`hasValidationErrors === error || hasAnyError(errors)`
+
+#### `error`
 
 ```ts
 any
@@ -65,7 +108,7 @@ any
 
 The whole-form error returned by a validation function under the [`FORM_ERROR`](../api#form_error) key.
 
-## `errors`
+#### `errors`
 
 ```ts
 Object
@@ -74,7 +117,7 @@ Object
 An object containing all the current validation errors. The shape will match the
 shape of the form's values.
 
-## `hasSubmitErrors`
+### `hasSubmitErrors`
 
 ```ts
 boolean
@@ -82,13 +125,22 @@ boolean
 
 `true` when the form currently has submit errors. Useful for distinguishing _why_ `invalid` is `true`.
 
-## `hasValidationErrors`
+#### `submitError`
 
 ```ts
-boolean
+any
 ```
 
-`true` when the form currently has validation errors. Useful for distinguishing _why_ `invalid` is `true`. For example, if your form is `invalid` because of a submit error, you might also want to disable the submit button if user's changes to fix the submit errors causes the form to have sync validation errors.
+The whole-form submission error returned by `onSubmit` under the [`FORM_ERROR`](../api#form_error) key.
+
+#### `submitErrors`
+
+```ts
+Object
+```
+
+An object containing all the current submission errors. The shape will match the
+shape of the form's values.
 
 ## `initialValues`
 
@@ -98,16 +150,6 @@ FormValues
 
 The values the form was initialized with. `undefined` if the form was never
 initialized.
-
-## `invalid`
-
-```ts
-boolean
-```
-
-`true` if any of the fields or the form has a validation or submission error.
-`false` otherwise. Note that a form can be invalid even if the errors do not
-belong to any currently registered fields.
 
 ## `modified`
 
@@ -124,23 +166,6 @@ boolean
 ```
 
 true if the form values have ever been changed since the last submission. false otherwise.
-
-## `submitError`
-
-```ts
-any
-```
-
-The whole-form submission error returned by `onSubmit` under the [`FORM_ERROR`](../api#form_error) key.
-
-## `submitErrors`
-
-```ts
-Object
-```
-
-An object containing all the current submission errors. The shape will match the
-shape of the form's values.
 
 ## `submitFailed`
 
@@ -175,25 +200,6 @@ otherwise.
 ```
 
 An object full of booleans, with a boolean value for each field name denoting whether that field is `touched` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `touched` value for that field will be available under `touched['addresses.shipping.street']`.
-
-## `valid`
-
-```ts
-boolean
-```
-
-`true` if neither the form nor any of its fields has a validation or submission
-error. `false` otherwise. Note that a form can be invalid even if the errors do
-not belong to any currently registered fields.
-
-## `validating`
-
-```ts
-boolean
-```
-
-`true` if the form is currently being validated asynchronously. `false`
-otherwise.
 
 ## `values`
 
