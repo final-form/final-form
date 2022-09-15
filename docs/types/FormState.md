@@ -12,7 +12,20 @@ string
 
 The name of the currently active field. `undefined` if none are active.
 
-## `dirty`
+## Properties about *dirtyness*
+
+### `pristine`
+
+```ts
+boolean
+```
+
+`true` if the form values are the same as the initial values. `false` otherwise.
+Comparison is done with shallow-equals.
+
+reverse of [dirty](#dirty). (`pristine === !dirty`)
+
+### `dirty`
 
 ```ts
 boolean
@@ -20,7 +33,7 @@ boolean
 
 `true` if the form values are different from the values it was initialized with. `false` otherwise. Comparison is done with shallow-equals.
 
-## `dirtyFields`
+### `dirtyFields`
 
 ```ts
 { [string]: boolean }
@@ -28,21 +41,21 @@ boolean
 
 An object full of booleans, with a value of `true` for each `dirty` field. _Pristine fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirty` value for that field will be available under `dirty['addresses.shipping.street']`.
 
-## `dirtyFieldsSinceLastSubmit`
-
-```ts
-{ [string]: boolean }
-```
-
-An object full of booleans, with a value of `true` for each field that has a different value from the one when the form was last submitted. _Pristine (since last submit) fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirtySinceLastSubmit` value for that field will be available under `dirty['addresses.shipping.street']`.
-
-## `dirtySinceLastSubmit`
+### `dirtySinceLastSubmit`
 
 ```ts
 boolean
 ```
 
 `true` if the form values are different from the values it was last submitted with. `false` otherwise. Comparison is done with shallow-equals.
+
+### `dirtyFieldsSinceLastSubmit`
+
+```ts
+{ [string]: boolean }
+```
+
+An object full of booleans, with a value of `true` for each field that has a different value from the one when the form was last submitted. _Pristine (since last submit) fields will not appear in this object_. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `dirtySinceLastSubmit` value for that field will be available under `dirty['addresses.shipping.street']`.
 
 ## `error`
 
@@ -111,15 +124,6 @@ boolean
 ```
 
 true if the form values have ever been changed since the last submission. false otherwise.
-
-## `pristine`
-
-```ts
-boolean
-```
-
-`true` if the form values are the same as the initial values. `false` otherwise.
-Comparison is done with shallow-equals.
 
 ## `submitError`
 
