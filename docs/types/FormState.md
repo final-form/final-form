@@ -4,13 +4,66 @@
 
 `FormState` is an object containing the following values. **Depending on your subscription when calling [`form.subscribe()`](FormApi#subscribe), some of the values may not be present.**
 
-## `active`
+
+## About fields
+### `active`
 
 ```ts
 string
 ```
 
 The name of the currently active field. `undefined` if none are active.
+
+### `visited`
+
+```ts
+{ [string]: boolean }
+```
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `visited` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `visited` value for that field will be available under `visited['addresses.shipping.street']`.
+
+### `touched`
+
+```ts
+{ [string]: boolean }
+```
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `touched` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `touched` value for that field will be available under `touched['addresses.shipping.street']`.
+
+## About values
+
+### `values`
+
+```ts
+FormValues
+```
+
+The current values of the form.
+
+### `initialValues`
+
+```ts
+FormValues
+```
+
+The values the form was initialized with. `undefined` if the form was never
+initialized.
+
+### `modified`
+
+```ts
+{ [string]: boolean }
+```
+
+An object full of booleans, with a boolean value for each field name denoting whether that field is `modified` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `modified` value for that field will be available under `modified['addresses.shipping.street']`.
+
+### `modifiedSinceLastSubmit`
+
+```ts
+boolean
+```
+
+true if the form values have ever been changed since the last submission. false otherwise.
 
 ## Properties about *dirtyness*
 
@@ -142,32 +195,9 @@ Object
 An object containing all the current submission errors. The shape will match the
 shape of the form's values.
 
-## `initialValues`
+## About submission
 
-```ts
-FormValues
-```
-
-The values the form was initialized with. `undefined` if the form was never
-initialized.
-
-## `modified`
-
-```ts
-{ [string]: boolean }
-```
-
-An object full of booleans, with a boolean value for each field name denoting whether that field is `modified` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `modified` value for that field will be available under `modified['addresses.shipping.street']`.
-
-## `modifiedSinceLastSubmit`
-
-```ts
-boolean
-```
-
-true if the form values have ever been changed since the last submission. false otherwise.
-
-## `submitFailed`
+### `submitFailed`
 
 ```ts
 boolean
@@ -176,7 +206,7 @@ boolean
 `true` if the form was submitted, but the submission failed with submission
 errors. `false` otherwise.
 
-## `submitSucceeded`
+### `submitSucceeded`
 
 ```ts
 boolean
@@ -184,7 +214,7 @@ boolean
 
 `true` if the form was successfully submitted. `false` otherwise.
 
-## `submitting`
+### `submitting`
 
 ```ts
 boolean
@@ -192,27 +222,3 @@ boolean
 
 `true` if the form is currently being submitted asynchronously. `false`
 otherwise.
-
-## `touched`
-
-```ts
-{ [string]: boolean }
-```
-
-An object full of booleans, with a boolean value for each field name denoting whether that field is `touched` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `touched` value for that field will be available under `touched['addresses.shipping.street']`.
-
-## `values`
-
-```ts
-FormValues
-```
-
-The current values of the form.
-
-## `visited`
-
-```ts
-{ [string]: boolean }
-```
-
-An object full of booleans, with a boolean value for each field name denoting whether that field is `visited` or not. Note that this is a flat object, so if your field name is `addresses.shipping.street`, the `visited` value for that field will be available under `visited['addresses.shipping.street']`.
