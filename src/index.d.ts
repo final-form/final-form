@@ -134,14 +134,15 @@ export type Subscribers<T extends Object> = {
 
 export type Unsubscribe = () => void;
 
-export type FieldValidator<FieldValue> = (
+export type FieldValidator<FieldValue, FormValues = Record<string, unknown>> = (
   value: FieldValue,
-  allValues?: object,
-  meta?: FieldState<FieldValue>
-) => any | Promise<any>
-export type GetFieldValidator<FieldValue> = () =>
-  | FieldValidator<FieldValue>
-  | undefined;
+  allValues?: FormValues,
+  meta?: FieldState<FieldValue>,
+) => any | Promise<any>;
+export type GetFieldValidator<
+  FieldValue,
+  FormValues = Record<string, unknown>,
+> = () => FieldValidator<FieldValue, FormValues> | undefined;
 
 export interface FieldConfig<FieldValue> {
   afterSubmit?: () => void;
