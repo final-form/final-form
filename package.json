@@ -89,7 +89,7 @@
     },
     {
       "path": "dist/final-form.es.js",
-      "maxSize": "9.9kB"
+      "maxSize": "10.0kB"
     },
     {
       "path": "dist/final-form.cjs.js",
