@@ -45,6 +45,7 @@ const stringToPath = (string) => {
 };
 
 const keysCache: { [string]: string[] } = {};
+const keysRegex = /[.[\]]+/;
 
 const toPath = (key: string): string[] => {
   if (key === null || key === undefined || !key.length) {
@@ -54,7 +55,26 @@ const toPath = (key: string): string[] => {
     throw new Error("toPath() expects a string");
   }
   if (keysCache[key] == null) {
-    keysCache[key] = stringToPath(key);
+    /**
+     * The following patch fixes issue 456, introduced since v4.20.3:
+     *
+     * Before v4.20.3, i.e. in v4.20.2, a `key` like 'choices[]' would map to ['choices']
+     * (e.g. an array of choices used where 'choices[]' is name attribute of an input of type checkbox).
+     *
+     * Since v4.20.3, a `key` like 'choices[]' would map to ['choices', ''] which is wrong and breaks
+     * this kind of inputs e.g. in React.
+     *
+     * v4.20.3 introduced an unwanted breaking change, this patch fixes it, see the issue at the link below.
+     *
+     * @see https://github.com/final-form/final-form/issues/456
+     */
+    if (key.endsWith("[]")) {
+      // v4.20.2 (a `key` like 'choices[]' should map to ['choices'], which is fine).
+      keysCache[key] = key.split(keysRegex).filter(Boolean);
+    } else {
+      // v4.20.3 (a `key` like 'choices[]' maps to ['choices', ''], which breaks applications relying on inputs like `<input type="checkbox" name="choices[]" />`).
+      keysCache[key] = stringToPath(key);
+    }
   }
   return keysCache[key];
 };

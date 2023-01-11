@@ -38,7 +38,13 @@ describe("structure.toPath", () => {
       "cow",
     ]);
   });
+
   it("should support string properties that are not valid JS identifiers", () => {
     expect(toPath('foo["bar.baz\\"["]')).toEqual(["foo", 'bar.baz"[']);
+  });
+
+  it("should be retrocompatible with v4.20.2 where key names like 'choices[]' and 'options[]' map to ['choices'] and ['options'] instead of ['choices', ''] and ['options', ''] as introduced by v4.20.3 (unwanted breaking change)", () => {
+    expect(toPath("choices[]")).toEqual(["choices"]);
+    expect(toPath("options[]")).toEqual(["options"]);
   });
 });
