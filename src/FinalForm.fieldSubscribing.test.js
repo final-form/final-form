@@ -44,6 +44,20 @@ describe("Field.subscribing", () => {
     expect(form.getRegisteredFields()).toEqual(["foo", "bar", "baz"]);
   });
 
+  it("should allow register and unregister", () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const config = { 
+      getValidator: () => () => Promise.resolve("err"),
+      silent: true, 
+    };
+    // register
+    const unsuscribe = form.registerField("foo", () => {}, {}, config);
+    // unsuscribe
+    unsuscribe();
+
+    expect(form.getRegisteredFields()).toEqual([]);
+  });
+
   it("should provide a access to field state", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     form.registerField("foo", () => {}, {});

@@ -867,7 +867,7 @@ function createForm<FormValues: FormValuesShape>(
       let haveValidator = false;
       const silent = fieldConfig && fieldConfig.silent;
       const notify = () => {
-        if (silent) {
+        if (silent && state.fields[name]) {
           notifyFieldListeners(name);
         } else {
           notifyFormListeners();
