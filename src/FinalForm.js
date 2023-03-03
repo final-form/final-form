@@ -479,6 +479,12 @@ function createForm<FormValues: FormValuesShape>(
       const afterPromise = () => {
         state.formState.validating--;
         callback();
+        // field async validation may affect formState validating
+        // so force notifyFormListeners if validating is still 0 after callback finished
+        // and lastFormState validating is true
+        if (state.formState.validating === 0 && state.lastFormState.validating) {
+          notifyFormListeners();
+        }
       };
 
       promise
