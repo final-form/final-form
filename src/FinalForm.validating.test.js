@@ -1612,4 +1612,41 @@ describe("Field.validation", () => {
     expect(twoArg.mock.calls[0][2]).toBeUndefined();
     expect(threeArg.mock.calls[0][2]).toEqual(meta);
   });
+
+  it("should notify form listener when one field async validator runs before unregister and ends after unregister, even other field registers silently", async () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    });
+    const formSub = jest.fn(() => {});
+    form.subscribe(formSub, {
+      validating: true,
+    });
+    expect(formSub).toHaveBeenCalledTimes(1);
+    const asyncFn = async () => {
+      return await sleep(100);
+    };
+    const syncFn = jest.fn(() => {});
+
+    const unregisterAsync = form.registerField(
+      "fieldWithAsyncValidator",
+      () => {},
+      { error: true },
+      { initialValue: "value", getValidator: () => asyncFn },
+    );
+    await sleep(20);
+    expect(formSub).toHaveBeenCalledTimes(2);
+    await sleep(130);
+    expect(formSub).toHaveBeenCalledTimes(3);
+    form.registerField(
+      "bar",
+      () => {},
+      { error: true },
+      { initialValue: "value", silent: true, getValidator: () => syncFn },
+    );
+    unregisterAsync();
+    await sleep(20);
+    expect(formSub).toHaveBeenCalledTimes(4);
+    await sleep(130);
+    expect(formSub).toHaveBeenCalledTimes(5);
+  });
 });
