@@ -34,6 +34,16 @@ boolean
 
 If `true`, the value of a field will be destroyed when that field is unregistered. Defaults to `false`. Can be useful when creating dynamic forms where only form values displayed need be submitted.
 
+## `ignoreUnregister`
+
+Optional.
+
+```ts
+boolean
+```
+
+If `true`, the value and state of a field will be preserved when that field is unregistered. Defaults to `false`. Can be useful when hiding part of the form, as an optimization. Mainly to be used by JS framework wrappers, such as `react-final-form`.
+
 ## `initialValues`
 
 ```ts

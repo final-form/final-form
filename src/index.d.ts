@@ -214,6 +214,7 @@ export interface FormApi<
   blur: (name: keyof FormValues) => void;
   change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void;
   destroyOnUnregister: boolean;
+  ignoreUnregister: boolean;
   focus: (name: keyof FormValues) => void;
   initialize: (
     data: InitialFormValues | ((values: FormValues) => InitialFormValues),
@@ -304,6 +305,7 @@ export interface Config<
 > {
   debug?: DebugFunction<FormValues, InitialFormValues>;
   destroyOnUnregister?: boolean;
+  ignoreUnregister?: boolean;
   initialValues?: InitialFormValues;
   keepDirtyOnReinitialize?: boolean;
   mutators?: { [key: string]: Mutator<FormValues, InitialFormValues> };

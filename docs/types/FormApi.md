@@ -44,6 +44,14 @@ boolean
 
 A read/write property to get and set the `destroyOnUnregister` config setting.
 
+## `ignoreUnregister`
+
+```ts
+boolean
+```
+
+A read/write property to get and set the `ignoreUnregister` config setting.
+
 ## `focus`
 
 ```ts

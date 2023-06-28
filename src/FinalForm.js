@@ -171,6 +171,7 @@ function createForm<FormValues: FormValuesShape>(
   let {
     debug,
     destroyOnUnregister,
+    ignoreUnregister,
     keepDirtyOnReinitialize,
     initialValues,
     mutators,
@@ -757,6 +758,13 @@ function createForm<FormValues: FormValuesShape>(
       destroyOnUnregister = value;
     },
 
+    get ignoreUnregister() {
+      return !!ignoreUnregister;
+    },
+    set ignoreUnregister(value: boolean) {
+      ignoreUnregister = value;
+    },
+
     focus: (name: string) => {
       const field = state.fields[name];
       if (field && !field.active) {
@@ -950,7 +958,7 @@ function createForm<FormValues: FormValuesShape>(
         let lastOne =
           hasFieldSubscribers &&
           !Object.keys(state.fieldSubscribers[name].entries).length;
-        if (lastOne) {
+        if (lastOne && !ignoreUnregister) {
           delete state.fieldSubscribers[name];
           delete state.fields[name];
           if (validatorRemoved) {
@@ -1057,6 +1065,9 @@ function createForm<FormValues: FormValuesShape>(
           break;
         case "destroyOnUnregister":
           destroyOnUnregister = value;
+          break;
+        case "ignoreUnregister":
+          ignoreUnregister = value;
           break;
         case "initialValues":
           api.initialize(value);
