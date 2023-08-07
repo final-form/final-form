@@ -96,6 +96,9 @@
       "maxSize": "10.6kB"
     }
   ],
+  "engines": {
+    "node": ">=8"
+  },
   "dependencies": {
     "@babel/runtime": "^7.10.0"
   }
