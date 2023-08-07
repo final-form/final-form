@@ -85,7 +85,7 @@
   "bundlesize": [
     {
       "path": "dist/final-form.umd.min.js",
-      "maxSize": "5.6kB"
+      "maxSize": "5.8kB"
     },
     {
       "path": "dist/final-form.es.js",
@@ -93,10 +93,11 @@
     },
     {
       "path": "dist/final-form.cjs.js",
-      "maxSize": "10.5kB"
+      "maxSize": "10.6kB"
     }
   ],
   "dependencies": {
-    "@babel/runtime": "^7.10.0"
+    "@babel/runtime": "^7.10.0",
+    "caniuse-lite": "^1.0.30001519"
   }
 }
