@@ -97,7 +97,6 @@
     }
   ],
   "dependencies": {
-    "@babel/runtime": "^7.10.0",
-    "caniuse-lite": "^1.0.30001519"
+    "@babel/runtime": "^7.10.0"
   }
 }
