@@ -90,7 +90,7 @@ console.log(
   formState.error as boolean,
 );
 console.log(formState.errors as AnyObject, formState.errors!.foo);
-console.log(formState.initialValues as AnyObject, formState.initialValues.foo);
+console.log(formState.initialValues as AnyObject, formState.initialValues!.foo);
 console.log(formState.invalid as boolean);
 console.log(formState.pristine as boolean);
 console.log(

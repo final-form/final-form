@@ -48,7 +48,7 @@ export interface FormState<
   errors: ValidationErrors;
   hasSubmitErrors: boolean;
   hasValidationErrors: boolean;
-  initialValues: InitialFormValues;
+  initialValues?: InitialFormValues;
   invalid: boolean;
   modified?: { [key: string]: boolean };
   modifiedSinceLastSubmit: boolean;
