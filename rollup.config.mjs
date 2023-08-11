@@ -1,10 +1,10 @@
-import babel from "rollup-plugin-babel";
-import json from "rollup-plugin-json";
+import babel from "@rollup/plugin-babel";
+import commonjs from "@rollup/plugin-commonjs";
+import terser from "@rollup/plugin-terser";
 import flow from "rollup-plugin-flow";
-import commonjs from "rollup-plugin-commonjs";
-import { uglify } from "rollup-plugin-uglify";
+import json from "rollup-plugin-json";
 import replace from "rollup-plugin-replace";
-import pkg from "./package.json";
+import pkg from "./package.json" assert { type: "json" };
 
 const makeExternalPredicate = (externalArr) => {
   if (externalArr.length === 0) {
@@ -47,6 +47,7 @@ export default {
     {
       name: "final-form",
       exports: "named",
+      globals: { "final-form": "FinalForm" },
     },
     output,
   ),
@@ -65,7 +66,7 @@ export default {
     babel({
       exclude: "node_modules/**",
       babelrc: false,
-      runtimeHelpers: true,
+      babelHelpers: "runtime",
       presets: [
         [
           "@babel/preset-env",
@@ -90,6 +91,6 @@ export default {
           ),
         })
       : null,
-    minify ? uglify() : null,
+    minify ? terser() : null,
   ].filter(Boolean),
 };
