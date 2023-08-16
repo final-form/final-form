@@ -1,6 +1,7 @@
 // @flow
 export default [
   "active",
+  "data",
   "dirty",
   "dirtyFields",
   "dirtyFieldsSinceLastSubmit",
