@@ -852,7 +852,6 @@ function createForm<FormValues: FormValuesShape>(
         afterSubmit: fieldConfig && fieldConfig.afterSubmit,
         beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
         data: (fieldConfig && fieldConfig.data) || {},
-        isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
         lastFieldState: undefined,
         modified: false,
         modifiedSinceLastSubmit: false,
@@ -869,6 +868,10 @@ function createForm<FormValues: FormValuesShape>(
       field.blur = field.blur || (() => api.blur(name));
       field.change = field.change || ((value) => api.change(name, value));
       field.focus = field.focus || (() => api.focus(name));
+      field.isEqual =
+        (fieldConfig && fieldConfig.isEqual) ||
+        (state.fields[name] && state.fields[name].isEqual) ||
+        tripleEquals;
       state.fields[name] = field;
       let haveValidator = false;
       const silent = fieldConfig && fieldConfig.silent;
