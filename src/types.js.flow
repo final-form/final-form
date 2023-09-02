@@ -204,6 +204,7 @@ export type InternalFormState<FormValues: FormValuesShape> = {
 export type ConfigKey =
   | "debug"
   | "destroyOnUnregister"
+  | "ignoreUnregister"
   | "initialValues"
   | "keepDirtyOnReinitialize"
   | "mutators"
@@ -216,6 +217,7 @@ export type FormApi<FormValues: FormValuesShape> = {
   blur: (name: string) => void,
   change: (name: string, value: ?any) => void,
   destroyOnUnregister: boolean,
+  ignoreUnregister: boolean,
   focus: (name: string) => void,
   initialize: (data: Object | ((values: Object) => Object)) => void,
   isValidationPaused: () => boolean,
@@ -286,6 +288,7 @@ export type Mutator<FormValues: FormValuesShape> = (
 export type Config<FormValues: FormValuesShape> = {
   debug?: DebugFunction<FormValues>,
   destroyOnUnregister?: boolean,
+  ignoreUnregister?: boolean,
   initialValues?: FormValues,
   keepDirtyOnReinitialize?: boolean,
   mutators?: { [string]: Mutator<FormValues> },

@@ -492,4 +492,98 @@ describe("FinalForm.setConfig", () => {
     expect(foz).toHaveBeenCalledTimes(2); // but field not notified
     expect(form.destroyOnUnregister).toBe(true);
   });
+
+  it('should update ignoreUnregister on setConfig("ignoreUnregister", value)', () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    });
+
+    const subscriber = jest.fn();
+    let unregister = form.registerField("foo", subscriber, { value: true });
+
+    // initial state
+    expect(form.getFieldState("foo").dirty).toBe(false);
+    expect(form.getFieldState("foo").touched).toBe(false);
+    expect(form.getFieldState("foo").modified).toBe(false);
+
+    // change value
+    form.change("foo", "bar");
+    form.blur("foo");
+
+    // state changed
+    expect(form.getFieldState("foo").dirty).toBe(true);
+    expect(form.getFieldState("foo").touched).toBe(true);
+    expect(form.getFieldState("foo").modified).toBe(true);
+
+    expect(form.ignoreUnregister).toBe(false);
+    form.setConfig("ignoreUnregister", true);
+
+    // unregister should remove state
+    unregister();
+
+    // field state is preserved
+    expect(form.getFieldState("foo")).not.toBe(undefined);
+    expect(form.getFieldState("foo").dirty).toBe(true);
+    expect(form.getFieldState("foo").touched).toBe(true);
+    expect(form.getFieldState("foo").modified).toBe(true);
+
+    // re-register the same field
+    unregister = form.registerField("foo", subscriber, { value: true });
+
+    // dirty state is preserved, because FF doesn't touch the value on unregister
+    expect(form.getFieldState("foo").dirty).toBe(true);
+
+    // however the other states are reset
+    expect(form.getFieldState("foo").touched).toBe(true);
+    expect(form.getFieldState("foo").modified).toBe(true);
+
+    expect(form.ignoreUnregister).toBe(true);
+  });
+
+  it("should update ignoreUnregister on ignoreUnregister setter", () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    });
+
+    const subscriber = jest.fn();
+    let unregister = form.registerField("foo", subscriber, { value: true });
+
+    // initial state
+    expect(form.getFieldState("foo").dirty).toBe(false);
+    expect(form.getFieldState("foo").touched).toBe(false);
+    expect(form.getFieldState("foo").modified).toBe(false);
+
+    // change value
+    form.change("foo", "bar");
+    form.blur("foo");
+
+    // state changed
+    expect(form.getFieldState("foo").dirty).toBe(true);
+    expect(form.getFieldState("foo").touched).toBe(true);
+    expect(form.getFieldState("foo").modified).toBe(true);
+
+    expect(form.ignoreUnregister).toBe(false);
+    form.ignoreUnregister = true;
+
+    // unregister should remove state
+    unregister();
+
+    // field state is preserved
+    expect(form.getFieldState("foo")).not.toBe(undefined);
+    expect(form.getFieldState("foo").dirty).toBe(true);
+    expect(form.getFieldState("foo").touched).toBe(true);
+    expect(form.getFieldState("foo").modified).toBe(true);
+
+    // re-register the same field
+    unregister = form.registerField("foo", subscriber, { value: true });
+
+    // dirty state is preserved, because FF doesn't touch the value on unregister
+    expect(form.getFieldState("foo").dirty).toBe(true);
+
+    // however the other states are reset
+    expect(form.getFieldState("foo").touched).toBe(true);
+    expect(form.getFieldState("foo").modified).toBe(true);
+
+    expect(form.ignoreUnregister).toBe(true);
+  });
 });
