@@ -235,7 +235,7 @@ export interface FormApi<
     name: K,
     value: Config<FormValues>[K],
   ) => void;
-  submit: () => Promise<FormValues | undefined> | undefined;
+  submit: () => Promise<SubmissionErrors | undefined> | undefined;
   subscribe: (
     subscriber: FormSubscriber<FormValues>,
     subscription: FormSubscription,
