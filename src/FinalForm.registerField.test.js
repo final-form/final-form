@@ -38,4 +38,17 @@ describe("FinalForm.registerField", () => {
     expect(typeof spy.mock.calls[0][0].focus).toBe("function");
     expect(typeof spy.mock.calls[0][0].change).toBe("function");
   });
+
+  it("should handle non-prototype fields correctly", () => {
+    const submitSpy = jest.fn();
+    const changeSpy = jest.fn();
+
+    const form = createForm({ onSubmit: submitSpy });
+    form.registerField("constructor", changeSpy);
+
+    expect(changeSpy).toHaveBeenCalledTimes(1);
+    form.change("constructor", "bar");
+    form.submit();
+    expect(submitSpy).toHaveBeenCalledTimes(1);
+  });
 });

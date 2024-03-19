@@ -184,8 +184,8 @@ function createForm<FormValues: FormValuesShape>(
 
   const state: InternalState<FormValues> = {
     subscribers: { index: 0, entries: {} },
-    fieldSubscribers: {},
-    fields: {},
+    fieldSubscribers: Object.create(null),
+    fields: Object.create(null),
     formState: {
       asyncErrors: {},
       dirtySinceLastSubmit: false,
