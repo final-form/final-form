@@ -1,22 +1,20 @@
-// @flow
-
 const charCodeOfDot = ".".charCodeAt(0);
 const reEscapeChar = /\\(\\)?/g;
 const rePropName = RegExp(
   // Match anything that isn't a dot or bracket.
   "[^.[\\]]+" +
-    "|" +
-    // Or match property names within brackets.
-    "\\[(?:" +
-    // Match a non-string expression.
-    "([^\"'][^[]*)" +
-    "|" +
-    // Or match strings (supports escaping characters).
-    "([\"'])((?:(?!\\2)[^\\\\]|\\\\.)*?)\\2" +
-    ")\\]" +
-    "|" +
-    // Or match "" as the space between consecutive dots or empty brackets.
-    "(?=(?:\\.|\\[\\])(?:\\.|\\[\\]|$))",
+  "|" +
+  // Or match property names within brackets.
+  "\\[(?:" +
+  // Match a non-string expression.
+  "([^\"'][^[]*)" +
+  "|" +
+  // Or match strings (supports escaping characters).
+  "([\"'])((?:(?!\\2)[^\\\\]|\\\\.)*?)\\2" +
+  ")\\]" +
+  "|" +
+  // Or match "" as the space between consecutive dots or empty brackets.
+  "(?=(?:\\.|\\[\\])(?:\\.|\\[\\]|$))",
   "g",
 );
 
@@ -27,12 +25,12 @@ const rePropName = RegExp(
  * @param {string} string The string to convert.
  * @returns {Array} Returns the property path array.
  */
-const stringToPath = (string) => {
-  const result = [];
+const stringToPath = (string: string): string[] => {
+  const result: string[] = [];
   if (string.charCodeAt(0) === charCodeOfDot) {
     result.push("");
   }
-  string.replace(rePropName, (match, expression, quote, subString) => {
+  string.replace(rePropName, (match: string, expression: string, quote: string, subString: string): string => {
     let key = match;
     if (quote) {
       key = subString.replace(reEscapeChar, "$1");
@@ -40,11 +38,12 @@ const stringToPath = (string) => {
       key = expression.trim();
     }
     result.push(key);
+    return "";
   });
   return result;
 };
 
-const keysCache: { [string]: string[] } = {};
+const keysCache: { [key: string]: string[] } = {};
 const keysRegex = /[.[\]]+/;
 
 const toPath = (key: string): string[] => {
@@ -79,4 +78,4 @@ const toPath = (key: string): string[] => {
   return keysCache[key];
 };
 
-export default toPath;
+export default toPath; 

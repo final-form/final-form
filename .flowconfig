@@ -1,9 +1,0 @@
-[ignore]
-dist/.*
-
-[include]
-
-[libs]
-
-[options]
-esproposal.decorators=ignore

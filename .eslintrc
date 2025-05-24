@@ -1,12 +1,27 @@
 {
   "extends": "react-app",
+  "parser": "@typescript-eslint/parser",
   "rules": {
     "jsx-a11y/href-no-hash": 0,
-    "import/no-anonymous-default-export": 0
+    "import/no-anonymous-default-export": 0,
   },
   "settings": {
     "react": {
-      "version": "999.999.999"
-    }
-  }
+      "version": "999.999.999",
+    },
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.test.tsx"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+  ],
 }

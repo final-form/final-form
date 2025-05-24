@@ -26,7 +26,6 @@ module.exports = {
           "build.cjs",
           "build.umd.main",
           "build.umd.min",
-          "copyTypes",
         ),
       ),
       es: {
@@ -57,21 +56,11 @@ module.exports = {
       description: "Runs prettier on everything",
       script: 'prettier --write "**/*.([jt]s*)"',
     },
-    copyTypes: series(
-      npsUtils.copy("src/*.js.flow src/*.d.ts dist"),
-      npsUtils.copy(
-        'dist/index.js.flow dist --rename="final-form.cjs.js.flow"',
-      ),
-      npsUtils.copy('dist/index.js.flow dist --rename="final-form.es.js.flow"'),
-    ),
     lint: {
       description: "lint the entire project",
       script: "eslint .",
     },
-    flow: {
-      description: "flow check the entire project",
-      script: "flow check",
-    },
+
     typescript: {
       description: "typescript check the entire project",
       script: "tsc",
@@ -79,13 +68,7 @@ module.exports = {
     validate: {
       description:
         "This runs several scripts to make sure things look good before committing or on clean install",
-      default: concurrent.nps(
-        "lint",
-        // "flow",
-        "typescript",
-        "build.andTest",
-        "test",
-      ),
+      default: concurrent.nps("lint", "typescript", "build.andTest", "test"),
     },
   },
   options: {

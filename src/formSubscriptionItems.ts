@@ -1,4 +1,3 @@
-// @flow
 export default [
   "active",
   "dirty",
@@ -24,4 +23,4 @@ export default [
   "validating",
   "values",
   "visited",
-];
+] as const; 

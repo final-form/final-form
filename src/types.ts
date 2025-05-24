@@ -1,13 +1,15 @@
 export type Subscription = { [key: string]: boolean };
 export type Subscriber<V> = (value: V) => void;
 export type IsEqual = (a: any, b: any) => boolean;
+
 export interface AnyObject {
   [key: string]: any;
 }
+
 export type ValidationErrors = AnyObject | undefined;
 export type SubmissionErrors = AnyObject | undefined;
 
-export interface FormSubscription {
+export interface FormSubscription extends Subscription {
   active?: boolean;
   dirty?: boolean;
   dirtyFields?: boolean;
@@ -35,42 +37,41 @@ export interface FormSubscription {
 }
 
 export interface FormState<
-  FormValues,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > {
-  // by default: all values are subscribed. if subscription is specified, some values may be undefined
-  active: undefined | keyof FormValues;
-  dirty: boolean;
-  dirtyFields: { [key: string]: boolean };
-  dirtyFieldsSinceLastSubmit: { [key: string]: boolean };
-  dirtySinceLastSubmit: boolean;
-  error: any;
-  errors: ValidationErrors;
-  hasSubmitErrors: boolean;
-  hasValidationErrors: boolean;
-  initialValues: InitialFormValues;
-  invalid: boolean;
+  active?: undefined | keyof FormValues;
+  dirty?: boolean;
+  dirtyFields?: { [key: string]: boolean };
+  dirtyFieldsSinceLastSubmit?: { [key: string]: boolean };
+  dirtySinceLastSubmit?: boolean;
+  error?: any;
+  errors?: ValidationErrors;
+  hasSubmitErrors?: boolean;
+  hasValidationErrors?: boolean;
+  initialValues?: InitialFormValues;
+  invalid?: boolean;
   modified?: { [key: string]: boolean };
-  modifiedSinceLastSubmit: boolean;
-  pristine: boolean;
-  submitError: any;
-  submitErrors: SubmissionErrors;
-  submitFailed: boolean;
-  submitSucceeded: boolean;
-  submitting: boolean;
+  modifiedSinceLastSubmit?: boolean;
+  pristine?: boolean;
+  submitError?: any;
+  submitErrors?: SubmissionErrors;
+  submitFailed?: boolean;
+  submitSucceeded?: boolean;
+  submitting?: boolean;
   touched?: { [key: string]: boolean };
-  valid: boolean;
-  validating: boolean;
-  values: FormValues;
+  valid?: boolean;
+  validating?: boolean;
+  values?: FormValues;
   visited?: { [key: string]: boolean };
 }
 
 export type FormSubscriber<
-  FormValues,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > = Subscriber<FormState<FormValues, InitialFormValues>>;
 
-export interface FieldState<FieldValue> {
+export interface FieldState<FieldValue = any> {
   active?: boolean;
   blur: () => void;
   change: (value: FieldValue | undefined) => void;
@@ -120,7 +121,8 @@ export interface FieldSubscription {
   visited?: boolean;
 }
 
-export type FieldSubscriber<FieldValue> = Subscriber<FieldState<FieldValue>>;
+export type FieldSubscriber<FieldValue = any> = Subscriber<FieldState<FieldValue>>;
+
 export type Subscribers<T extends Object> = {
   index: number;
   entries: {
@@ -134,16 +136,15 @@ export type Subscribers<T extends Object> = {
 
 export type Unsubscribe = () => void;
 
-export type FieldValidator<FieldValue> = (
+export type FieldValidator<FieldValue = any> = (
   value: FieldValue,
   allValues: object,
   meta?: FieldState<FieldValue>
-) => any | Promise<any>
-export type GetFieldValidator<FieldValue> = () =>
-  | FieldValidator<FieldValue>
-  | undefined;
+) => any | Promise<any>;
 
-export interface FieldConfig<FieldValue> {
+export type GetFieldValidator<FieldValue = any> = () => FieldValidator<FieldValue> | undefined;
+
+export interface FieldConfig<FieldValue = any> {
   afterSubmit?: () => void;
   beforeSubmit?: () => void | false;
   data?: any;
@@ -155,15 +156,17 @@ export interface FieldConfig<FieldValue> {
   validateFields?: string[];
 }
 
-export type RegisterField<FormValues> = <F extends keyof FormValues>(
+export type RegisterField<FormValues = Record<string, any>> = <F extends keyof FormValues>(
   name: F,
   subscriber: FieldSubscriber<FormValues[F]>,
   subscription: FieldSubscription,
-  config?: FieldConfig<FormValues[F]>,
+  config?: FieldConfig<FormValues[F]>
 ) => Unsubscribe;
 
-export interface InternalFieldState<FieldValue> {
+export interface InternalFieldState<FieldValue = any> {
   active: boolean;
+  afterSubmit?: () => void;
+  beforeSubmit?: () => void | false;
   blur: () => void;
   change: (value: any) => void;
   data: AnyObject;
@@ -184,31 +187,40 @@ export interface InternalFieldState<FieldValue> {
   visited: boolean;
 }
 
-export interface InternalFormState {
+export interface InternalFormState<FormValues = Record<string, any>> {
   active?: string;
+  asyncErrors: AnyObject;
   dirtySinceLastSubmit: boolean;
   modifiedSinceLastSubmit: boolean;
   error?: any;
   errors: ValidationErrors;
-  initialValues?: object;
-  lastSubmittedValues?: object;
+  initialValues?: AnyObject;
+  lastSubmittedValues?: AnyObject;
   pristine: boolean;
   resetWhileSubmitting: boolean;
   submitError?: any;
-  submitErrors?: object;
+  submitErrors?: AnyObject;
   submitFailed: boolean;
   submitSucceeded: boolean;
   submitting: boolean;
   valid: boolean;
   validating: number;
-  values: object;
+  values: FormValues;
 }
 
-type ConfigKey = keyof Config;
+export type ConfigKey =
+  | "debug"
+  | "destroyOnUnregister"
+  | "initialValues"
+  | "keepDirtyOnReinitialize"
+  | "mutators"
+  | "onSubmit"
+  | "validate"
+  | "validateOnBlur";
 
 export interface FormApi<
   FormValues = Record<string, any>,
-  InitialFormValues = Partial<FormValues>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > {
   batch: (fn: () => void) => void;
   blur: (name: keyof FormValues) => void;
@@ -216,11 +228,11 @@ export interface FormApi<
   destroyOnUnregister: boolean;
   focus: (name: keyof FormValues) => void;
   initialize: (
-    data: InitialFormValues | ((values: FormValues) => InitialFormValues),
+    data: InitialFormValues | ((values: FormValues) => InitialFormValues)
   ) => void;
   isValidationPaused: () => boolean;
   getFieldState: <F extends keyof FormValues>(
-    field: F,
+    field: F
   ) => FieldState<FormValues[F]> | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
@@ -233,54 +245,60 @@ export interface FormApi<
   resumeValidation: () => void;
   setConfig: <K extends ConfigKey>(
     name: K,
-    value: Config<FormValues>[K],
+    value: Config<FormValues, InitialFormValues>[K]
   ) => void;
   submit: () => Promise<FormValues | undefined> | undefined;
   subscribe: (
-    subscriber: FormSubscriber<FormValues>,
-    subscription: FormSubscription,
+    subscriber: FormSubscriber<FormValues, InitialFormValues>,
+    subscription: FormSubscription
   ) => Unsubscribe;
 }
 
 export type DebugFunction<
-  FormValues,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > = (
   state: FormState<FormValues, InitialFormValues>,
-  fieldStates: { [key: string]: FieldState<any> },
+  fieldStates: { [key: string]: FieldState<any> }
 ) => void;
 
 export interface MutableState<
-  FormValues,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > {
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
   fields: {
     [key: string]: InternalFieldState<any>;
   };
-  formState: InternalFormState;
+  formState: InternalFormState<FormValues>;
   lastFormState?: FormState<FormValues, InitialFormValues>;
 }
 
 export type GetIn = (state: object, complexKey: string) => any;
-export type SetIn = (state: object, key: string, value: any) => object;
+export type SetIn = (state: object, key: string, value: any, destroyArrays?: boolean) => object;
+
 export type ChangeValue<
-  FormValues = object,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > = (
   state: MutableState<FormValues, InitialFormValues>,
   name: string,
-  mutate: (value: any) => any,
+  mutate: (value: any) => any
 ) => void;
+
 export type RenameField<
-  FormValues = object,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > = (
   state: MutableState<FormValues, InitialFormValues>,
   from: string,
-  to: string,
+  to: string
 ) => void;
-export interface Tools<FormValues, InitialFormValues = Partial<FormValues>> {
+
+export interface Tools<
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+> {
   changeValue: ChangeValue<FormValues, InitialFormValues>;
   getIn: GetIn;
   renameField: RenameField<FormValues, InitialFormValues>;
@@ -290,17 +308,17 @@ export interface Tools<FormValues, InitialFormValues = Partial<FormValues>> {
 }
 
 export type Mutator<
-  FormValues = object,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > = (
-  args: any,
+  args: any[],
   state: MutableState<FormValues, InitialFormValues>,
-  tools: Tools<FormValues, InitialFormValues>,
+  tools: Tools<FormValues, InitialFormValues>
 ) => any;
 
 export interface Config<
-  FormValues = object,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > {
   debug?: DebugFunction<FormValues, InitialFormValues>;
   destroyOnUnregister?: boolean;
@@ -310,27 +328,22 @@ export interface Config<
   onSubmit: (
     values: FormValues,
     form: FormApi<FormValues, InitialFormValues>,
-    callback?: (errors?: SubmissionErrors) => void,
+    callback?: (errors?: SubmissionErrors) => void
   ) => SubmissionErrors | Promise<SubmissionErrors> | void;
   validate?: (
-    values: FormValues,
+    values: FormValues
   ) => ValidationErrors | Promise<ValidationErrors>;
   validateOnBlur?: boolean;
 }
 
 export type Decorator<
-  FormValues = object,
-  InitialFormValues = Partial<FormValues>,
+  FormValues = Record<string, any>,
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > = (form: FormApi<FormValues, InitialFormValues>) => Unsubscribe;
 
-export function createForm<FormValues, InitialFormValues = Partial<FormValues>>(
-  config: Config<FormValues>,
-): FormApi<FormValues, InitialFormValues>;
-export const fieldSubscriptionItems: string[];
-export const formSubscriptionItems: string[];
-export const ARRAY_ERROR: "FINAL_FORM/array-error";
-export const FORM_ERROR: "FINAL_FORM/form-error";
-export function getIn(state: object, complexKey: string): any;
-export function setIn(state: object, key: string, value: any): object;
-export const version: string;
-export const configOptions: ConfigKey[];
+export type StateFilter<T> = (
+  state: T,
+  previousState: T | undefined,
+  subscription: Subscription,
+  force: boolean
+) => T | undefined; 

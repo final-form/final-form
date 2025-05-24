@@ -1,7 +1,7 @@
 import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import terser from "@rollup/plugin-terser";
-import flow from "rollup-plugin-flow";
+import typescript from "@rollup/plugin-typescript";
 import json from "rollup-plugin-json";
 import replace from "rollup-plugin-replace";
 import { createRequire } from "module";
@@ -44,7 +44,7 @@ if (es) {
 }
 
 export default {
-  input: "src/index.js",
+  input: "src/index.ts",
   output: Object.assign(
     {
       name: "final-form",
@@ -63,12 +63,18 @@ export default {
   ),
   plugins: [
     json(),
-    flow(),
+    typescript({
+      tsconfig: "./tsconfig.json",
+      declaration: es,
+      declarationDir: es ? "./dist" : undefined,
+      noEmitOnError: true,
+    }),
     commonjs({ include: "node_modules/**" }),
     babel({
       exclude: "node_modules/**",
       babelrc: false,
       babelHelpers: "runtime",
+      extensions: [".ts", ".js"],
       presets: [
         [
           "@babel/preset-env",
@@ -77,11 +83,9 @@ export default {
             loose: true,
           },
         ],
-        "@babel/preset-flow",
       ],
       plugins: [
         ["@babel/plugin-transform-runtime", { useESModules: !cjs }],
-        "@babel/plugin-transform-flow-strip-types",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-syntax-import-meta",
       ],

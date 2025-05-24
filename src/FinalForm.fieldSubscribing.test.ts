@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values, callback) => { };
 
 describe("Field.subscribing", () => {
   const prepareFieldSubscribers = (
@@ -38,20 +38,20 @@ describe("Field.subscribing", () => {
 
   it("should provide a list of registered fields", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    form.registerField("foo", () => {}, {});
-    form.registerField("bar", () => {}, {});
-    form.registerField("baz", () => {}, {});
+    form.registerField("foo", () => { }, {});
+    form.registerField("bar", () => { }, {});
+    form.registerField("baz", () => { }, {});
     expect(form.getRegisteredFields()).toEqual(["foo", "bar", "baz"]);
   });
 
   it("should allow register and unregister", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    const config = { 
+    const config = {
       getValidator: () => () => Promise.resolve("err"),
-      silent: true, 
+      silent: true,
     };
     // register
-    const unsuscribe = form.registerField("foo", () => {}, {}, config);
+    const unsuscribe = form.registerField("foo", () => { }, {}, config);
     // unsuscribe
     unsuscribe();
 
@@ -60,9 +60,9 @@ describe("Field.subscribing", () => {
 
   it("should provide a access to field state", () => {
     const form = createForm({ onSubmit: onSubmitMock });
-    form.registerField("foo", () => {}, {});
-    form.registerField("bar", () => {}, {});
-    form.registerField("baz", () => {}, {});
+    form.registerField("foo", () => { }, {});
+    form.registerField("bar", () => { }, {});
+    form.registerField("baz", () => { }, {});
     expect(form.getFieldState("foo")).toBeDefined();
     expect(form.getFieldState("foo").name).toBe("foo");
     expect(form.getFieldState("notafield")).toBeUndefined();
