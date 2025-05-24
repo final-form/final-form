@@ -8,16 +8,14 @@ const crossEnv = npsUtils.crossEnv;
 module.exports = {
   scripts: {
     test: {
-      default: crossEnv("NODE_ENV=test NODE_OPTIONS=--unhandled-rejections=strict jest --coverage"),
+      default: crossEnv(
+        "NODE_ENV=test NODE_OPTIONS=--unhandled-rejections=strict jest --coverage",
+      ),
       update: crossEnv("NODE_ENV=test jest --coverage --updateSnapshot"),
       watch: crossEnv("NODE_ENV=test jest --watch"),
       codeCov: crossEnv(
         "cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js",
       ),
-      size: {
-        description: "check the size of the bundle",
-        script: "bundlesize",
-      },
     },
     build: {
       description: "delete the dist directory and run all builds",
@@ -49,7 +47,7 @@ module.exports = {
           script: "rollup --config --sourcemap --environment FORMAT:umd",
         },
       },
-      andTest: series.nps("build", "test.size"),
+      andTest: series.nps("build"),
     },
     docs: {
       description: "Generates table of contents in README",

@@ -4,7 +4,9 @@ import terser from "@rollup/plugin-terser";
 import flow from "rollup-plugin-flow";
 import json from "rollup-plugin-json";
 import replace from "rollup-plugin-replace";
-import pkg from "./package.json" assert { type: "json" };
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pkg = require("./package.json");
 
 const makeExternalPredicate = (externalArr) => {
   if (externalArr.length === 0) {
