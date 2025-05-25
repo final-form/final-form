@@ -255,6 +255,43 @@ export interface FormApi<
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
     subscription: FormSubscription
   ) => Unsubscribe;
+  /**
+   * Subscribes to the state of a specific field in the form.
+   * @param name - The name of the field to subscribe to.
+   * @param onChange - A callback function that is called whenever the field state changes.
+   * @param subscription - An object specifying which parts of the field state to subscribe to.
+   * @returns A function to unsubscribe from the field state updates.
+   */
+  subscribeFieldState: <F extends keyof FormValues>(
+    name: F,
+    onChange: () => void,
+    subscription: FieldSubscription
+  ) => Unsubscribe;
+
+  /**
+   * Retrieves a snapshot of the current state of a specific field.
+   * @param name - The name of the field to retrieve the state for.
+   * @returns The current state of the field, or undefined if the field is not registered.
+   */
+  getFieldSnapshot: <F extends keyof FormValues>(
+    name: F
+  ) => FieldState<FormValues[F]> | undefined;
+
+  /**
+   * Subscribes to the state of the entire form.
+   * @param onChange - A callback function that is called whenever the form state changes.
+   * @param subscription - An object specifying which parts of the form state to subscribe to.
+   * @returns A function to unsubscribe from the form state updates.
+   */
+  subscribeFormState: (
+    onChange: () => void,
+    subscription: FormSubscription
+  ) => Unsubscribe;
+  /**
+   * Retrieves a snapshot of the current state of the form.
+   * @returns The current state of the form, represented by `FormState<FormValues, InitialFormValues>`.
+   */
+  getFormSnapshot: () => FormState<FormValues, InitialFormValues>;
 }
 
 export type DebugFunction<
