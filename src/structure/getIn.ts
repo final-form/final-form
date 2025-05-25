@@ -1,8 +1,7 @@
-// @flow
 import toPath from "./toPath";
 import type { GetIn } from "../types";
 
-const getIn: GetIn = (state: Object, complexKey: string): any => {
+const getIn: GetIn = (state: object, complexKey: string): any => {
   // Intentionally using iteration rather than recursion
   const path = toPath(complexKey);
   let current: any = state;
@@ -12,7 +11,7 @@ const getIn: GetIn = (state: Object, complexKey: string): any => {
       current === undefined ||
       current === null ||
       typeof current !== "object" ||
-      (Array.isArray(current) && isNaN(key))
+      (Array.isArray(current) && isNaN(Number(key)))
     ) {
       return undefined;
     }
@@ -21,4 +20,4 @@ const getIn: GetIn = (state: Object, complexKey: string): any => {
   return current;
 };
 
-export default getIn;
+export default getIn; 

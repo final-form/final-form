@@ -1,8 +1,27 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "noEmit": true,
-    "strict": true
+    "strict": false,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "ES2018",
+    "module": "ESNext",
+    "lib": ["ES2018"],
+    "sourceMap": true
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": [
+    "./src/**/*.test.ts",
+    "./src/**/*.test.js",
+    "node_modules",
+    "dist"
+  ]
 }

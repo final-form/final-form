@@ -1,15 +1,14 @@
-// @flow
 import toPath from "./toPath";
 import type { SetIn } from "../types";
 
-type State = Object | Array<*> | void;
+type State = object | any[] | undefined;
 
 const setInRecursor = (
   current: State,
   index: number,
   path: string[],
   value: any,
-  destroyArrays: boolean,
+  destroyArrays: boolean
 ): State => {
   if (index >= path.length) {
     // end of recursion
@@ -18,7 +17,7 @@ const setInRecursor = (
   const key = path[index];
 
   // determine type of key
-  if (isNaN(key)) {
+  if (isNaN(Number(key))) {
     // object set
     if (current === undefined || current === null) {
       // recurse
@@ -27,7 +26,7 @@ const setInRecursor = (
         index + 1,
         path,
         value,
-        destroyArrays,
+        destroyArrays
       );
 
       // delete or create an object
@@ -38,33 +37,33 @@ const setInRecursor = (
     }
     // current exists, so make a copy of all its values, and add/update the new one
     const result = setInRecursor(
-      current[key],
+      (current as any)[key],
       index + 1,
       path,
       value,
-      destroyArrays,
+      destroyArrays
     );
     if (result === undefined) {
       const numKeys = Object.keys(current).length;
-      if (current[key] === undefined && numKeys === 0) {
+      if ((current as any)[key] === undefined && numKeys === 0) {
         // object was already empty
         return undefined;
       }
-      if (current[key] !== undefined && numKeys <= 1) {
+      if ((current as any)[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
-        if (!isNaN(path[index - 1]) && !destroyArrays) {
+        if (!isNaN(Number(path[index - 1])) && !destroyArrays) {
           // we are in an array, so return an empty object
           return {};
         } else {
           return undefined;
         }
       }
-      const { [key]: _removed, ...final } = current;
+      const { [key]: _removed, ...final } = current as any;
       return final;
     }
     // set result in key
     return {
-      ...current,
+      ...(current as any),
       [key]: result,
     };
   }
@@ -77,7 +76,7 @@ const setInRecursor = (
       index + 1,
       path,
       value,
-      destroyArrays,
+      destroyArrays
     );
 
     // if nothing returned, delete it
@@ -86,9 +85,9 @@ const setInRecursor = (
     }
 
     // create an array
-    const array = [];
+    const array: any[] = [];
     array[numericKey] = result;
-    return (array: Array<*>);
+    return array;
   }
   if (!Array.isArray(current)) {
     throw new Error("Cannot set a numeric property on an object");
@@ -100,7 +99,7 @@ const setInRecursor = (
     index + 1,
     path,
     value,
-    destroyArrays,
+    destroyArrays
   );
 
   // current exists, so make a copy of all its values, and add/update the new one
@@ -117,11 +116,11 @@ const setInRecursor = (
 };
 
 const setIn: SetIn = (
-  state: Object,
+  state: object,
   key: string,
   value: any,
-  destroyArrays?: boolean = false,
-): Object => {
+  destroyArrays: boolean = false
+): object => {
   if (state === undefined || state === null) {
     throw new Error(`Cannot call setIn() with ${String(state)} state`);
   }
@@ -130,13 +129,13 @@ const setIn: SetIn = (
   }
   // Recursive function needs to accept and return State, but public API should
   // only deal with Objects
-  return ((setInRecursor(
+  return setInRecursor(
     state,
     0,
     toPath(key),
     value,
-    destroyArrays,
-  ): any): Object);
+    destroyArrays
+  ) as object;
 };
 
-export default setIn;
+export default setIn; 

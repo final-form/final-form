@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values, callback) => {};
+const onSubmitMock = (values, callback) => { };
 
 describe("FinalForm.batching", () => {
   it("should not call form or field listeners during batch update", () => {

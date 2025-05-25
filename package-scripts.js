@@ -8,16 +8,14 @@ const crossEnv = npsUtils.crossEnv;
 module.exports = {
   scripts: {
     test: {
-      default: crossEnv("NODE_ENV=test NODE_OPTIONS=--unhandled-rejections=strict jest --coverage"),
+      default: crossEnv(
+        "NODE_ENV=test NODE_OPTIONS=--unhandled-rejections=strict jest --coverage",
+      ),
       update: crossEnv("NODE_ENV=test jest --coverage --updateSnapshot"),
       watch: crossEnv("NODE_ENV=test jest --watch"),
       codeCov: crossEnv(
         "cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js",
       ),
-      size: {
-        description: "check the size of the bundle",
-        script: "bundlesize",
-      },
     },
     build: {
       description: "delete the dist directory and run all builds",
@@ -28,7 +26,6 @@ module.exports = {
           "build.cjs",
           "build.umd.main",
           "build.umd.min",
-          "copyTypes",
         ),
       ),
       es: {
@@ -49,7 +46,7 @@ module.exports = {
           script: "rollup --config --sourcemap --environment FORMAT:umd",
         },
       },
-      andTest: series.nps("build", "test.size"),
+      andTest: series.nps("build"),
     },
     docs: {
       description: "Generates table of contents in README",
@@ -59,21 +56,11 @@ module.exports = {
       description: "Runs prettier on everything",
       script: 'prettier --write "**/*.([jt]s*)"',
     },
-    copyTypes: series(
-      npsUtils.copy("src/*.js.flow src/*.d.ts dist"),
-      npsUtils.copy(
-        'dist/index.js.flow dist --rename="final-form.cjs.js.flow"',
-      ),
-      npsUtils.copy('dist/index.js.flow dist --rename="final-form.es.js.flow"'),
-    ),
     lint: {
       description: "lint the entire project",
       script: "eslint .",
     },
-    flow: {
-      description: "flow check the entire project",
-      script: "flow check",
-    },
+
     typescript: {
       description: "typescript check the entire project",
       script: "tsc",
@@ -81,13 +68,7 @@ module.exports = {
     validate: {
       description:
         "This runs several scripts to make sure things look good before committing or on clean install",
-      default: concurrent.nps(
-        "lint",
-        // "flow",
-        "typescript",
-        "build.andTest",
-        "test",
-      ),
+      default: concurrent.nps("lint", "typescript", "build.andTest", "test"),
     },
   },
   options: {

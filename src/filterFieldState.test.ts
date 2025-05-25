@@ -1,5 +1,5 @@
 import filterFieldState from "./filterFieldState";
-import createForm from "./FinalForm.js";
+import createForm from "./FinalForm";
 
 describe("filterFieldState", () => {
   const name = "foo";
@@ -93,9 +93,9 @@ describe("restart", () => {
     const fieldName = "fooField";
 
     const form = createForm({
-      onSubmit: () => {},
+      onSubmit: () => { },
     });
-    form.registerField(fieldName, () => {});
+    form.registerField(fieldName, () => { });
 
     function isTouched() {
       return form.getState().touched[fieldName];

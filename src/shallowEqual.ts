@@ -1,4 +1,3 @@
-// @flow
 import type { IsEqual } from "./types";
 
 const shallowEqual: IsEqual = (a: any, b: any): boolean => {
@@ -8,14 +7,14 @@ const shallowEqual: IsEqual = (a: any, b: any): boolean => {
   if (typeof a !== "object" || !a || typeof b !== "object" || !b) {
     return false;
   }
-  var keysA = Object.keys(a);
-  var keysB = Object.keys(b);
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
   if (keysA.length !== keysB.length) {
     return false;
   }
-  var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(b);
-  for (var idx = 0; idx < keysA.length; idx++) {
-    var key = keysA[idx];
+  const bHasOwnProperty = Object.prototype.hasOwnProperty.bind(b);
+  for (let idx = 0; idx < keysA.length; idx++) {
+    const key = keysA[idx];
     if (!bHasOwnProperty(key) || a[key] !== b[key]) {
       return false;
     }
@@ -23,4 +22,4 @@ const shallowEqual: IsEqual = (a: any, b: any): boolean => {
   return true;
 };
 
-export default shallowEqual;
+export default shallowEqual; 
