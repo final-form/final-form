@@ -1,4 +1,4 @@
-export type Subscription = { [key: string]: boolean };
+export type Subscription = { [key: string]: boolean | undefined };
 export type Subscriber<V> = (value: V) => void;
 export type IsEqual = (a: any, b: any) => boolean;
 
