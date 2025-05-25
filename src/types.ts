@@ -287,6 +287,10 @@ export interface FormApi<
     onChange: () => void,
     subscription: FormSubscription
   ) => Unsubscribe;
+  /**
+   * Retrieves a snapshot of the current state of the form.
+   * @returns The current state of the form, represented by `FormState<FormValues, InitialFormValues>`.
+   */
   getFormSnapshot: () => FormState<FormValues, InitialFormValues>;
 }
 
