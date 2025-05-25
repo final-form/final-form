@@ -154,6 +154,7 @@ export interface FieldConfig<FieldValue = any> {
   isEqual?: IsEqual;
   silent?: boolean;
   validateFields?: string[];
+  async?: boolean;
 }
 
 export type RegisterField<FormValues = Record<string, any>> = <F extends keyof FormValues>(
@@ -216,7 +217,8 @@ export type ConfigKey =
   | "mutators"
   | "onSubmit"
   | "validate"
-  | "validateOnBlur";
+  | "validateOnBlur"
+  | "callbackScheduler";
 
 export interface FormApi<
   FormValues = Record<string, any>,
@@ -247,6 +249,7 @@ export interface FormApi<
     name: K,
     value: Config<FormValues, InitialFormValues>[K]
   ) => void;
+  setCallbackScheduler: (scheduler?: (callback: () => void) => void) => void;
   submit: () => Promise<FormValues | undefined> | undefined;
   subscribe: (
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
@@ -334,6 +337,7 @@ export interface Config<
     values: FormValues
   ) => ValidationErrors | Promise<ValidationErrors>;
   validateOnBlur?: boolean;
+  callbackScheduler?: (callback: () => void) => void;
 }
 
 export type Decorator<

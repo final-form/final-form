@@ -42,6 +42,7 @@ export const configOptions: ConfigKey[] = [
   "onSubmit",
   "validate",
   "validateOnBlur",
+  "callbackScheduler",
 ];
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
@@ -177,6 +178,7 @@ function createForm<
     onSubmit,
     validate,
     validateOnBlur,
+    callbackScheduler,
   } = config;
   if (!onSubmit) {
     throw new Error("No onSubmit function specified");
@@ -210,9 +212,33 @@ function createForm<
   let preventNotificationWhileValidationPaused = false;
   let nextAsyncValidationKey = 0;
   const asyncValidationPromises: { [key: number]: Promise<any> } = {};
+  const pendingAsyncCallbacks: (() => void)[] = [];
+  let asyncCallbacksScheduled = false;
   const clearAsyncValidationPromise = (key: number) => (result: any) => {
     delete asyncValidationPromises[key];
     return result;
+  };
+
+  const scheduleAsyncCallbacks = () => {
+    if (!asyncCallbacksScheduled && pendingAsyncCallbacks.length > 0) {
+      asyncCallbacksScheduled = true;
+      const scheduler = callbackScheduler || ((callback) => setTimeout(callback, 0));
+      scheduler(() => {
+        const callbacks = [...pendingAsyncCallbacks];
+        pendingAsyncCallbacks.length = 0;
+        asyncCallbacksScheduled = false;
+        callbacks.forEach(callback => callback());
+      });
+    }
+  };
+
+  const executeCallback = (callback: () => void, isAsync: boolean) => {
+    if (isAsync) {
+      pendingAsyncCallbacks.push(callback);
+      scheduleAsyncCallbacks();
+    } else {
+      callback();
+    }
   };
 
   const changeValue: ChangeValue<FormValues, InitialFormValues> = (state, name, mutate) => {
@@ -867,13 +893,17 @@ function createForm<
       state.fields[name as string] = field;
       let haveValidator = false;
       const silent = fieldConfig && fieldConfig.silent;
+      const isAsync = fieldConfig && fieldConfig.async;
       const notify = () => {
-        if (silent && state.fields[name as string]) {
-          notifyFieldListeners(name as string);
-        } else {
-          notifyFormListeners();
-          notifyFieldListeners(undefined);
-        }
+        const callback = () => {
+          if (silent && state.fields[name as string]) {
+            notifyFieldListeners(name as string);
+          } else {
+            notifyFormListeners();
+            notifyFieldListeners(undefined);
+          }
+        };
+        executeCallback(callback, !!isAsync);
       };
       if (fieldConfig) {
         haveValidator = !!(
@@ -1092,9 +1122,16 @@ function createForm<
         case "validateOnBlur":
           validateOnBlur = value as boolean;
           break;
+        case "callbackScheduler":
+          callbackScheduler = value as ((callback: () => void) => void) | undefined;
+          break;
         default:
           throw new Error("Unrecognised option " + name);
       }
+    },
+
+    setCallbackScheduler: (scheduler?: (callback: () => void) => void) => {
+      callbackScheduler = scheduler;
     },
 
     submit: (): Promise<FormValues | undefined> => {
