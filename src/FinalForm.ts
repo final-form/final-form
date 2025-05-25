@@ -1285,7 +1285,7 @@ function createForm<
       // Subscribe to field changes using the existing registerField mechanism
       return api.registerField(
         name,
-        () => onChange(), // Just call onChange, don't pass field state
+        onChange,
         subscription
       );
     },
@@ -1306,7 +1306,7 @@ function createForm<
     ): Unsubscribe => {
       // Subscribe to form changes using the existing subscribe mechanism
       return api.subscribe(
-        () => onChange(), // Just call onChange, don't pass form state
+        onChange,
         subscription
       );
     },
