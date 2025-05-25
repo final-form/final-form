@@ -255,6 +255,19 @@ export interface FormApi<
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
     subscription: FormSubscription
   ) => Unsubscribe;
+  subscribeFieldState: <F extends keyof FormValues>(
+    name: F,
+    onChange: () => void,
+    subscription: FieldSubscription
+  ) => Unsubscribe;
+  getFieldSnapshot: <F extends keyof FormValues>(
+    name: F
+  ) => FieldState<FormValues[F]> | undefined;
+  subscribeFormState: (
+    onChange: () => void,
+    subscription: FormSubscription
+  ) => Unsubscribe;
+  getFormSnapshot: () => FormState<FormValues, InitialFormValues>;
 }
 
 export type DebugFunction<

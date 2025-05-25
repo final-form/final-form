@@ -1275,6 +1275,45 @@ function createForm<
         delete subscribers.entries[index];
       };
     },
+
+    // useSyncExternalStore compatible APIs
+    subscribeFieldState: <F extends keyof FormValues>(
+      name: F,
+      onChange: () => void,
+      subscription: FieldSubscription
+    ): Unsubscribe => {
+      // Subscribe to field changes using the existing registerField mechanism
+      return api.registerField(
+        name,
+        () => onChange(), // Just call onChange, don't pass field state
+        subscription
+      );
+    },
+
+    getFieldSnapshot: <F extends keyof FormValues>(
+      name: F
+    ): FieldState<FormValues[F]> | undefined => {
+      const field = state.fields[name as string];
+      if (!field) {
+        return undefined;
+      }
+      return publishFieldState(state.formState, field);
+    },
+
+    subscribeFormState: (
+      onChange: () => void,
+      subscription: FormSubscription
+    ): Unsubscribe => {
+      // Subscribe to form changes using the existing subscribe mechanism
+      return api.subscribe(
+        () => onChange(), // Just call onChange, don't pass form state
+        subscription
+      );
+    },
+
+    getFormSnapshot: (): FormState<FormValues, InitialFormValues> => {
+      return calculateNextFormState();
+    },
   };
   return api;
 }
