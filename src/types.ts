@@ -250,7 +250,7 @@ export interface FormApi<
     value: Config<FormValues, InitialFormValues>[K]
   ) => void;
   setCallbackScheduler: (scheduler?: (callback: () => void) => void) => void;
-  submit: () => Promise<FormValues | undefined> | undefined;
+  submit: () => Promise<SubmissionErrors | undefined> | undefined;
   subscribe: (
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
     subscription: FormSubscription
