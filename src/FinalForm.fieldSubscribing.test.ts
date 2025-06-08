@@ -912,4 +912,38 @@ describe("Field.subscribing", () => {
     expect(name1).toHaveBeenCalledTimes(1);
     expect(name2).toHaveBeenCalledTimes(1);
   });
+
+  it("should not destroy field value on unregister when ignoreUnregister is true", () => {
+    const { form, formSpy, foo: { spy: fieldSpy } } = prepareFieldSubscribers(
+      { values: true },
+      { foo: { value: true } },
+      {},
+      {
+        destroyOnUnregister: true,
+        ignoreUnregister: true,
+      }
+    );
+
+    // no values yet
+    expect(formSpy).toHaveBeenCalledTimes(1);
+    expect(formSpy.mock.calls[0][0].values).toEqual({});
+    expect(fieldSpy).toHaveBeenCalledTimes(1);
+    expect(fieldSpy.mock.calls[0][0].value).toBeUndefined();
+
+    // change value
+    form.change("foo", "bar");
+
+    // value changed
+    expect(formSpy).toHaveBeenCalledTimes(2);
+    expect(formSpy.mock.calls[1][0].values).toEqual({ foo: "bar" });
+    expect(fieldSpy).toHaveBeenCalledTimes(2);
+    expect(fieldSpy.mock.calls[1][0].value).toBe("bar");
+
+    // unregister should not remove value
+    form.registerField("foo", () => { }, { value: true })();
+
+    // no need to notify form or field
+    expect(formSpy).toHaveBeenCalledTimes(2);
+    expect(fieldSpy).toHaveBeenCalledTimes(2);
+  });
 });
