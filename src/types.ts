@@ -218,7 +218,8 @@ export type ConfigKey =
   | "onSubmit"
   | "validate"
   | "validateOnBlur"
-  | "callbackScheduler";
+  | "callbackScheduler"
+  | "ignoreUnregister";
 
 export interface FormApi<
   FormValues = Record<string, any>,
@@ -250,7 +251,7 @@ export interface FormApi<
     value: Config<FormValues, InitialFormValues>[K]
   ) => void;
   setCallbackScheduler: (scheduler?: (callback: () => void) => void) => void;
-  submit: () => Promise<SubmissionErrors | undefined> | undefined;
+  submit: () => Promise<FormValues | undefined> | undefined;
   subscribe: (
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
     subscription: FormSubscription
@@ -292,6 +293,7 @@ export interface FormApi<
    * @returns The current state of the form, represented by `FormState<FormValues, InitialFormValues>`.
    */
   getFormSnapshot: () => FormState<FormValues, InitialFormValues>;
+  ignoreUnregister: boolean;
 }
 
 export type DebugFunction<
@@ -375,6 +377,7 @@ export interface Config<
   ) => ValidationErrors | Promise<ValidationErrors>;
   validateOnBlur?: boolean;
   callbackScheduler?: (callback: () => void) => void;
+  ignoreUnregister?: boolean;
 }
 
 export type Decorator<

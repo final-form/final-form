@@ -43,6 +43,7 @@ export const configOptions: ConfigKey[] = [
   "validate",
   "validateOnBlur",
   "callbackScheduler",
+  "ignoreUnregister",
 ];
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
@@ -179,6 +180,7 @@ function createForm<
     validate,
     validateOnBlur,
     callbackScheduler,
+    ignoreUnregister,
   } = config;
   if (!onSubmit) {
     throw new Error("No onSubmit function specified");
@@ -783,6 +785,14 @@ function createForm<
       destroyOnUnregister = value;
     },
 
+    get ignoreUnregister() {
+      return !!ignoreUnregister;
+    },
+
+    set ignoreUnregister(value: boolean) {
+      ignoreUnregister = value;
+    },
+
     focus: (name: keyof FormValues) => {
       const field = state.fields[name as string];
       if (field && !field.active) {
@@ -982,7 +992,7 @@ function createForm<
             state.formState.errors =
               setIn(state.formState.errors, name as string, undefined) || {};
           }
-          if (destroyOnUnregister) {
+          if (destroyOnUnregister && !ignoreUnregister) {
             state.formState.values =
               (setIn(state.formState.values as object, name as string, undefined, true) as FormValues) || ({} as FormValues);
           }
@@ -1085,6 +1095,9 @@ function createForm<
           break;
         case "destroyOnUnregister":
           destroyOnUnregister = value as boolean;
+          break;
+        case "ignoreUnregister":
+          ignoreUnregister = value as boolean;
           break;
         case "initialValues":
           api.initialize(value as InitialFormValues);

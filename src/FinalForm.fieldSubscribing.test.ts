@@ -912,4 +912,38 @@ describe("Field.subscribing", () => {
     expect(name1).toHaveBeenCalledTimes(1);
     expect(name2).toHaveBeenCalledTimes(1);
   });
+
+  it("should not destroy field value on unregister when ignoreUnregister is true", () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      destroyOnUnregister: true,
+      ignoreUnregister: true,
+    });
+    const spy = jest.fn();
+    form.subscribe(spy, { values: true });
+    const field = jest.fn();
+    const unregister = form.registerField("foo", field, { value: true });
+
+    // no values yet
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0].values).toEqual({});
+    expect(field).toHaveBeenCalledTimes(1);
+    expect(field.mock.calls[0][0].value).toBeUndefined();
+
+    // change value
+    form.change("foo", "bar");
+
+    // value changed
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls[1][0].values).toEqual({ foo: "bar" });
+    expect(field).toHaveBeenCalledTimes(2);
+    expect(field.mock.calls[1][0].value).toBe("bar");
+
+    // unregister should not remove value
+    unregister();
+
+    // no need to notify form or field
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(field).toHaveBeenCalledTimes(2);
+  });
 });

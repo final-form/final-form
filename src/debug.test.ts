@@ -8,12 +8,8 @@ describe("Debug field notifications", () => {
     // Register field normally with value subscription
     const unsubscribe = form.registerField("test", fieldCallback, { value: true });
 
-    console.log("After registration, callback called:", fieldCallback.mock.calls.length);
-
     // Change field value
     form.change("test", "value");
-
-    console.log("After change, callback called:", fieldCallback.mock.calls.length);
 
     unsubscribe();
   });
@@ -25,12 +21,8 @@ describe("Debug field notifications", () => {
     // Subscribe to form normally with values subscription
     const unsubscribe = form.subscribe(formCallback, { values: true });
 
-    console.log("After subscription, callback called:", formCallback.mock.calls.length);
-
     // Change field value
     form.change("test", "value");
-
-    console.log("After change, callback called:", formCallback.mock.calls.length);
 
     unsubscribe();
   });
