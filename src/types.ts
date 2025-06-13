@@ -62,7 +62,7 @@ export interface FormState<
   touched?: { [key: string]: boolean };
   valid?: boolean;
   validating?: boolean;
-  values?: FormValues;
+  values: FormValues;
   visited?: { [key: string]: boolean };
 }
 
