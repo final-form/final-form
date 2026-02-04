@@ -367,8 +367,10 @@ function createForm<
           const promise = errorOrPromise.then((error) => {
             // Only mutate if the field instance is still the same (not unregistered/re-registered)
             if (state.fields[field.name] === currentField) {
-              // Decrement async validation counter
-              currentField.asyncValidationCount--;
+              // Decrement async validation counter (guard against underflow)
+              if (currentField.asyncValidationCount > 0) {
+                currentField.asyncValidationCount--;
+              }
               // Only set validating=false if all async validations for this field are complete
               if (currentField.asyncValidationCount === 0) {
                 currentField.validating = false;
@@ -1046,8 +1048,9 @@ function createForm<
      * Resets all field flags (e.g. touched, visited, etc.) to their initial state
      */
     resetFieldState: (name: keyof FormValues) => {
+      const field = state.fields[name as string];
       state.fields[name as string] = {
-        ...state.fields[name as string],
+        ...field,
         ...{
           active: false,
           lastFieldState: undefined,
@@ -1055,8 +1058,9 @@ function createForm<
           touched: false,
           valid: true,
           validating: false,
-          asyncValidationCount: 0,
-          asyncValidationKey: 0,
+          // Preserve asyncValidationCount but bump key to invalidate in-flight validations
+          asyncValidationCount: field.asyncValidationCount,
+          asyncValidationKey: field.asyncValidationKey + 1,
           visited: false,
         },
       };
@@ -1074,9 +1078,10 @@ function createForm<
     restart: (initialValues = state.formState.initialValues) => {
       api.batch(() => {
         for (const name in state.fields) {
+          const field = state.fields[name];
           api.resetFieldState(name as keyof FormValues);
           state.fields[name] = {
-            ...state.fields[name],
+            ...field,
             ...{
               active: false,
               lastFieldState: undefined,
@@ -1085,8 +1090,9 @@ function createForm<
               touched: false,
               valid: true,
               validating: false,
-              asyncValidationCount: 0,
-              asyncValidationKey: 0,
+              // Preserve asyncValidationCount but bump key to invalidate in-flight validations
+              asyncValidationCount: field.asyncValidationCount,
+              asyncValidationKey: field.asyncValidationKey + 1,
               visited: false,
             },
           };
