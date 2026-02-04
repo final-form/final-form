@@ -358,11 +358,23 @@ function createForm<
         );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
+          // Track async validation with per-field counter and key
+          field.asyncValidationCount++;
+          field.asyncValidationKey++;
           field.validating = true;
+          const fieldValidationKey = field.asyncValidationKey;
           const promise = errorOrPromise.then((error) => {
             if (state.fields[field.name]) {
-              state.fields[field.name].validating = false;
-              setError(error);
+              // Decrement async validation counter
+              state.fields[field.name].asyncValidationCount--;
+              // Only set validating=false if all async validations for this field are complete
+              if (state.fields[field.name].asyncValidationCount === 0) {
+                state.fields[field.name].validating = false;
+              }
+              // Only apply error if this validation hasn't been superseded by a newer one
+              if (fieldValidationKey === state.fields[field.name].asyncValidationKey) {
+                setError(error);
+              }
             }
           }); // errors must be resolved, not rejected
           promises.push(promise);
@@ -890,6 +902,8 @@ function createForm<
         validateFields: fieldConfig && fieldConfig.validateFields,
         validators: {},
         validating: false,
+        asyncValidationCount: 0,
+        asyncValidationKey: 0,
         visited: false,
         blur: () => api.blur(name),
         change: (value) => api.change(name, value),
@@ -1036,6 +1050,8 @@ function createForm<
           touched: false,
           valid: true,
           validating: false,
+          asyncValidationCount: 0,
+          asyncValidationKey: 0,
           visited: false,
         },
       };
@@ -1064,6 +1080,8 @@ function createForm<
               touched: false,
               valid: true,
               validating: false,
+              asyncValidationCount: 0,
+              asyncValidationKey: 0,
               visited: false,
             },
           };

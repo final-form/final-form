@@ -167,6 +167,8 @@ export type RegisterField<FormValues = Record<string, any>> = <F extends keyof F
 export interface InternalFieldState<FieldValue = any> {
   active: boolean;
   afterSubmit?: () => void;
+  asyncValidationCount: number;
+  asyncValidationKey: number;
   beforeSubmit?: () => void | false;
   blur: () => void;
   change: (value: any) => void;
