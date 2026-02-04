@@ -363,16 +363,18 @@ function createForm<
           field.asyncValidationKey++;
           field.validating = true;
           const fieldValidationKey = field.asyncValidationKey;
+          const currentField = field; // Capture field instance to prevent mutation of re-registered fields
           const promise = errorOrPromise.then((error) => {
-            if (state.fields[field.name]) {
+            // Only mutate if the field instance is still the same (not unregistered/re-registered)
+            if (state.fields[field.name] === currentField) {
               // Decrement async validation counter
-              state.fields[field.name].asyncValidationCount--;
+              currentField.asyncValidationCount--;
               // Only set validating=false if all async validations for this field are complete
-              if (state.fields[field.name].asyncValidationCount === 0) {
-                state.fields[field.name].validating = false;
+              if (currentField.asyncValidationCount === 0) {
+                currentField.validating = false;
               }
               // Only apply error if this validation hasn't been superseded by a newer one
-              if (fieldValidationKey === state.fields[field.name].asyncValidationKey) {
+              if (fieldValidationKey === currentField.asyncValidationKey) {
                 setError(error);
               }
             }
@@ -914,6 +916,9 @@ function createForm<
       field.blur = field.blur || (() => api.blur(name));
       field.change = field.change || ((value) => api.change(name, value));
       field.focus = field.focus || (() => api.focus(name));
+      // Ensure async validation counters exist (for fields created by mutators)
+      field.asyncValidationCount = field.asyncValidationCount ?? 0;
+      field.asyncValidationKey = field.asyncValidationKey ?? 0;
       state.fields[name as string] = field;
       let haveValidator = false;
       const silent = fieldConfig && fieldConfig.silent;
