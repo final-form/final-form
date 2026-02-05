@@ -349,6 +349,9 @@ function createForm<
     const validators = getValidators(field);
     if (validators.length) {
       let error: any;
+      // Bump validation key once per validation run (all validators share same key)
+      field.asyncValidationKey++;
+      const fieldValidationKey = field.asyncValidationKey;
       validators.forEach((validator) => {
         const errorOrPromise = validator(
           getIn(state.formState.values as object, field.name),
@@ -359,11 +362,9 @@ function createForm<
         );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          // Track async validation with per-field counter and key
+          // Track async validation with per-field counter
           field.asyncValidationCount++;
-          field.asyncValidationKey++;
           field.validating = true;
-          const fieldValidationKey = field.asyncValidationKey;
           const fieldInstanceId = field.instanceId; // Capture stable instance ID
           const promise = errorOrPromise.then((error) => {
             const currentField = state.fields[field.name];
