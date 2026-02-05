@@ -213,6 +213,7 @@ function createForm<
   let validationBlocked = false;
   let preventNotificationWhileValidationPaused = false;
   let nextAsyncValidationKey = 0;
+  let nextFieldInstanceId = 0;
   const asyncValidationPromises: { [key: number]: Promise<any> } = {};
   const pendingAsyncCallbacks: (() => void)[] = [];
   let asyncCallbacksScheduled = false;
@@ -363,10 +364,11 @@ function createForm<
           field.asyncValidationKey++;
           field.validating = true;
           const fieldValidationKey = field.asyncValidationKey;
-          const currentField = field; // Capture field instance to prevent mutation of re-registered fields
+          const fieldInstanceId = field.instanceId; // Capture stable instance ID
           const promise = errorOrPromise.then((error) => {
-            // Only mutate if the field instance is still the same (not unregistered/re-registered)
-            if (state.fields[field.name] === currentField) {
+            const currentField = state.fields[field.name];
+            // Only mutate if the field instance is still the same (check stable instanceId)
+            if (currentField && currentField.instanceId === fieldInstanceId) {
               // Decrement async validation counter (guard against underflow)
               if (currentField.asyncValidationCount > 0) {
                 currentField.asyncValidationCount--;
@@ -896,6 +898,7 @@ function createForm<
         afterSubmit: fieldConfig && fieldConfig.afterSubmit,
         beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
         data: (fieldConfig && fieldConfig.data) || {},
+        instanceId: ++nextFieldInstanceId,
         isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
         lastFieldState: undefined,
         modified: false,
@@ -918,7 +921,8 @@ function createForm<
       field.blur = field.blur || (() => api.blur(name));
       field.change = field.change || ((value) => api.change(name, value));
       field.focus = field.focus || (() => api.focus(name));
-      // Ensure async validation counters exist (for fields created by mutators)
+      // Ensure instanceId and async validation counters exist (for fields created by mutators)
+      field.instanceId = field.instanceId ?? ++nextFieldInstanceId;
       field.asyncValidationCount = field.asyncValidationCount ?? 0;
       field.asyncValidationKey = field.asyncValidationKey ?? 0;
       state.fields[name as string] = field;
@@ -1058,7 +1062,8 @@ function createForm<
           touched: false,
           valid: true,
           validating: false,
-          // Preserve asyncValidationCount but bump key to invalidate in-flight validations
+          // Preserve instanceId, asyncValidationCount but bump key to invalidate in-flight validations
+          instanceId: field.instanceId,
           asyncValidationCount: field.asyncValidationCount,
           asyncValidationKey: field.asyncValidationKey + 1,
           visited: false,
@@ -1090,7 +1095,8 @@ function createForm<
               touched: false,
               valid: true,
               validating: false,
-              // Preserve asyncValidationCount but bump key to invalidate in-flight validations
+              // Preserve instanceId, asyncValidationCount but bump key to invalidate in-flight validations
+              instanceId: field.instanceId,
               asyncValidationCount: field.asyncValidationCount,
               asyncValidationKey: field.asyncValidationKey + 1,
               visited: false,
