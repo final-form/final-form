@@ -1084,7 +1084,6 @@ function createForm<
       api.batch(() => {
         for (const name in state.fields) {
           const field = state.fields[name];
-          api.resetFieldState(name as keyof FormValues);
           state.fields[name] = {
             ...field,
             ...{
