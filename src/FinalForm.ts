@@ -1064,9 +1064,9 @@ function createForm<
           valid: true,
           validating: false,
           // Preserve instanceId, asyncValidationCount but bump key to invalidate in-flight validations
-          instanceId: field.instanceId,
-          asyncValidationCount: field.asyncValidationCount,
-          asyncValidationKey: field.asyncValidationKey + 1,
+          instanceId: field.instanceId ?? ++nextFieldInstanceId,
+          asyncValidationCount: field.asyncValidationCount ?? 0,
+          asyncValidationKey: (field.asyncValidationKey ?? 0) + 1,
           visited: false,
         },
       };
@@ -1096,9 +1096,9 @@ function createForm<
               valid: true,
               validating: false,
               // Preserve instanceId, asyncValidationCount but bump key to invalidate in-flight validations
-              instanceId: field.instanceId,
-              asyncValidationCount: field.asyncValidationCount,
-              asyncValidationKey: field.asyncValidationKey + 1,
+              instanceId: field.instanceId ?? ++nextFieldInstanceId,
+              asyncValidationCount: field.asyncValidationCount ?? 0,
+              asyncValidationKey: (field.asyncValidationKey ?? 0) + 1,
               visited: false,
             },
           };
