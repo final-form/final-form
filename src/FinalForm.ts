@@ -355,6 +355,7 @@ function createForm<
     const validators = getValidators(field);
     if (validators.length) {
       let error: any;
+      const fieldAsyncKey = getNextFieldAsyncKey(field.name);
       validators.forEach((validator) => {
         const errorOrPromise = validator(
           getIn(state.formState.values as object, field.name),
@@ -365,7 +366,6 @@ function createForm<
         );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          const fieldAsyncKey = getNextFieldAsyncKey(field.name);
           field.validating++;
           const promise = errorOrPromise.then((error) => {
             if (fieldAsyncValidationKeys[field.name] > fieldAsyncKey) {
