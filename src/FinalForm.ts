@@ -216,7 +216,7 @@ function createForm<
   const asyncValidationPromises: { [key: number]: Promise<any> } = {};
   const fieldAsyncValidationKeys: { [fieldName: string]: number } = {};
   const getNextFieldAsyncKey = (fieldName: string): number => {
-    if (!fieldAsyncValidationKeys[fieldName]) {
+    if (fieldAsyncValidationKeys[fieldName] === undefined) {
       fieldAsyncValidationKeys[fieldName] = 0;
     }
     return ++fieldAsyncValidationKeys[fieldName];
@@ -1003,6 +1003,7 @@ function createForm<
         if (lastOne) {
           delete state.fieldSubscribers[name as string];
           delete state.fields[name as string];
+          delete fieldAsyncValidationKeys[name as string];
           if (validatorRemoved) {
             state.formState.errors =
               setIn(state.formState.errors, name as string, undefined) || {};
@@ -1042,6 +1043,10 @@ function createForm<
      * Resets all field flags (e.g. touched, visited, etc.) to their initial state
      */
     resetFieldState: (name: keyof FormValues) => {
+      // Invalidate any in-flight async validations for this field
+      if (fieldAsyncValidationKeys[name as string] !== undefined) {
+        fieldAsyncValidationKeys[name as string]++;
+      }
       state.fields[name as string] = {
         ...state.fields[name as string],
         ...{
