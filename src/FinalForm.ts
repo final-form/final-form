@@ -369,14 +369,18 @@ function createForm<
           field.validating++;
           const promise = errorOrPromise.then((error) => {
             const currentKey = fieldAsyncValidationKeys[field.name];
-            // If key is undefined (field unregistered) or newer validation started, ignore result
-            if (currentKey === undefined || currentKey > fieldAsyncKey) {
-              // Newer validation for this field has started, ignore these results
+            // If key is undefined, field was unregistered - ignore result without touching counter
+            if (currentKey === undefined) {
+              return;
+            }
+            // If newer validation started for same registration, decrement and ignore result
+            if (currentKey > fieldAsyncKey) {
               if (state.fields[field.name]) {
                 state.fields[field.name].validating--;
               }
               return;
             }
+            // Validation result is current for this registration
             if (state.fields[field.name]) {
               state.fields[field.name].validating--;
               setError(error);
@@ -1085,7 +1089,6 @@ function createForm<
               modifiedSinceLastSubmit: false,
               touched: false,
               valid: true,
-              validating: 0,
               visited: false,
             },
           };
