@@ -1049,10 +1049,9 @@ function createForm<
      * Resets all field flags (e.g. touched, visited, etc.) to their initial state
      */
     resetFieldState: (name: keyof FormValues) => {
-      // Invalidate any in-flight async validations for this field
-      if (fieldAsyncValidationKeys[name as string] !== undefined) {
-        fieldAsyncValidationKeys[name as string]++;
-      }
+      // Delete key so in-flight async validations are treated as stale
+      // (they will hit the currentKey === undefined check and return without decrementing)
+      delete fieldAsyncValidationKeys[name as string];
       state.fields[name as string] = {
         ...state.fields[name as string],
         ...{
