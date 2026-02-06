@@ -69,7 +69,7 @@ function publishFieldState<FormValues = Record<string, any>>(
     valid,
     value,
     visited,
-    validating,
+    validating: validating > 0,
   };
 }
 

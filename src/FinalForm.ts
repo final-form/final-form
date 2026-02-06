@@ -214,6 +214,13 @@ function createForm<
   let preventNotificationWhileValidationPaused = false;
   let nextAsyncValidationKey = 0;
   const asyncValidationPromises: { [key: number]: Promise<any> } = {};
+  const fieldAsyncValidationKeys: { [fieldName: string]: number } = {};
+  const getNextFieldAsyncKey = (fieldName: string): number => {
+    if (!fieldAsyncValidationKeys[fieldName]) {
+      fieldAsyncValidationKeys[fieldName] = 0;
+    }
+    return ++fieldAsyncValidationKeys[fieldName];
+  };
   const pendingAsyncCallbacks: (() => void)[] = [];
   let asyncCallbacksScheduled = false;
   const clearAsyncValidationPromise = (key: number) => (result: any) => {
@@ -358,10 +365,18 @@ function createForm<
         );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          field.validating = true;
+          const fieldAsyncKey = getNextFieldAsyncKey(field.name);
+          field.validating++;
           const promise = errorOrPromise.then((error) => {
+            if (fieldAsyncValidationKeys[field.name] > fieldAsyncKey) {
+              // Newer validation for this field has started, ignore these results
+              if (state.fields[field.name]) {
+                state.fields[field.name].validating--;
+              }
+              return;
+            }
             if (state.fields[field.name]) {
-              state.fields[field.name].validating = false;
+              state.fields[field.name].validating--;
               setError(error);
             }
           }); // errors must be resolved, not rejected
@@ -889,7 +904,7 @@ function createForm<
         valid: true,
         validateFields: fieldConfig && fieldConfig.validateFields,
         validators: {},
-        validating: false,
+        validating: 0,
         visited: false,
         blur: () => api.blur(name),
         change: (value) => api.change(name, value),
@@ -1035,7 +1050,7 @@ function createForm<
           modified: false,
           touched: false,
           valid: true,
-          validating: false,
+          validating: 0,
           visited: false,
         },
       };
@@ -1063,7 +1078,7 @@ function createForm<
               modifiedSinceLastSubmit: false,
               touched: false,
               valid: true,
-              validating: false,
+              validating: 0,
               visited: false,
             },
           };
