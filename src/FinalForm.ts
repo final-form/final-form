@@ -368,7 +368,9 @@ function createForm<
         if (errorOrPromise && isPromise(errorOrPromise)) {
           field.validating++;
           const promise = errorOrPromise.then((error) => {
-            if (fieldAsyncValidationKeys[field.name] > fieldAsyncKey) {
+            const currentKey = fieldAsyncValidationKeys[field.name];
+            // If key is undefined (field unregistered) or newer validation started, ignore result
+            if (currentKey === undefined || currentKey > fieldAsyncKey) {
               // Newer validation for this field has started, ignore these results
               if (state.fields[field.name]) {
                 state.fields[field.name].validating--;
