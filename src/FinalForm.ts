@@ -373,9 +373,10 @@ function createForm<
             if (currentKey === undefined) {
               return;
             }
-            // If newer validation started for same registration, decrement and ignore result
-            if (currentKey > fieldAsyncKey) {
-              if (state.fields[field.name]) {
+            // If key mismatch, result is stale
+            if (currentKey !== fieldAsyncKey) {
+              // Only decrement when a newer validation superseded this one
+              if (currentKey > fieldAsyncKey && state.fields[field.name]) {
                 state.fields[field.name].validating--;
               }
               return;
