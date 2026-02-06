@@ -184,7 +184,7 @@ export interface InternalFieldState<FieldValue = any> {
     [index: number]: GetFieldValidator<FieldValue>;
   };
   valid: boolean;
-  validating: boolean;
+  validating: number;
   visited: boolean;
 }
 

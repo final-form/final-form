@@ -214,6 +214,13 @@ function createForm<
   let preventNotificationWhileValidationPaused = false;
   let nextAsyncValidationKey = 0;
   const asyncValidationPromises: { [key: number]: Promise<any> } = {};
+  const fieldAsyncValidationKeys: { [fieldName: string]: number } = {};
+  const getNextFieldAsyncKey = (fieldName: string): number => {
+    if (fieldAsyncValidationKeys[fieldName] === undefined) {
+      fieldAsyncValidationKeys[fieldName] = 0;
+    }
+    return ++fieldAsyncValidationKeys[fieldName];
+  };
   const pendingAsyncCallbacks: (() => void)[] = [];
   let asyncCallbacksScheduled = false;
   const clearAsyncValidationPromise = (key: number) => (result: any) => {
@@ -348,6 +355,7 @@ function createForm<
     const validators = getValidators(field);
     if (validators.length) {
       let error: any;
+      const fieldAsyncKey = getNextFieldAsyncKey(field.name);
       validators.forEach((validator) => {
         const errorOrPromise = validator(
           getIn(state.formState.values as object, field.name),
@@ -358,10 +366,24 @@ function createForm<
         );
 
         if (errorOrPromise && isPromise(errorOrPromise)) {
-          field.validating = true;
+          field.validating++;
           const promise = errorOrPromise.then((error) => {
+            const currentKey = fieldAsyncValidationKeys[field.name];
+            // If key is undefined, field was unregistered - ignore result without touching counter
+            if (currentKey === undefined) {
+              return;
+            }
+            // If key mismatch, result is stale
+            if (currentKey !== fieldAsyncKey) {
+              // Only decrement when a newer validation superseded this one
+              if (currentKey > fieldAsyncKey && state.fields[field.name]) {
+                state.fields[field.name].validating--;
+              }
+              return;
+            }
+            // Validation result is current for this registration
             if (state.fields[field.name]) {
-              state.fields[field.name].validating = false;
+              state.fields[field.name].validating--;
               setError(error);
             }
           }); // errors must be resolved, not rejected
@@ -889,7 +911,7 @@ function createForm<
         valid: true,
         validateFields: fieldConfig && fieldConfig.validateFields,
         validators: {},
-        validating: false,
+        validating: 0,
         visited: false,
         blur: () => api.blur(name),
         change: (value) => api.change(name, value),
@@ -988,6 +1010,7 @@ function createForm<
         if (lastOne) {
           delete state.fieldSubscribers[name as string];
           delete state.fields[name as string];
+          delete fieldAsyncValidationKeys[name as string];
           if (validatorRemoved) {
             state.formState.errors =
               setIn(state.formState.errors, name as string, undefined) || {};
@@ -1027,6 +1050,9 @@ function createForm<
      * Resets all field flags (e.g. touched, visited, etc.) to their initial state
      */
     resetFieldState: (name: keyof FormValues) => {
+      // Delete key so in-flight async validations are treated as stale
+      // (they will hit the currentKey === undefined check and return without decrementing)
+      delete fieldAsyncValidationKeys[name as string];
       state.fields[name as string] = {
         ...state.fields[name as string],
         ...{
@@ -1035,7 +1061,7 @@ function createForm<
           modified: false,
           touched: false,
           valid: true,
-          validating: false,
+          validating: 0,
           visited: false,
         },
       };
@@ -1063,7 +1089,6 @@ function createForm<
               modifiedSinceLastSubmit: false,
               touched: false,
               valid: true,
-              validating: false,
               visited: false,
             },
           };
