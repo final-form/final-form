@@ -580,9 +580,14 @@ describe("Field.validation", () => {
 
     await sleep(delay * 2);
 
-    expect(spy).toHaveBeenCalledTimes(6);
-    expect(spy.mock.calls[5][0].error).toBe("Username taken");
+    // With proper async validation notifications, we get two notifications for the final validation:
+    // 1. When the promise resolves and validating is set to false
+    // 2. When the error is processed and applied to the field
+    expect(spy).toHaveBeenCalledTimes(7);
     expect(spy.mock.calls[5][0].validating).toBe(false);
+    expect(spy.mock.calls[5][0].error).toBeUndefined(); // validating flag updated first
+    expect(spy.mock.calls[6][0].validating).toBe(false);
+    expect(spy.mock.calls[6][0].error).toBe("Username taken"); // error applied second
   });
 
   it("should allow field-level async validation via promise", async () => {
@@ -1650,3 +1655,217 @@ describe("Field.validation", () => {
     expect(formSub).toHaveBeenCalledTimes(5);
   });
 });
+
+describe('async validation race conditions (#509)', () => {
+  it('should not suppress validation errors when multiple fields validate concurrently', async () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    })
+
+    const field1Spy = jest.fn()
+    const field2Spy = jest.fn()
+    
+    let resolveField1: (error?: string) => void
+    let resolveField2: (error?: string) => void
+    
+    const field1Validator = jest.fn(() => 
+      new Promise<string | undefined>(resolve => {
+        resolveField1 = resolve
+      })
+    )
+    
+    const field2Validator = jest.fn(() => 
+      new Promise<string | undefined>(resolve => {
+        resolveField2 = resolve
+      })
+    )
+
+    // Register field1 with async validator
+    form.registerField(
+      'field1',
+      field1Spy,
+      { error: true, validating: true },
+      { 
+        validateFields: [],
+        getValidator: () => field1Validator
+      }
+    )
+
+    // Register field2 with async validator
+    form.registerField(
+      'field2',
+      field2Spy,
+      { error: true, validating: true },
+      { 
+        validateFields: [],
+        getValidator: () => field2Validator
+      }
+    )
+
+    // Change both fields rapidly (triggering concurrent validations)
+    form.change('field1', 'value1')
+    form.change('field2', 'value2')
+    await sleep(5)
+
+    // Both should be validating
+    expect(field1Spy).toHaveBeenCalledWith(
+      expect.objectContaining({ validating: true })
+    )
+    expect(field2Spy).toHaveBeenCalledWith(
+      expect.objectContaining({ validating: true })
+    )
+
+    // Resolve field2 first with an error
+    resolveField2!('field2 error')
+    await sleep(10)
+
+    console.log('\nfield2 calls after resolution:',  field2Spy.mock.calls.length);
+    field2Spy.mock.calls.forEach((call: any, i: number) => {
+      console.log(`  Call ${i}: validating=${call[0].validating}, error=${call[0].error}`);
+    });
+
+    // field2 should show error and not be validating
+    expect(field2Spy).toHaveBeenCalledWith(
+      expect.objectContaining({ 
+        error: 'field2 error',
+        validating: false 
+      })
+    )
+
+    // Resolve field1 with an error
+    resolveField1!('field1 error')
+    await sleep(10)
+
+    // field1 error should NOT be suppressed
+    expect(field1Spy).toHaveBeenCalledWith(
+      expect.objectContaining({ 
+        error: 'field1 error',
+        validating: false 
+      })
+    )
+  })
+
+  it('should not reset validating flag when overlapping validations occur', async () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    })
+
+    const fieldSpy = jest.fn()
+    
+    let resolveFirst: (error?: string) => void
+    let resolveSecond: (error?: string) => void
+    let callCount = 0
+    
+    const validator = jest.fn((value) => {
+      callCount++
+      if (callCount === 1) {
+        return new Promise<string | undefined>(resolve => {
+          resolveFirst = resolve
+        })
+      } else {
+        return new Promise<string | undefined>(resolve => {
+          resolveSecond = resolve
+        })
+      }
+    })
+
+    form.registerField(
+      'field',
+      fieldSpy,
+      { error: true, validating: true },
+      { 
+        validateFields: [],
+        getValidator: () => validator
+      }
+    )
+
+    // Trigger first validation
+    form.change('field', 'value1')
+    await sleep(5)
+    expect(fieldSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ validating: true })
+    )
+
+    // Trigger second validation while first is still pending
+    form.change('field', 'value2')
+    await sleep(5)
+
+    // Should still be validating (2 pending validations)
+    expect(fieldSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ validating: true })
+    )
+
+    // Resolve first validation
+    resolveFirst!(undefined)
+    await sleep(10)
+
+    // Should STILL be validating because second validation is still pending
+    expect(fieldSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ validating: true })
+    )
+
+    // Resolve second validation
+    resolveSecond!('error from second')
+    await sleep(10)
+
+    // Now should not be validating and should have the error from second validation
+    expect(fieldSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ 
+        validating: false,
+        error: 'error from second'
+      })
+    )
+  })
+
+  it('should ignore stale validation results when field is re-registered', async () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    })
+
+    const fieldSpy = jest.fn()
+    
+    let resolveValidation: (error?: string) => void
+    
+    const validator = jest.fn(() => 
+      new Promise<string | undefined>(resolve => {
+        resolveValidation = resolve
+      })
+    )
+
+    // Register field with async validator
+    const unregister = form.registerField(
+      'field',
+      fieldSpy,
+      { error: true, validating: true },
+      { 
+        validateFields: [],
+        getValidator: () => validator
+      }
+    )
+
+    // Trigger validation
+    form.change('field', 'value1')
+    await sleep(5)
+
+    // Unregister and re-register field (simulating unmount/remount)
+    unregister()
+    form.registerField(
+      'field',
+      fieldSpy,
+      { error: true, validating: true },
+      { 
+        validateFields: [],
+        getValidator: () => validator
+      }
+    )
+
+    // Resolve the stale validation
+    resolveValidation!('stale error')
+    await sleep(10)
+
+    // Should NOT apply stale validation result (field was re-registered with new instanceId)
+    const calls = fieldSpy.mock.calls
+    const latestCall = calls[calls.length - 1]
+    expect(latestCall[0].error).not.toBe('stale error')
+  })
+})

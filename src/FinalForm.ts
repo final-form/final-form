@@ -366,11 +366,13 @@ function createForm<
           field.asyncValidationCount++;
           field.validating = true;
           const fieldInstanceId = field.instanceId; // Capture stable instance ID
+          const fieldName = field.name; // Capture field name for notifications
           const promise = errorOrPromise.then((error) => {
-            const currentField = state.fields[field.name];
+            const currentField = state.fields[fieldName];
             // Only mutate if the field instance is still the same (check stable instanceId)
             if (currentField && currentField.instanceId === fieldInstanceId) {
               // Decrement async validation counter (guard against underflow)
+              const wasValidating = currentField.validating;
               if (currentField.asyncValidationCount > 0) {
                 currentField.asyncValidationCount--;
               }
@@ -381,6 +383,10 @@ function createForm<
               // Only apply error if this validation hasn't been superseded by a newer one
               if (fieldValidationKey === currentField.asyncValidationKey) {
                 setError(error);
+              }
+              // Notify field listeners only if validating state changed (true -> false)
+              if (wasValidating && !currentField.validating) {
+                notifyFieldListeners(fieldName);
               }
             }
           }); // errors must be resolved, not rejected

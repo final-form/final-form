@@ -94,9 +94,14 @@ describe("FinalForm.async.validation", () => {
 
       // Wait for async validation to complete
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledTimes(2);
+        // With proper async validation notifications, we get two notifications:
+        // 1. When the promise resolves and validating is set to false
+        // 2. When the error is processed and applied to the field
+        expect(spy).toHaveBeenCalledTimes(3);
         expect(spy.mock.calls[1][0].validating).toBe(false);
-        expect(spy.mock.calls[1][0].error).toBe("Async validation failed");
+        expect(spy.mock.calls[1][0].error).toBeUndefined(); // validating flag updated first
+        expect(spy.mock.calls[2][0].validating).toBe(false);
+        expect(spy.mock.calls[2][0].error).toBe("Async validation failed"); // error applied second
         done();
       }, 50);
     }, 10);
