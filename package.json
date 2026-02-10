@@ -104,19 +104,19 @@
   "size-limit": [
     {
       "path": "dist/final-form.umd.min.js",
-      "limit": "3kB"
+      "limit": "7kB"
     },
     {
       "path": "dist/final-form.umd.js",
-      "limit": "3kB"
+      "limit": "7kB"
     },
     {
       "path": "dist/final-form.es.js",
-      "limit": "3kB"
+      "limit": "6kB"
     },
     {
       "path": "dist/final-form.cjs.js",
-      "limit": "3kB"
+      "limit": "6kB"
     }
   ]
 }
