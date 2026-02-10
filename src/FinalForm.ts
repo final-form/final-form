@@ -926,6 +926,10 @@ function createForm<
       field.instanceId = field.instanceId ?? ++nextFieldInstanceId;
       field.asyncValidationCount = field.asyncValidationCount ?? 0;
       field.asyncValidationKey = field.asyncValidationKey ?? 0;
+      field.isEqual =
+        (fieldConfig && fieldConfig.isEqual) ||
+        (state.fields[name as string] && state.fields[name as string].isEqual) ||
+        tripleEquals;
       state.fields[name as string] = field;
       let haveValidator = false;
       const silent = fieldConfig && fieldConfig.silent;
