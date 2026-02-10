@@ -880,6 +880,7 @@ function createForm<
         afterSubmit: fieldConfig && fieldConfig.afterSubmit,
         beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
         data: (fieldConfig && fieldConfig.data) || {},
+        isEqual: tripleEquals,
         lastFieldState: undefined,
         modified: false,
         modifiedSinceLastSubmit: false,
