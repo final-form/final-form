@@ -880,7 +880,6 @@ function createForm<
         afterSubmit: fieldConfig && fieldConfig.afterSubmit,
         beforeSubmit: fieldConfig && fieldConfig.beforeSubmit,
         data: (fieldConfig && fieldConfig.data) || {},
-        isEqual: (fieldConfig && fieldConfig.isEqual) || tripleEquals,
         lastFieldState: undefined,
         modified: false,
         modifiedSinceLastSubmit: false,
@@ -900,6 +899,10 @@ function createForm<
       field.blur = field.blur || (() => api.blur(name));
       field.change = field.change || ((value) => api.change(name, value));
       field.focus = field.focus || (() => api.focus(name));
+      field.isEqual =
+        (fieldConfig && fieldConfig.isEqual) ||
+        (state.fields[name as string] && state.fields[name as string].isEqual) ||
+        tripleEquals;
       state.fields[name as string] = field;
       let haveValidator = false;
       const silent = fieldConfig && fieldConfig.silent;
