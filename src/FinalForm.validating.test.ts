@@ -1657,215 +1657,158 @@ describe("Field.validation", () => {
 });
 
 describe('async validation race conditions (#509)', () => {
-  it('should not suppress validation errors when multiple fields validate concurrently', async () => {
-    const form = createForm({
-      onSubmit: onSubmitMock,
-    })
-
-    const field1Spy = jest.fn()
-    const field2Spy = jest.fn()
+  // Test Case 1: Overlapping validations on a single field
+  // Verifies that validating flag stays true until ALL validations complete
+  it('should keep validating=true until all overlapping validations complete', async () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const spy = jest.fn();
     
-    let resolveField1: (error?: string) => void
-    let resolveField2: (error?: string) => void
-    
-    const field1Validator = jest.fn(() => 
-      new Promise<string | undefined>(resolve => {
-        resolveField1 = resolve
-      })
-    )
-    
-    const field2Validator = jest.fn(() => 
-      new Promise<string | undefined>(resolve => {
-        resolveField2 = resolve
-      })
-    )
-
-    // Register field1 with async validator
-    form.registerField(
-      'field1',
-      field1Spy,
-      { error: true, validating: true },
-      { 
-        validateFields: [],
-        getValidator: () => field1Validator
-      }
-    )
-
-    // Register field2 with async validator
-    form.registerField(
-      'field2',
-      field2Spy,
-      { error: true, validating: true },
-      { 
-        validateFields: [],
-        getValidator: () => field2Validator
-      }
-    )
-
-    // Change both fields rapidly (triggering concurrent validations)
-    form.change('field1', 'value1')
-    form.change('field2', 'value2')
-    await sleep(5)
-
-    // Both should be validating
-    expect(field1Spy).toHaveBeenCalledWith(
-      expect.objectContaining({ validating: true })
-    )
-    expect(field2Spy).toHaveBeenCalledWith(
-      expect.objectContaining({ validating: true })
-    )
-
-    // Resolve field2 first with an error
-    resolveField2!('field2 error')
-    await sleep(10)
-
-    console.log('\nfield2 calls after resolution:',  field2Spy.mock.calls.length);
-    field2Spy.mock.calls.forEach((call: any, i: number) => {
-      console.log(`  Call ${i}: validating=${call[0].validating}, error=${call[0].error}`);
-    });
-
-    // field2 should show error and not be validating
-    expect(field2Spy).toHaveBeenCalledWith(
-      expect.objectContaining({ 
-        error: 'field2 error',
-        validating: false 
-      })
-    )
-
-    // Resolve field1 with an error
-    resolveField1!('field1 error')
-    await sleep(10)
-
-    // field1 error should NOT be suppressed
-    expect(field1Spy).toHaveBeenCalledWith(
-      expect.objectContaining({ 
-        error: 'field1 error',
-        validating: false 
-      })
-    )
-  })
-
-  it('should not reset validating flag when overlapping validations occur', async () => {
-    const form = createForm({
-      onSubmit: onSubmitMock,
-    })
-
-    const fieldSpy = jest.fn()
-    
-    let resolveFirst: (error?: string) => void
-    let resolveSecond: (error?: string) => void
-    let callCount = 0
-    
-    const validator = jest.fn((value) => {
-      callCount++
-      if (callCount === 1) {
-        return new Promise<string | undefined>(resolve => {
-          resolveFirst = resolve
-        })
-      } else {
-        return new Promise<string | undefined>(resolve => {
-          resolveSecond = resolve
-        })
-      }
-    })
-
-    form.registerField(
-      'field',
-      fieldSpy,
-      { error: true, validating: true },
-      { 
-        validateFields: [],
-        getValidator: () => validator
-      }
-    )
-
-    // Trigger first validation
-    form.change('field', 'value1')
-    await sleep(5)
-    expect(fieldSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ validating: true })
-    )
-
-    // Trigger second validation while first is still pending
-    form.change('field', 'value2')
-    await sleep(5)
-
-    // Should still be validating (2 pending validations)
-    expect(fieldSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ validating: true })
-    )
-
-    // Resolve first validation
-    resolveFirst!(undefined)
-    await sleep(10)
-
-    // Should STILL be validating because second validation is still pending
-    expect(fieldSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ validating: true })
-    )
-
-    // Resolve second validation
-    resolveSecond!('error from second')
-    await sleep(10)
-
-    // Now should not be validating and should have the error from second validation
-    expect(fieldSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ 
-        validating: false,
-        error: 'error from second'
-      })
-    )
-  })
-
-  it('should ignore stale validation results when field is re-registered', async () => {
-    const form = createForm({
-      onSubmit: onSubmitMock,
-    })
-
-    const fieldSpy = jest.fn()
-    
-    let resolveValidation: (error?: string) => void
+    const resolvers: Array<(error?: string) => void> = [];
     
     const validator = jest.fn(() => 
       new Promise<string | undefined>(resolve => {
-        resolveValidation = resolve
+        resolvers.push(resolve);
       })
-    )
+    );
+
+    form.registerField(
+      'email',
+      spy,
+      { validating: true, error: true },
+      { validateFields: [], getValidator: () => validator }
+    );
+
+    // Trigger first validation
+    form.change('email', 'test1@example.com');
+    await sleep(5);
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ validating: true }));
+
+    // Trigger second validation while first is still pending
+    form.change('email', 'test2@example.com');
+    await sleep(5);
+
+    // Resolve all but the last validation
+    for (let i = 0; i < resolvers.length - 1; i++) {
+      resolvers[i](undefined);
+      await sleep(5);
+    }
+
+    // validating should STILL be true (last validation pending)
+    const callsAfterPartialResolve = spy.mock.calls.filter(c => !c[0].validating);
+    expect(callsAfterPartialResolve.length).toBe(0);
+
+    // Resolve last validation (with error)
+    resolvers[resolvers.length - 1]('Invalid email');
+    await sleep(10);
+
+    // NOW validating should be false and error should be applied
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({ 
+        validating: false,
+        error: 'Invalid email'
+      })
+    );
+  });
+
+  // Test Case 2: Stale validation results should be ignored
+  // Verifies that validation results from a superseded validation run are discarded
+  it('should ignore stale validation results when field is re-registered', async () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const spy = jest.fn();
+    
+    const resolvers: Array<(error?: string) => void> = [];
+    
+    const validator = jest.fn(() => 
+      new Promise<string | undefined>(resolve => {
+        resolvers.push(resolve);
+      })
+    );
 
     // Register field with async validator
     const unregister = form.registerField(
-      'field',
-      fieldSpy,
-      { error: true, validating: true },
-      { 
-        validateFields: [],
-        getValidator: () => validator
-      }
-    )
+      'username',
+      spy,
+      { validating: true, error: true },
+      { validateFields: [], getValidator: () => validator }
+    );
 
     // Trigger validation
-    form.change('field', 'value1')
-    await sleep(5)
+    form.change('username', 'oldvalue');
+    await sleep(5);
 
-    // Unregister and re-register field (simulating unmount/remount)
-    unregister()
+    const staleResolversCount = resolvers.length;
+
+    // Unregister field (simulating unmount)
+    unregister();
+    
+    // Re-register field (simulating remount with new instance)
     form.registerField(
-      'field',
-      fieldSpy,
-      { error: true, validating: true },
-      { 
-        validateFields: [],
-        getValidator: () => validator
-      }
-    )
+      'username',
+      spy,
+      { validating: true, error: true },
+      { validateFields: [], getValidator: () => validator }
+    );
 
-    // Resolve the stale validation
-    resolveValidation!('stale error')
-    await sleep(10)
+    // Resolve all the stale validations from old instance
+    for (let i = 0; i < staleResolversCount; i++) {
+      resolvers[i]('stale error');
+    }
+    await sleep(10);
 
-    // Should NOT apply stale validation result (field was re-registered with new instanceId)
-    const calls = fieldSpy.mock.calls
-    const latestCall = calls[calls.length - 1]
-    expect(latestCall[0].error).not.toBe('stale error')
-  })
-})
+    // The stale error should NOT be applied to the new field instance
+    const allCalls = spy.mock.calls;
+    const errorsFound = allCalls.filter(c => c[0].error === 'stale error');
+    expect(errorsFound.length).toBe(0);
+  });
+
+  // Test Case 3: Error from latest validation should be applied
+  // Verifies that when multiple validations run, the error from the most recent one wins
+  it('should apply error from most recent validation, not first', async () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const spy = jest.fn();
+    
+    const resolvers: Array<(error?: string) => void> = [];
+    
+    const validator = jest.fn(() => 
+      new Promise<string | undefined>(resolve => {
+        resolvers.push(resolve);
+      })
+    );
+
+    form.registerField(
+      'password',
+      spy,
+      { validating: true, error: true },
+      { validateFields: [], getValidator: () => validator }
+    );
+
+    // Trigger first validation
+    form.change('password', 'weak');
+    await sleep(5);
+
+    // Trigger second validation (supersedes first)
+    form.change('password', 'strong123');
+    await sleep(5);
+
+    const validatorCallCount = validator.mock.calls.length;
+
+    // Resolve the LAST validation first (no error)
+    resolvers[validatorCallCount - 1](undefined);
+    await sleep(10);
+
+    // Resolve earlier validations with errors
+    for (let i = 0; i < validatorCallCount - 1; i++) {
+      resolvers[i]('Password too weak');
+    }
+    await sleep(10);
+
+    // The error from earlier validations should be IGNORED (superseded by latest)
+    // Field should have no error and validating should be false
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({ 
+        validating: false,
+        error: undefined
+      })
+    );
+  });
+});
