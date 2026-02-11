@@ -911,6 +911,7 @@ function createForm<
         validating: false,
         asyncValidationCount: 0,
         asyncValidationKey: 0,
+        instanceId: undefined,
         visited: false,
         blur: () => api.blur(name),
         change: (value) => api.change(name, value),
