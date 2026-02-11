@@ -174,7 +174,7 @@ export interface InternalFieldState<FieldValue = any> {
   change: (value: any) => void;
   data: AnyObject;
   focus: () => void;
-  instanceId: number;
+  instanceId?: number;
   isEqual: IsEqual;
   lastFieldState?: FieldState<FieldValue>;
   length?: any;
