@@ -911,7 +911,6 @@ function createForm<
         validating: false,
         asyncValidationCount: 0,
         asyncValidationKey: 0,
-        instanceId: 0, // Temporary, will be assigned below
         visited: false,
         blur: () => api.blur(name),
         change: (value) => api.change(name, value),
