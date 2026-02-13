@@ -1194,6 +1194,14 @@ function createForm<
 
       formState.lastSubmittedValues = { ...formState.values };
 
+      // Call beforeSubmit first to allow fields to format values (e.g., formatOnBlur)
+      // before validation runs. This ensures that when submitting via Enter key,
+      // the formatOnBlur logic runs before checking for sync errors.
+      const submitIsBlocked = beforeSubmit();
+      if (submitIsBlocked) {
+        return Promise.resolve(undefined);
+      }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched();
         resetModifiedAfterSubmit();
@@ -1220,10 +1228,6 @@ function createForm<
             return undefined;
           }
         ) as Promise<FormValues | undefined>;
-      }
-      const submitIsBlocked = beforeSubmit();
-      if (submitIsBlocked) {
-        return Promise.resolve(undefined);
       }
 
       let resolvePromise: any
