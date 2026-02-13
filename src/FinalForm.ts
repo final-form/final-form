@@ -189,7 +189,7 @@ function createForm<
   const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
     fieldSubscribers: {},
-    fields: Object.create(null),
+    fields: {},
     formState: {
       asyncErrors: {},
       dirtySinceLastSubmit: false,
@@ -251,7 +251,8 @@ function createForm<
   };
   const renameField: RenameField<FormValues, InitialFormValues> = (state, from, to) => {
     if (state.fields[from]) {
-      state.fields = Object.assign(Object.create(null), state.fields, {
+      state.fields = {
+        ...state.fields,
         [to]: {
           ...state.fields[from],
           name: to,
@@ -261,7 +262,7 @@ function createForm<
           focus: () => api.focus(to as keyof FormValues),
           lastFieldState: undefined,
         },
-      });
+      };
       delete state.fields[from];
       state.fieldSubscribers = {
         ...state.fieldSubscribers,
