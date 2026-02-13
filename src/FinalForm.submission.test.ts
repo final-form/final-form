@@ -1311,12 +1311,13 @@ describe("FinalForm.submission", () => {
       // Submit the form (like pressing Enter key)
       form.submit();
 
-      // Validation should have been called
+      // Validation should have been called multiple times
       expect(validate).toHaveBeenCalled();
       
-      // The value passed to validation should be trimmed (formatted)
-      const validatedValue = validate.mock.calls[0][0].username;
-      expect(validatedValue).toBe("test");
+      // The FINAL validation call (during submit) should have the trimmed value
+      const lastCallIndex = validate.mock.calls.length - 1;
+      const validatedValues = validate.mock.calls[lastCallIndex][0];
+      expect(validatedValues.username).toBe("test");
       
       // The form should have submitted successfully (no validation errors)
       expect(onSubmit).toHaveBeenCalled();
@@ -1365,7 +1366,10 @@ describe("FinalForm.submission", () => {
 
       // Validation should have been called with the trimmed (empty) value
       expect(validate).toHaveBeenCalled();
-      expect(validate.mock.calls[0][0].username).toBe("");
+      
+      // The FINAL validation call (during submit) should have the trimmed empty value
+      const lastCallIndex = validate.mock.calls.length - 1;
+      expect(validate.mock.calls[lastCallIndex][0].username).toBe("");
       
       // The form should NOT have submitted (validation failed)
       expect(onSubmit).not.toHaveBeenCalled();
