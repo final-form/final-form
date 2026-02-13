@@ -476,6 +476,7 @@ function createForm<
             // make sure field is still registered
             // field-level errors take precedent over record-level errors
             const recordLevelError = getIn(recordLevelErrors, name);
+            const asyncRecordLevelError = afterAsync ? getIn(asyncRecordLevelErrors, name) : undefined;
             const errorFromParent = getIn(merged, name);
             const hasFieldLevelValidation = getValidators(safeFields[name])
               .length;
@@ -483,7 +484,7 @@ function createForm<
             fn(
               name,
               (hasFieldLevelValidation && fieldLevelError) ||
-              (validate && recordLevelError) ||
+              (validate && (asyncRecordLevelError || recordLevelError)) ||
               (!recordLevelError && !limitedFieldLevelValidation
                 ? errorFromParent
                 : undefined),
