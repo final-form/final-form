@@ -668,9 +668,14 @@ describe("FinalForm.submission", () => {
     form.change("foo", "baz");
     form.submit();
 
+    // FIX #437: When sync validation fails, submitErrors should be preserved
+    // (they should NOT be cleared since we're not actually submitting)
     expect(spy).toHaveBeenLastCalledWith({
-      submitError: undefined,
-      submitErrors: undefined,
+      submitError: submitErrorText,
+      submitErrors: {
+        [FORM_ERROR]: submitErrorText,
+        foo: fooSubmitErrorText,
+      },
     });
   });
 

@@ -38,6 +38,7 @@ describe("FinalForm.registerField", () => {
     expect(typeof spy.mock.calls[0][0].focus).toBe("function");
     expect(typeof spy.mock.calls[0][0].change).toBe("function");
   });
+
 });
 
   it("should fix up field even when blur/change/focus are explicitly set to null", () => {

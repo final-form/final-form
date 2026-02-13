@@ -1193,8 +1193,6 @@ function createForm<
         return Promise.resolve(undefined);
       }
 
-      delete formState.submitErrors;
-      delete formState.submitError;
       formState.lastSubmittedValues = { ...formState.values };
 
       if (hasSyncErrors()) {
@@ -1205,6 +1203,10 @@ function createForm<
         notifyFieldListeners(undefined);
         return Promise.resolve(undefined);
       }
+
+      // Only clear submit errors if we're actually proceeding with submission
+      delete formState.submitErrors;
+      delete formState.submitError;
       const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises);
       if (asyncValidationPromisesKeys.length) {
         // still waiting on async validation to complete...
