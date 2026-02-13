@@ -1650,3 +1650,45 @@ describe("Field.validation", () => {
     expect(formSub).toHaveBeenCalledTimes(5);
   });
 });
+
+describe("FinalForm.dirty - Issue #487", () => {
+  it("should remain dirty after removing all items from an array field (unregistered field)", () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      initialValues: {
+        items: ["a", "b", "c"],
+      },
+    });
+
+    // NOTE: Don't register the field - this simulates using FieldArray
+    // where you only register individual items, not the array itself
+
+    const spy = jest.fn();
+    form.subscribe(spy, { dirty: true, pristine: true, values: true });
+
+    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0].dirty).toBe(false);
+    expect(spy.mock.calls[0][0].pristine).toBe(true);
+    expect(spy.mock.calls[0][0].values).toEqual({ items: ["a", "b", "c"] });
+
+    // Remove one item - should be dirty
+    form.change("items", ["a", "b"]);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls[1][0].dirty).toBe(true);
+    expect(spy.mock.calls[1][0].pristine).toBe(false);
+
+    // Remove another - should still be dirty
+    form.change("items", ["a"]);
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(spy.mock.calls[2][0].dirty).toBe(true);
+    expect(spy.mock.calls[2][0].pristine).toBe(false);
+
+    // Remove last item - should STILL be dirty! (Bug #487)
+    form.change("items", []);
+    expect(spy).toHaveBeenCalledTimes(4);
+    expect(spy.mock.calls[3][0].dirty).toBe(true); // This should be true
+    expect(spy.mock.calls[3][0].pristine).toBe(false); // This should be false
+    expect(spy.mock.calls[3][0].values).toEqual({ items: [] });
+  });
+});

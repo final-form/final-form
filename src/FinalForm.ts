@@ -604,6 +604,24 @@ function createForm<
       }
       return result;
     }, {});
+
+    // FIX #487: For unregistered fields, check if their values differ from initialValues
+    // This handles cases like FieldArray where the array itself isn't registered
+    if (!foundDirty) {
+      const allKeys = [
+        ...Object.keys(formState.values || {}),
+        ...Object.keys(formState.initialValues || {})
+      ];
+      const unregisteredKeys = allKeys.filter(key => !safeFields[key]);
+      for (const key of unregisteredKeys) {
+        const currentValue = (formState.values as any)?.[key];
+        const initialValue = (formState.initialValues as any)?.[key];
+        if (!shallowEqual(currentValue, initialValue)) {
+          foundDirty = true;
+          break;
+        }
+      }
+    }
     const dirtyFieldsSinceLastSubmit = safeFieldKeys.reduce((result, key) => {
       // istanbul ignore next
       const nonNullLastSubmittedValues = formState.lastSubmittedValues || {}; // || {} is for flow, but causes branch coverage complaint
