@@ -3,6 +3,20 @@ import type { SetIn } from "../types";
 
 type State = object | any[] | undefined;
 
+/**
+ * Check if a key is a valid array index (non-negative integer)
+ * Valid: "0", "1", "42"
+ * Invalid: "5.1.1", "01", "-1", "foo", "3.14"
+ */
+const isValidArrayIndex = (key: string): boolean => {
+  const num = Number(key);
+  // Check if:
+  // 1. It's not NaN
+  // 2. It's a non-negative integer
+  // 3. The string representation matches (prevents "01" from being treated as 1)
+  return !isNaN(num) && Number.isInteger(num) && num >= 0 && String(num) === key;
+};
+
 const setInRecursor = (
   current: State,
   index: number,
@@ -17,7 +31,7 @@ const setInRecursor = (
   const key = path[index];
 
   // determine type of key
-  if (isNaN(Number(key))) {
+  if (!isValidArrayIndex(key)) {
     // object set
     if (current === undefined || current === null) {
       // recurse
@@ -51,12 +65,17 @@ const setInRecursor = (
       }
       if ((current as any)[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
-        if (!isNaN(Number(path[index - 1])) && !destroyArrays) {
+        if (isValidArrayIndex(path[index - 1]) && !destroyArrays) {
           // we are in an array, so return an empty object
           return {};
         } else {
           return undefined;
         }
+      }
+      // Strings cannot have custom properties, and destructuring converts them to objects
+      // with numeric keys. Return the string as-is to preserve field-level error messages.
+      if (typeof current === 'string') {
+        return current;
       }
       const { [key]: _removed, ...final } = current as any;
       return final;
@@ -90,7 +109,26 @@ const setInRecursor = (
     return array;
   }
   if (!Array.isArray(current)) {
-    throw new Error("Cannot set a numeric property on an object");
+    // FIX #482: If we have an object but need to set a numeric property,
+    // convert it to an array. This can happen when validating both the array
+    // as a whole and individual array items (e.g., with ARRAY_ERROR).
+    if (typeof current === 'object' && current !== null) {
+      // Convert object to array, preserving any existing properties like ARRAY_ERROR
+      const array: any[] = [];
+      Object.keys(current).forEach(k => {
+        const idx = Number(k);
+        if (!isNaN(idx)) {
+          // Transfer numeric keys as array indices
+          array[idx] = (current as any)[k];
+        } else {
+          // Preserve non-numeric keys (like ARRAY_ERROR) on the array
+          (array as any)[k] = (current as any)[k];
+        }
+      });
+      current = array;
+    } else {
+      throw new Error("Cannot set a numeric property on an object");
+    }
   }
   // recurse
   const existingValue = current[numericKey];
@@ -103,7 +141,13 @@ const setInRecursor = (
   );
 
   // current exists, so make a copy of all its values, and add/update the new one
-  const array = [...current];
+  const array = [...(current as any[])];
+  // FIX #482: Preserve custom properties (like ARRAY_ERROR) from the original array
+  Object.keys(current).forEach(k => {
+    if (isNaN(Number(k))) {
+      (array as any)[k] = (current as any)[k];
+    }
+  });
   if (destroyArrays && result === undefined) {
     array.splice(numericKey, 1);
     if (array.length === 0) {

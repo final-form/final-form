@@ -188,8 +188,8 @@ function createForm<
 
   const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
-    fieldSubscribers: {},
-    fields: {},
+    fieldSubscribers: Object.create(null),
+    fields: Object.create(null),
     formState: {
       asyncErrors: {},
       dirtySinceLastSubmit: false,
@@ -251,8 +251,7 @@ function createForm<
   };
   const renameField: RenameField<FormValues, InitialFormValues> = (state, from, to) => {
     if (state.fields[from]) {
-      state.fields = {
-        ...state.fields,
+      state.fields = Object.assign(Object.create(null), state.fields, {
         [to]: {
           ...state.fields[from],
           name: to,
@@ -262,12 +261,11 @@ function createForm<
           focus: () => api.focus(to as keyof FormValues),
           lastFieldState: undefined,
         },
-      };
+      });
       delete state.fields[from];
-      state.fieldSubscribers = {
-        ...state.fieldSubscribers,
+      state.fieldSubscribers = Object.assign(Object.create(null), state.fieldSubscribers, {
         [to]: state.fieldSubscribers[from],
-      };
+      });
       delete state.fieldSubscribers[from];
       const value = getIn(state.formState.values as object, from);
       state.formState.values =
@@ -476,6 +474,7 @@ function createForm<
             // make sure field is still registered
             // field-level errors take precedent over record-level errors
             const recordLevelError = getIn(recordLevelErrors, name);
+            const asyncRecordLevelError = afterAsync ? getIn(asyncRecordLevelErrors, name) : undefined;
             const errorFromParent = getIn(merged, name);
             const hasFieldLevelValidation = getValidators(safeFields[name])
               .length;
@@ -483,7 +482,7 @@ function createForm<
             fn(
               name,
               (hasFieldLevelValidation && fieldLevelError) ||
-              (validate && recordLevelError) ||
+              (validate && (asyncRecordLevelError || recordLevelError)) ||
               (!recordLevelError && !limitedFieldLevelValidation
                 ? errorFromParent
                 : undefined),
@@ -1215,6 +1214,14 @@ function createForm<
 
       formState.lastSubmittedValues = { ...formState.values };
 
+      // Call beforeSubmit first to allow fields to format values (e.g., formatOnBlur)
+      // before validation runs. This ensures that when submitting via Enter key,
+      // the formatOnBlur logic runs before checking for sync errors.
+      const submitIsBlocked = beforeSubmit();
+      if (submitIsBlocked) {
+        return Promise.resolve(undefined);
+      }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched();
         resetModifiedAfterSubmit();
@@ -1241,10 +1248,6 @@ function createForm<
             return undefined;
           }
         ) as Promise<FormValues | undefined>;
-      }
-      const submitIsBlocked = beforeSubmit();
-      if (submitIsBlocked) {
-        return Promise.resolve(undefined);
       }
 
       let resolvePromise: any

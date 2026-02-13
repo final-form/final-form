@@ -1649,6 +1649,56 @@ describe("Field.validation", () => {
     await sleep(130);
     expect(formSub).toHaveBeenCalledTimes(5);
   });
+
+  it('should handle nested field-level errors correctly', () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const range = jest.fn();
+    const min = jest.fn();
+    const max = jest.fn();
+    const validate = jest.fn((value: any) =>
+      value && value.max < value.min ? 'Invalid range' : undefined
+    );
+    const spy = jest.fn();
+    form.subscribe(spy, { errors: true });
+    form.registerField(
+      'range',
+      range,
+      { error: true },
+      {
+        getValidator: () => validate
+      }
+    );
+    form.registerField('range.min', min, { error: true });
+    form.registerField('range.max', max, { error: true });
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(validate.mock.calls[0][0]).toBeUndefined();
+    expect(range).toHaveBeenCalledTimes(1);
+    expect(range.mock.calls[0][0].error).toBeUndefined();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0].errors).toEqual({});
+
+    // set min to 10
+    form.change('range.min', 10);
+
+    expect(validate).toHaveBeenCalledTimes(2);
+    expect(validate.mock.calls[1][0]).toEqual({ min: 10 });
+    expect(range).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    // set max to 5 (invalid: max < min)
+    form.change('range.max', 5);
+
+    expect(validate).toHaveBeenCalledTimes(3);
+    expect(validate.mock.calls[2][0]).toEqual({ min: 10, max: 5 });
+    expect(range).toHaveBeenCalledTimes(2);
+    expect(range.mock.calls[1][0].error).toEqual('Invalid range');
+    expect(spy).toHaveBeenCalledTimes(2);
+    // Bug: without the fix, errors becomes { range: { min: undefined, max: undefined } }
+    // instead of { range: 'Invalid range' }
+    expect(spy.mock.calls[1][0].errors).toEqual({
+      range: 'Invalid range'
+    });
+  });
 });
 
 describe("FinalForm.dirty - Issue #487", () => {
