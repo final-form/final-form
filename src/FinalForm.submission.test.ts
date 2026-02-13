@@ -1262,4 +1262,113 @@ describe("FinalForm.submission", () => {
       console.error.mockRestore();
     });
   });
+
+  describe("formatOnBlur integration with submit", () => {
+    it("should call beforeSubmit (formatOnBlur) before validation when submitting", () => {
+      // This test verifies the fix for react-final-form#1044
+      // Before the fix, validation ran before beforeSubmit, so formatOnBlur
+      // didn't apply when submitting via Enter key (form.submit())
+      
+      const onSubmit = jest.fn();
+      const validate = jest.fn((values) => {
+        const errors: any = {};
+        // This validation expects trimmed values
+        if (!values.username || values.username.length === 0) {
+          errors.username = "Required";
+        }
+        return errors;
+      });
+
+      const form = createForm({ onSubmit, validate });
+      
+      const format = (value) => value?.trim() || "";
+      let fieldChange;
+      let fieldValue;
+
+      form.registerField(
+        "username",
+        (state) => {
+          fieldChange = state.change;
+          fieldValue = state.value;
+        },
+        { value: true },
+        {
+          beforeSubmit: () => {
+            // formatOnBlur logic: apply format before submit
+            const currentValue = form.getFieldState("username")?.value;
+            const formatted = format(currentValue);
+            if (formatted !== currentValue) {
+              form.change("username", formatted);
+            }
+          },
+        }
+      );
+
+      // Set a value with trailing spaces
+      fieldChange("test     ");
+      expect(fieldValue).toBe("test     ");
+
+      // Submit the form (like pressing Enter key)
+      form.submit();
+
+      // Validation should have been called
+      expect(validate).toHaveBeenCalled();
+      
+      // The value passed to validation should be trimmed (formatted)
+      const validatedValue = validate.mock.calls[0][0].username;
+      expect(validatedValue).toBe("test");
+      
+      // The form should have submitted successfully (no validation errors)
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onSubmit.mock.calls[0][0]).toEqual({ username: "test" });
+    });
+
+    it("should not submit if validation fails after formatOnBlur", () => {
+      // This test ensures validation still works correctly after formatting
+      
+      const onSubmit = jest.fn();
+      const validate = jest.fn((values) => {
+        const errors: any = {};
+        if (!values.username || values.username.length === 0) {
+          errors.username = "Required";
+        }
+        return errors;
+      });
+
+      const form = createForm({ onSubmit, validate });
+      
+      const format = (value) => value?.trim() || "";
+      let fieldChange;
+
+      form.registerField(
+        "username",
+        (state) => {
+          fieldChange = state.change;
+        },
+        { value: true },
+        {
+          beforeSubmit: () => {
+            const currentValue = form.getFieldState("username")?.value;
+            const formatted = format(currentValue);
+            if (formatted !== currentValue) {
+              form.change("username", formatted);
+            }
+          },
+        }
+      );
+
+      // Set a value that will be empty after trimming
+      fieldChange("     ");
+
+      // Submit the form
+      form.submit();
+
+      // Validation should have been called with the trimmed (empty) value
+      expect(validate).toHaveBeenCalled();
+      expect(validate.mock.calls[0][0].username).toBe("");
+      
+      // The form should NOT have submitted (validation failed)
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+  });
 });
