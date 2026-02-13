@@ -126,7 +126,7 @@ const setInRecursor = (
   );
 
   // current exists, so make a copy of all its values, and add/update the new one
-  const array = [...cur];
+  const array = [...(cur as any[])];
   // FIX #482: Preserve custom properties (like ARRAY_ERROR) from the original array
   Object.keys(current).forEach(k => {
     if (isNaN(Number(k))) {
