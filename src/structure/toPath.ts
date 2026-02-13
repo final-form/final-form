@@ -43,7 +43,7 @@ const stringToPath = (string: string): string[] => {
   return result;
 };
 
-const keysCache: { [key: string]: string[] } = {};
+const keysCache: { [key: string]: string[] } = Object.create(null);
 const keysRegex = /[.[\]]+/;
 
 const toPath = (key: string): string[] => {
