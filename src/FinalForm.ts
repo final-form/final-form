@@ -919,9 +919,9 @@ function createForm<
       };
       // Mutators can create a field in order to keep the field states
       // We must update this field when registerField is called afterwards
-      field.blur = field.blur || (() => api.blur(name));
-      field.change = field.change || ((value) => api.change(name, value));
-      field.focus = field.focus || (() => api.focus(name));
+      if (typeof field.blur !== 'function') field.blur = () => api.blur(name);
+      if (typeof field.change !== 'function') field.change = (value) => api.change(name, value);
+      if (typeof field.focus !== 'function') field.focus = () => api.focus(name);
       field.isEqual =
         (fieldConfig && fieldConfig.isEqual) ||
         (state.fields[name as string] && state.fields[name as string].isEqual) ||
