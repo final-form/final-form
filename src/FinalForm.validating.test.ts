@@ -1649,4 +1649,99 @@ describe("Field.validation", () => {
     await sleep(130);
     expect(formSub).toHaveBeenCalledTimes(5);
   });
+
+  it("should preserve ARRAY_ERROR from async record-level validation", async () => {
+    // Regression test for #479
+    // Before the fix, ARRAY_ERROR from async validation was lost because
+    // the error processing logic only checked recordLevelErrors (sync) but
+    // not asyncRecordLevelErrors when determining which error to use
+
+    const validate = jest.fn(async (values) => {
+      await sleep(10); // Make it async
+      const errors: any = {};
+      
+      // Return array-level error with ARRAY_ERROR
+      errors.items = [];
+      errors.items[ARRAY_ERROR] = "Need at least 3 items";
+      
+      return errors;
+    });
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate,
+      initialValues: {
+        items: ["one", "two"],
+      },
+    });
+
+    const itemsSpy = jest.fn();
+    form.registerField("items", itemsSpy, { error: true });
+
+    // Initially no error (validation hasn't run yet)
+    expect(itemsSpy).toHaveBeenCalledTimes(1);
+    expect(itemsSpy.mock.calls[0][0].error).toBeUndefined();
+
+    // Trigger validation by changing a value
+    form.change("items", ["one"]);
+
+    // Wait for async validation to complete
+    await sleep(20);
+
+    // After async validation, the ARRAY_ERROR should be present
+    expect(itemsSpy.mock.calls[itemsSpy.mock.calls.length - 1][0].error).toBe(
+      "Need at least 3 items"
+    );
+  });
+
+  it("should preserve ARRAY_ERROR from async validation alongside item-level errors", async () => {
+    // Test that ARRAY_ERROR works correctly with both array-level and item-level errors
+
+    const validate = jest.fn(async (values) => {
+      await sleep(10); // Make it async
+      const errors: any = {};
+      
+      // Item-level errors
+      errors.items = values.items.map((value) =>
+        value ? undefined : "Required"
+      );
+      
+      // Array-level error
+      errors.items[ARRAY_ERROR] = "Need more items";
+      
+      return errors;
+    });
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      validate,
+      initialValues: {
+        items: ["Dog", ""],
+      },
+    });
+
+    const itemsSpy = jest.fn();
+    const items0Spy = jest.fn();
+    const items1Spy = jest.fn();
+    
+    form.registerField("items", itemsSpy, { error: true });
+    form.registerField("items[0]", items0Spy, { error: true });
+    form.registerField("items[1]", items1Spy, { error: true });
+
+    // Trigger async validation
+    form.change("items[0]", "Cat");
+
+    // Wait for async validation to complete
+    await sleep(20);
+
+    // Array-level error should be present
+    const itemsLastCall = itemsSpy.mock.calls[itemsSpy.mock.calls.length - 1][0];
+    expect(itemsLastCall.error).toBe("Need more items");
+    
+    // Item-level errors should also be present
+    const items0LastCall = items0Spy.mock.calls[items0Spy.mock.calls.length - 1][0];
+    const items1LastCall = items1Spy.mock.calls[items1Spy.mock.calls.length - 1][0];
+    expect(items0LastCall.error).toBeUndefined(); // "Cat" is valid
+    expect(items1LastCall.error).toBe("Required"); // "" is invalid
+  });
 });
