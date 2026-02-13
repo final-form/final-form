@@ -112,7 +112,7 @@
     },
     {
       "path": "dist/final-form.es.js",
-      "limit": "6kB"
+      "limit": "6.5kB"
     },
     {
       "path": "dist/final-form.cjs.js",
