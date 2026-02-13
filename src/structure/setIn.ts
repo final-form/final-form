@@ -125,6 +125,10 @@ const setInRecursor = (
           (array as any)[k] = (current as any)[k];
         }
       });
+      // Also preserve Symbol keys (like ARRAY_ERROR)
+      Object.getOwnPropertySymbols(current).forEach(sym => {
+        (array as any)[sym] = (current as any)[sym];
+      });
       current = array;
     } else {
       throw new Error("Cannot set a numeric property on an object");

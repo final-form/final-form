@@ -737,6 +737,7 @@ function createForm<
 
   // generate initial errors
   runValidation(undefined, () => {
+    notifyFieldListeners(undefined);
     notifyFormListeners();
   });
 
