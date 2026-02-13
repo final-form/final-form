@@ -1,4 +1,8 @@
-import type { InternalFieldState, InternalFormState, FieldState } from "./types";
+import type {
+  InternalFieldState,
+  InternalFormState,
+  FieldState,
+} from "./types";
 import getIn from "./structure/getIn";
 import { ARRAY_ERROR } from "./constants";
 
@@ -7,7 +11,7 @@ import { ARRAY_ERROR } from "./constants";
  */
 function publishFieldState<FormValues = Record<string, any>>(
   formState: InternalFormState<FormValues>,
-  field: InternalFieldState
+  field: InternalFieldState,
 ): FieldState {
   const {
     errors,
@@ -73,4 +77,4 @@ function publishFieldState<FormValues = Record<string, any>>(
   };
 }
 
-export default publishFieldState; 
+export default publishFieldState;

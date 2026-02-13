@@ -103,7 +103,9 @@ describe("TypeScript types", () => {
     form7.restart({ foo: undefined });
 
     // Test form state properties
-    expect(formState.active === undefined || typeof formState.active === "string").toBe(true);
+    expect(
+      formState.active === undefined || typeof formState.active === "string",
+    ).toBe(true);
     expect(typeof formState.dirty).toBe("boolean");
     expect(typeof formState.dirtyFields).toBe("object");
     expect(formState.dirtyFields).toBeDefined();
@@ -115,8 +117,8 @@ describe("TypeScript types", () => {
     if (formState.error) {
       expect(
         typeof formState.error === "string" ||
-        typeof formState.error === "boolean" ||
-        typeof formState.error === "object"
+          typeof formState.error === "boolean" ||
+          typeof formState.error === "object",
       ).toBe(true);
     }
 
@@ -135,7 +137,7 @@ describe("TypeScript types", () => {
     if (formState.submitError !== undefined) {
       expect(
         typeof formState.submitError === "string" ||
-        typeof formState.submitError === "object"
+          typeof formState.submitError === "object",
       ).toBe(true);
     }
 

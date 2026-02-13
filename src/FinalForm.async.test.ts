@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values: any) => { };
+const onSubmitMock = (values: any) => {};
 
 describe("FinalForm.async", () => {
   it("should register field synchronously by default", () => {
@@ -38,7 +38,7 @@ describe("FinalForm.async", () => {
 
     const form = createForm({
       onSubmit: onSubmitMock,
-      callbackScheduler: customScheduler
+      callbackScheduler: customScheduler,
     });
     const spy = jest.fn();
 
@@ -62,7 +62,7 @@ describe("FinalForm.async", () => {
 
     const form = createForm({
       onSubmit: onSubmitMock,
-      callbackScheduler: customScheduler
+      callbackScheduler: customScheduler,
     });
     const spy1 = jest.fn();
     const spy2 = jest.fn();
@@ -150,8 +150,8 @@ describe("FinalForm.async", () => {
       { error: true, value: true },
       {
         async: true,
-        getValidator: () => (value: any) => value ? undefined : "Required"
-      }
+        getValidator: () => (value: any) => (value ? undefined : "Required"),
+      },
     );
 
     setTimeout(() => {
@@ -172,8 +172,8 @@ describe("FinalForm.async", () => {
       { value: true },
       {
         async: true,
-        initialValue: "test"
-      }
+        initialValue: "test",
+      },
     );
 
     setTimeout(() => {
@@ -201,4 +201,4 @@ describe("FinalForm.async", () => {
       done();
     }, 10);
   });
-}); 
+});

@@ -22,4 +22,4 @@ const shallowEqual: IsEqual = (a: any, b: any): boolean => {
   return true;
 };
 
-export default shallowEqual; 
+export default shallowEqual;

@@ -6,7 +6,7 @@ export default function subscriptionFilter<T extends Record<string, any>>(
   previous: T | undefined,
   subscription: Record<string, boolean>,
   keys: string[],
-  shallowEqualKeys: string[]
+  shallowEqualKeys: string[],
 ): boolean {
   let different = false;
   keys.forEach((key) => {

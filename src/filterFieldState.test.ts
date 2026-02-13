@@ -93,9 +93,9 @@ describe("restart", () => {
     const fieldName = "fooField";
 
     const form = createForm({
-      onSubmit: () => { },
+      onSubmit: () => {},
     });
-    form.registerField(fieldName, () => { });
+    form.registerField(fieldName, () => {});
 
     function isTouched() {
       return form.getState().touched[fieldName];

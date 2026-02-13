@@ -11,7 +11,7 @@ const filterFieldState: StateFilter<FieldState> = (
   state: FieldState,
   previousState: FieldState | undefined,
   subscription: FieldSubscription,
-  force: boolean
+  force: boolean,
 ): FieldState | undefined => {
   const result: FieldState = {
     blur: state.blur,
@@ -26,9 +26,9 @@ const filterFieldState: StateFilter<FieldState> = (
       previousState,
       subscription as Record<string, boolean>,
       fieldSubscriptionItems as unknown as string[],
-      shallowEqualKeys
+      shallowEqualKeys,
     ) || !previousState;
   return different || force ? result : undefined;
 };
 
-export default filterFieldState; 
+export default filterFieldState;

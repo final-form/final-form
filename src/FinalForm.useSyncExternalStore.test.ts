@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values: any) => { };
+const onSubmitMock = (values: any) => {};
 
 describe("FinalForm.useSyncExternalStore", () => {
   describe("subscribeFieldState and getFieldSnapshot", () => {
@@ -9,7 +9,9 @@ describe("FinalForm.useSyncExternalStore", () => {
       const onChange = jest.fn();
 
       // Subscribe to field state changes
-      const unsubscribe = form.subscribeFieldState("username", onChange, { value: true });
+      const unsubscribe = form.subscribeFieldState("username", onChange, {
+        value: true,
+      });
 
       // registerField calls the callback immediately with initial state
       expect(onChange).toHaveBeenCalledTimes(1);
@@ -40,8 +42,12 @@ describe("FinalForm.useSyncExternalStore", () => {
       const onChange1 = jest.fn();
       const onChange2 = jest.fn();
 
-      const unsubscribe1 = form.subscribeFieldState("email", onChange1, { value: true });
-      const unsubscribe2 = form.subscribeFieldState("email", onChange2, { value: true });
+      const unsubscribe1 = form.subscribeFieldState("email", onChange1, {
+        value: true,
+      });
+      const unsubscribe2 = form.subscribeFieldState("email", onChange2, {
+        value: true,
+      });
 
       form.change("email", "test@example.com");
 
@@ -62,7 +68,9 @@ describe("FinalForm.useSyncExternalStore", () => {
       const form = createForm({ onSubmit: onSubmitMock });
       const onChange = jest.fn();
 
-      const unsubscribe = form.subscribeFieldState("temp", onChange, { value: true });
+      const unsubscribe = form.subscribeFieldState("temp", onChange, {
+        value: true,
+      });
 
       // Field should exist
       expect(form.getRegisteredFields()).toContain("temp");
@@ -89,11 +97,14 @@ describe("FinalForm.useSyncExternalStore", () => {
             errors.required = "This field is required";
           }
           return errors;
-        }
+        },
       });
 
       const onChange = jest.fn();
-      const unsubscribe = form.subscribeFieldState("required", onChange, { error: true, value: true });
+      const unsubscribe = form.subscribeFieldState("required", onChange, {
+        error: true,
+        value: true,
+      });
 
       let snapshot = form.getFieldSnapshot("required");
       expect(snapshot?.error).toBe("This field is required");
@@ -114,7 +125,10 @@ describe("FinalForm.useSyncExternalStore", () => {
       const onChange = jest.fn();
 
       // Subscribe to form state changes
-      const unsubscribe = form.subscribeFormState(onChange, { values: true, pristine: true });
+      const unsubscribe = form.subscribeFormState(onChange, {
+        values: true,
+        pristine: true,
+      });
 
       // subscribe calls the callback immediately with initial state
       expect(onChange).toHaveBeenCalledTimes(1);
@@ -126,7 +140,7 @@ describe("FinalForm.useSyncExternalStore", () => {
       expect(snapshot.values).toEqual({});
 
       // Register a field first so changes affect pristine state
-      form.subscribeFieldState("field", () => { }, { value: true });
+      form.subscribeFieldState("field", () => {}, { value: true });
 
       // Change form state
       form.change("field", "value");
@@ -174,11 +188,14 @@ describe("FinalForm.useSyncExternalStore", () => {
             errors.username = "Username required";
           }
           return errors;
-        }
+        },
       });
 
       const onChange = jest.fn();
-      const unsubscribe = form.subscribeFormState(onChange, { valid: true, errors: true });
+      const unsubscribe = form.subscribeFormState(onChange, {
+        valid: true,
+        errors: true,
+      });
 
       let snapshot = form.getFormSnapshot();
       expect(snapshot.valid).toBe(false);
@@ -202,7 +219,7 @@ describe("FinalForm.useSyncExternalStore", () => {
       // Simulate React.useSyncExternalStore usage
       const mockUseSyncExternalStore = (
         subscribe: (onChange: () => void) => () => void,
-        getSnapshot: () => any
+        getSnapshot: () => any,
       ) => {
         const onChange = jest.fn();
         const unsubscribe = subscribe(onChange);
@@ -213,8 +230,9 @@ describe("FinalForm.useSyncExternalStore", () => {
 
       // For field state
       const fieldStore = mockUseSyncExternalStore(
-        (onChange) => form.subscribeFieldState("username", onChange, { value: true }),
-        () => form.getFieldSnapshot("username")
+        (onChange) =>
+          form.subscribeFieldState("username", onChange, { value: true }),
+        () => form.getFieldSnapshot("username"),
       );
 
       expect(fieldStore.snapshot?.name).toBe("username");
@@ -222,8 +240,9 @@ describe("FinalForm.useSyncExternalStore", () => {
 
       // For form state
       const formStore = mockUseSyncExternalStore(
-        (onChange) => form.subscribeFormState(onChange, { pristine: true, values: true }),
-        () => form.getFormSnapshot()
+        (onChange) =>
+          form.subscribeFormState(onChange, { pristine: true, values: true }),
+        () => form.getFormSnapshot(),
       );
 
       expect(formStore.snapshot.pristine).toBe(true);
@@ -241,4 +260,4 @@ describe("FinalForm.useSyncExternalStore", () => {
       formStore.unsubscribe();
     });
   });
-}); 
+});

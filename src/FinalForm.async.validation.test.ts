@@ -1,6 +1,6 @@
 import createForm from "./FinalForm";
 
-const onSubmitMock = (values: any) => { };
+const onSubmitMock = (values: any) => {};
 
 describe("FinalForm.async.validation", () => {
   it("should handle async field registration with form-level validation", (done) => {
@@ -12,12 +12,17 @@ describe("FinalForm.async.validation", () => {
           errors.username = "Required";
         }
         return errors;
-      }
+      },
     });
 
     const spy = jest.fn();
 
-    form.registerField("username", spy, { error: true, value: true }, { async: true });
+    form.registerField(
+      "username",
+      spy,
+      { error: true, value: true },
+      { async: true },
+    );
 
     setTimeout(() => {
       expect(spy).toHaveBeenCalledTimes(1);
@@ -41,8 +46,8 @@ describe("FinalForm.async.validation", () => {
           if (!value) return "Required";
           if (!value.includes("@")) return "Invalid email";
           return undefined;
-        }
-      }
+        },
+      },
     );
 
     setTimeout(() => {
@@ -84,8 +89,8 @@ describe("FinalForm.async.validation", () => {
               resolve(value ? undefined : "Async validation failed");
             }, 20);
           });
-        }
-      }
+        },
+      },
     );
 
     setTimeout(() => {
@@ -117,8 +122,8 @@ describe("FinalForm.async.validation", () => {
       {
         async: true,
         silent: true,
-        initialValue: "test"
-      }
+        initialValue: "test",
+      },
     );
 
     // Form listener should not be called for silent registration
@@ -146,8 +151,9 @@ describe("FinalForm.async.validation", () => {
       {
         async: true,
         validateFields: ["bar"],
-        getValidator: () => (value: any) => value ? undefined : "Foo required"
-      }
+        getValidator: () => (value: any) =>
+          value ? undefined : "Foo required",
+      },
     );
 
     // Register bar field
@@ -157,8 +163,9 @@ describe("FinalForm.async.validation", () => {
       { error: true },
       {
         async: true,
-        getValidator: () => (value: any) => value ? undefined : "Bar required"
-      }
+        getValidator: () => (value: any) =>
+          value ? undefined : "Bar required",
+      },
     );
 
     setTimeout(() => {
@@ -179,4 +186,4 @@ describe("FinalForm.async.validation", () => {
       }, 10);
     }, 10);
   });
-}); 
+});

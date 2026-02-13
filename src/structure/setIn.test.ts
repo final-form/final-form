@@ -286,7 +286,7 @@ describe("structure.setIn", () => {
     const output = setIn(input, "items[0]", "first");
     expect(output.items).toEqual(["first"]);
     expect(Array.isArray(output.items)).toBe(true);
-    
+
     const output2 = setIn(output, "items[42]", "answer");
     expect(output2.items[42]).toBe("answer");
   });
