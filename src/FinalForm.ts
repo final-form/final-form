@@ -234,7 +234,9 @@ function createForm<
         const callbacks = [...pendingAsyncCallbacks];
         pendingAsyncCallbacks.length = 0;
         asyncCallbacksScheduled = false;
-        callbacks.forEach((callback) => callback());
+        callbacks.forEach((callback) => {
+          callback();
+        });
       });
     }
   };
