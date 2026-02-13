@@ -188,7 +188,7 @@ function createForm<
 
   const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
-    fieldSubscribers: {},
+    fieldSubscribers: Object.create(null),
     fields: Object.create(null),
     formState: {
       asyncErrors: {},
@@ -263,10 +263,9 @@ function createForm<
         },
       });
       delete state.fields[from];
-      state.fieldSubscribers = {
-        ...state.fieldSubscribers,
+      state.fieldSubscribers = Object.assign(Object.create(null), state.fieldSubscribers, {
         [to]: state.fieldSubscribers[from],
-      };
+      });
       delete state.fieldSubscribers[from];
       const value = getIn(state.formState.values as object, from);
       state.formState.values =
