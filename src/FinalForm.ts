@@ -188,8 +188,8 @@ function createForm<
 
   const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
-    fieldSubscribers: {},
-    fields: {},
+    fieldSubscribers: Object.create(null),
+    fields: Object.create(null),
     formState: {
       asyncErrors: {},
       dirtySinceLastSubmit: false,
@@ -251,8 +251,7 @@ function createForm<
   };
   const renameField: RenameField<FormValues, InitialFormValues> = (state, from, to) => {
     if (state.fields[from]) {
-      state.fields = {
-        ...state.fields,
+      state.fields = Object.assign(Object.create(null), state.fields, {
         [to]: {
           ...state.fields[from],
           name: to,
@@ -262,12 +261,11 @@ function createForm<
           focus: () => api.focus(to as keyof FormValues),
           lastFieldState: undefined,
         },
-      };
+      });
       delete state.fields[from];
-      state.fieldSubscribers = {
-        ...state.fieldSubscribers,
+      state.fieldSubscribers = Object.assign(Object.create(null), state.fieldSubscribers, {
         [to]: state.fieldSubscribers[from],
-      };
+      });
       delete state.fieldSubscribers[from];
       const value = getIn(state.formState.values as object, from);
       state.formState.values =
@@ -920,9 +918,9 @@ function createForm<
       };
       // Mutators can create a field in order to keep the field states
       // We must update this field when registerField is called afterwards
-      field.blur = field.blur || (() => api.blur(name));
-      field.change = field.change || ((value) => api.change(name, value));
-      field.focus = field.focus || (() => api.focus(name));
+      if (typeof field.blur !== 'function') field.blur = () => api.blur(name);
+      if (typeof field.change !== 'function') field.change = (value) => api.change(name, value);
+      if (typeof field.focus !== 'function') field.focus = () => api.focus(name);
       field.isEqual =
         (fieldConfig && fieldConfig.isEqual) ||
         (state.fields[name as string] && state.fields[name as string].isEqual) ||
@@ -1194,8 +1192,6 @@ function createForm<
         return Promise.resolve(undefined);
       }
 
-      delete formState.submitErrors;
-      delete formState.submitError;
       formState.lastSubmittedValues = { ...formState.values };
 
       if (hasSyncErrors()) {
@@ -1206,6 +1202,10 @@ function createForm<
         notifyFieldListeners(undefined);
         return Promise.resolve(undefined);
       }
+
+      // Only clear submit errors if we're actually proceeding with submission
+      delete formState.submitErrors;
+      delete formState.submitError;
       const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises);
       if (asyncValidationPromisesKeys.length) {
         // still waiting on async validation to complete...

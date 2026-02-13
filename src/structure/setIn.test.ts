@@ -27,10 +27,13 @@ describe("structure.setIn", () => {
         /non-numeric property on an array/,
       );
     });
-    it("should throw an error when trying to set a numeric key into an object", () => {
-      expect(() => setIn({}, "42", "bar")).toThrow(
-        /numeric property on an object/,
-      );
+    it("should convert object to array when setting a numeric key (for ARRAY_ERROR compatibility)", () => {
+      // FIX #482: When validating both array and array items, errors can be
+      // an object with ARRAY_ERROR that needs to become an array with items
+      const result = setIn({ ARRAY_ERROR: "error" }, "0", "item error");
+      expect(Array.isArray(result)).toBe(true);
+      expect(result[0]).toBe("item error");
+      expect((result as any).ARRAY_ERROR).toBe("error");
     });
   });
 
@@ -255,5 +258,36 @@ describe("structure.setIn", () => {
     expect(output.a).toBe(a);
     expect(output.b).toBe(b);
     expect(output.dog).toBeUndefined();
+  });
+
+  it("should treat decimal numbers like '5.1' as object keys, not array indexes", () => {
+    const input = {};
+    const output = setIn(input, "[5.1]", "value");
+    expect(output).toEqual({ "5.1": "value" });
+    expect(Array.isArray(output)).toBe(false);
+  });
+
+  it("should treat negative numbers like '-1' as object keys, not array indexes", () => {
+    const input = {};
+    const output = setIn(input, "-1", "value");
+    expect(output).toEqual({ "-1": "value" });
+    expect(Array.isArray(output)).toBe(false);
+  });
+
+  it("should treat padded numbers like '01' as object keys, not array indexes", () => {
+    const input = {};
+    const output = setIn(input, "01", "value");
+    expect(output).toEqual({ "01": "value" });
+    expect(Array.isArray(output)).toBe(false);
+  });
+
+  it("should still treat valid integers like '0' and '42' as array indexes", () => {
+    const input = {};
+    const output = setIn(input, "items[0]", "first");
+    expect(output.items).toEqual(["first"]);
+    expect(Array.isArray(output.items)).toBe(true);
+    
+    const output2 = setIn(output, "items[42]", "answer");
+    expect(output2.items[42]).toBe("answer");
   });
 });
