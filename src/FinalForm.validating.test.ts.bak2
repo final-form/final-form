@@ -1700,48 +1700,4 @@ describe("Field.validation", () => {
     });
   });
 });
-  it("should allow for array fields to both have errors and for the array itself to have an error (ASYNC validation)", async () => {
-    const validate = jest.fn((values) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const errors = {};
-          errors.items = values.items.map((value) =>
-            value ? undefined : "Required",
-          );
-          errors.items[ARRAY_ERROR] = "Need more items";
-          resolve(errors);
-        }, 2);
-      });
-    });
-
-    const form = createForm({
-      onSubmit: onSubmitMock,
-      validate,
-      initialValues: {
-        items: ["Dog", ""],
-      },
-    });
-    expect(validate).toHaveBeenCalledTimes(1);
-
-    const items = jest.fn();
-    const items0 = jest.fn();
-    const items1 = jest.fn();
-    form.registerField("items", items, { error: true });
-
-    form.registerField("items[0]", items0, { error: true });
-
-    form.registerField("items[1]", items1, { error: true });
-
-    // Wait for async validation to complete
-    await sleep(10);
-
-    expect(items).toHaveBeenCalled();
-    expect(items.mock.calls[items.mock.calls.length - 1][0].error).toBe("Need more items");
-
-    expect(items0).toHaveBeenCalled();
-    expect(items0.mock.calls[items0.mock.calls.length - 1][0].error).toBeUndefined();
-
-    expect(items1).toHaveBeenCalled();
-    expect(items1.mock.calls[items1.mock.calls.length - 1][0].error).toBe("Required");
-  });
 

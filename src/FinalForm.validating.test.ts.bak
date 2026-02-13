@@ -1700,6 +1700,7 @@ describe("Field.validation", () => {
     });
   });
 });
+
   it("should allow for array fields to both have errors and for the array itself to have an error (ASYNC validation)", async () => {
     const validate = jest.fn((values) => {
       return new Promise((resolve) => {
@@ -1744,4 +1745,3 @@ describe("Field.validation", () => {
     expect(items1).toHaveBeenCalled();
     expect(items1.mock.calls[items1.mock.calls.length - 1][0].error).toBe("Required");
   });
-

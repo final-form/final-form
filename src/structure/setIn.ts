@@ -152,6 +152,10 @@ const setInRecursor = (
       (array as any)[k] = (current as any)[k];
     }
   });
+  // Also preserve Symbol keys (like ARRAY_ERROR)
+  Object.getOwnPropertySymbols(current).forEach(sym => {
+    (array as any)[sym] = (current as any)[sym];
+  });
   if (destroyArrays && result === undefined) {
     array.splice(numericKey, 1);
     if (array.length === 0) {
