@@ -58,6 +58,11 @@ const setInRecursor = (
           return undefined;
         }
       }
+      // Strings cannot have custom properties, and destructuring converts them to objects
+      // with numeric keys. Return the string as-is to preserve field-level error messages.
+      if (typeof current === 'string') {
+        return current;
+      }
       const { [key]: _removed, ...final } = current as any;
       return final;
     }
