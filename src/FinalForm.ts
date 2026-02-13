@@ -189,7 +189,7 @@ function createForm<
   const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
     fieldSubscribers: {},
-    fields: {},
+    fields: Object.create(null),
     formState: {
       asyncErrors: {},
       dirtySinceLastSubmit: false,
@@ -251,8 +251,7 @@ function createForm<
   };
   const renameField: RenameField<FormValues, InitialFormValues> = (state, from, to) => {
     if (state.fields[from]) {
-      state.fields = {
-        ...state.fields,
+      state.fields = Object.assign(Object.create(null), state.fields, {
         [to]: {
           ...state.fields[from],
           name: to,
@@ -262,7 +261,7 @@ function createForm<
           focus: () => api.focus(to as keyof FormValues),
           lastFieldState: undefined,
         },
-      };
+      });
       delete state.fields[from];
       state.fieldSubscribers = {
         ...state.fieldSubscribers,
@@ -1193,8 +1192,6 @@ function createForm<
         return Promise.resolve(undefined);
       }
 
-      delete formState.submitErrors;
-      delete formState.submitError;
       formState.lastSubmittedValues = { ...formState.values };
 
       if (hasSyncErrors()) {
@@ -1205,6 +1202,10 @@ function createForm<
         notifyFieldListeners(undefined);
         return Promise.resolve(undefined);
       }
+
+      // Only clear submit errors if we're actually proceeding with submission
+      delete formState.submitErrors;
+      delete formState.submitError;
       const asyncValidationPromisesKeys = Object.keys(asyncValidationPromises);
       if (asyncValidationPromisesKeys.length) {
         // still waiting on async validation to complete...
