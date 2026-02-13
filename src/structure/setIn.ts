@@ -3,6 +3,20 @@ import type { SetIn } from "../types";
 
 type State = object | any[] | undefined;
 
+/**
+ * Check if a key is a valid array index (non-negative integer)
+ * Valid: "0", "1", "42"
+ * Invalid: "5.1.1", "01", "-1", "foo", "3.14"
+ */
+const isValidArrayIndex = (key: string): boolean => {
+  const num = Number(key);
+  // Check if:
+  // 1. It's not NaN
+  // 2. It's a non-negative integer
+  // 3. The string representation matches (prevents "01" from being treated as 1)
+  return !isNaN(num) && Number.isInteger(num) && num >= 0 && String(num) === key;
+};
+
 const setInRecursor = (
   current: State,
   index: number,
@@ -17,7 +31,7 @@ const setInRecursor = (
   const key = path[index];
 
   // determine type of key
-  if (isNaN(Number(key))) {
+  if (!isValidArrayIndex(key)) {
     // object set
     if (current === undefined || current === null) {
       // recurse
@@ -51,7 +65,7 @@ const setInRecursor = (
       }
       if ((current as any)[key] !== undefined && numKeys <= 1) {
         // only key we had was the one we are deleting
-        if (!isNaN(Number(path[index - 1])) && !destroyArrays) {
+        if (isValidArrayIndex(path[index - 1]) && !destroyArrays) {
           // we are in an array, so return an empty object
           return {};
         } else {
