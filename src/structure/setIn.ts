@@ -89,30 +89,34 @@ const setInRecursor = (
     array[numericKey] = result;
     return array;
   }
+  // Use a local variable to help TypeScript narrow the type correctly
+  let cur: State | any[];
   if (!Array.isArray(current)) {
     // FIX #482: If we have an object but need to set a numeric property,
     // convert it to an array. This can happen when validating both the array
     // as a whole and individual array items (e.g., with ARRAY_ERROR).
     if (typeof current === 'object' && current !== null) {
       // Convert object to array, preserving any existing properties like ARRAY_ERROR
-      const array: any[] = [];
+      const newArray: any[] = [];
       Object.keys(current).forEach(k => {
         const idx = Number(k);
         if (!isNaN(idx)) {
           // Transfer numeric keys as array indices
-          array[idx] = (current as any)[k];
+          newArray[idx] = (current as any)[k];
         } else {
           // Preserve non-numeric keys (like ARRAY_ERROR) on the array
-          (array as any)[k] = (current as any)[k];
+          (newArray as any)[k] = (current as any)[k];
         }
       });
-      current = array;
+      cur = newArray;
     } else {
       throw new Error("Cannot set a numeric property on an object");
     }
+  } else {
+    cur = current;
   }
   // recurse
-  const existingValue = current[numericKey];
+  const existingValue = cur[numericKey];
   const result = setInRecursor(
     existingValue,
     index + 1,
@@ -122,7 +126,7 @@ const setInRecursor = (
   );
 
   // current exists, so make a copy of all its values, and add/update the new one
-  const array = [...current];
+  const array = [...cur];
   // FIX #482: Preserve custom properties (like ARRAY_ERROR) from the original array
   Object.keys(current).forEach(k => {
     if (isNaN(Number(k))) {
