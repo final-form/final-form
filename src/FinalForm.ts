@@ -190,8 +190,8 @@ function createForm<
 
   const state: InternalState<FormValues, InitialFormValues> = {
     subscribers: { index: 0, entries: {} },
-    fieldSubscribers: {},
-    fields: {},
+    fieldSubscribers: Object.create(null),
+    fields: Object.create(null),
     formState: {
       asyncErrors: {},
       dirtySinceLastSubmit: false,
@@ -269,8 +269,7 @@ function createForm<
     to,
   ) => {
     if (state.fields[from]) {
-      state.fields = {
-        ...state.fields,
+      state.fields = Object.assign(Object.create(null), state.fields, {
         [to]: {
           ...state.fields[from],
           name: to,
@@ -280,12 +279,11 @@ function createForm<
           focus: () => api.focus(to as keyof FormValues),
           lastFieldState: undefined,
         },
-      };
+      });
       delete state.fields[from];
-      state.fieldSubscribers = {
-        ...state.fieldSubscribers,
+      state.fieldSubscribers = Object.assign(Object.create(null), state.fieldSubscribers, {
         [to]: state.fieldSubscribers[from],
-      };
+      });
       delete state.fieldSubscribers[from];
       const value = getIn(state.formState.values as object, from);
       state.formState.values = (setIn(
@@ -1261,6 +1259,14 @@ function createForm<
 
       formState.lastSubmittedValues = { ...formState.values };
 
+      // Call beforeSubmit first to allow fields to format values (e.g., formatOnBlur)
+      // before validation runs. This ensures that when submitting via Enter key,
+      // the formatOnBlur logic runs before checking for sync errors.
+      const submitIsBlocked = beforeSubmit();
+      if (submitIsBlocked) {
+        return Promise.resolve(undefined);
+      }
+
       if (hasSyncErrors()) {
         markAllFieldsTouched();
         resetModifiedAfterSubmit();
@@ -1287,10 +1293,6 @@ function createForm<
             return undefined;
           },
         ) as Promise<FormValues | undefined>;
-      }
-      const submitIsBlocked = beforeSubmit();
-      if (submitIsBlocked) {
-        return Promise.resolve(undefined);
       }
 
       let resolvePromise: any;
