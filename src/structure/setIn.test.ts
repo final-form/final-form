@@ -27,10 +27,13 @@ describe("structure.setIn", () => {
         /non-numeric property on an array/,
       );
     });
-    it("should throw an error when trying to set a numeric key into an object", () => {
-      expect(() => setIn({}, "42", "bar")).toThrow(
-        /numeric property on an object/,
-      );
+    it("should convert object to array when setting a numeric key (for ARRAY_ERROR compatibility)", () => {
+      // FIX #482: When validating both array and array items, errors can be
+      // an object with ARRAY_ERROR that needs to become an array with items
+      const result = setIn({ ARRAY_ERROR: "error" }, "0", "item error");
+      expect(Array.isArray(result)).toBe(true);
+      expect(result[0]).toBe("item error");
+      expect((result as any).ARRAY_ERROR).toBe("error");
     });
   });
 
