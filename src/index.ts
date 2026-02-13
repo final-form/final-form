@@ -6,4 +6,4 @@ export { default as getIn } from "./structure/getIn";
 export { default as setIn } from "./structure/setIn";
 
 // Export all types
-export * from "./types"; 
+export * from "./types";

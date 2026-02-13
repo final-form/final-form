@@ -134,7 +134,7 @@ describe("Field.validation", () => {
       "foo",
       spy1,
       { error: true },
-      { getValidator: () => (value) => value ? undefined : "Required" },
+      { getValidator: () => (value) => (value ? undefined : "Required") },
     );
 
     const spy2 = jest.fn();
@@ -320,7 +320,7 @@ describe("Field.validation", () => {
       "foo",
       spy,
       { error: true },
-      { getValidator: () => (value) => value ? undefined : "Required" },
+      { getValidator: () => (value) => (value ? undefined : "Required") },
     );
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -784,7 +784,7 @@ describe("Field.validation", () => {
       () => {},
       { errors: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value) => (value ? undefined : "Required"),
       },
     );
     expect(spy).toHaveBeenCalledTimes(2);
@@ -814,7 +814,7 @@ describe("Field.validation", () => {
       () => {},
       { errors: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value) => (value ? undefined : "Required"),
       },
     );
     expect(spy).toHaveBeenCalledTimes(2);
@@ -1198,7 +1198,7 @@ describe("Field.validation", () => {
     // https://github.com/final-form/final-form/issues/75
     const form = createForm({ onSubmit: onSubmitMock });
     const config = {
-      getValidator: () => (value) => value ? undefined : "Required",
+      getValidator: () => (value) => (value ? undefined : "Required"),
       validateFields: [],
     };
 
@@ -1225,7 +1225,7 @@ describe("Field.validation", () => {
   it("should mark the form as valid when all required fields are completed", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const config = {
-      getValidator: () => (value) => value ? undefined : "Required",
+      getValidator: () => (value) => (value ? undefined : "Required"),
       validateFields: [],
     };
 
@@ -1257,7 +1257,7 @@ describe("Field.validation", () => {
       foo,
       { error: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value) => (value ? undefined : "Required"),
         validateFields: ["baz"],
       },
     );
@@ -1266,7 +1266,7 @@ describe("Field.validation", () => {
       bar,
       { error: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value) => (value ? undefined : "Required"),
         validateFields: ["baz"],
       },
     );
@@ -1301,7 +1301,7 @@ describe("Field.validation", () => {
       "foo",
       foo,
       { error: true, invalid: true },
-      { getValidator: () => (value) => value ? undefined : "Required" },
+      { getValidator: () => (value) => (value ? undefined : "Required") },
     );
 
     expect(spy).toHaveBeenCalledTimes(2);
@@ -1479,7 +1479,7 @@ describe("Field.validation", () => {
       foo3,
       { error: true },
       {
-        getValidator: () => (value) => value ? undefined : "Required",
+        getValidator: () => (value) => (value ? undefined : "Required"),
       },
     );
     expect(foo3).toHaveBeenCalledTimes(1);
@@ -1650,26 +1650,26 @@ describe("Field.validation", () => {
     expect(formSub).toHaveBeenCalledTimes(5);
   });
 
-  it('should handle nested field-level errors correctly', () => {
+  it("should handle nested field-level errors correctly", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const range = jest.fn();
     const min = jest.fn();
     const max = jest.fn();
     const validate = jest.fn((value: any) =>
-      value && value.max < value.min ? 'Invalid range' : undefined
+      value && value.max < value.min ? "Invalid range" : undefined,
     );
     const spy = jest.fn();
     form.subscribe(spy, { errors: true });
     form.registerField(
-      'range',
+      "range",
       range,
       { error: true },
       {
-        getValidator: () => validate
-      }
+        getValidator: () => validate,
+      },
     );
-    form.registerField('range.min', min, { error: true });
-    form.registerField('range.max', max, { error: true });
+    form.registerField("range.min", min, { error: true });
+    form.registerField("range.max", max, { error: true });
     expect(validate).toHaveBeenCalledTimes(1);
     expect(validate.mock.calls[0][0]).toBeUndefined();
     expect(range).toHaveBeenCalledTimes(1);
@@ -1678,7 +1678,7 @@ describe("Field.validation", () => {
     expect(spy.mock.calls[0][0].errors).toEqual({});
 
     // set min to 10
-    form.change('range.min', 10);
+    form.change("range.min", 10);
 
     expect(validate).toHaveBeenCalledTimes(2);
     expect(validate.mock.calls[1][0]).toEqual({ min: 10 });
@@ -1686,62 +1686,67 @@ describe("Field.validation", () => {
     expect(spy).toHaveBeenCalledTimes(1);
 
     // set max to 5 (invalid: max < min)
-    form.change('range.max', 5);
+    form.change("range.max", 5);
 
     expect(validate).toHaveBeenCalledTimes(3);
     expect(validate.mock.calls[2][0]).toEqual({ min: 10, max: 5 });
     expect(range).toHaveBeenCalledTimes(2);
-    expect(range.mock.calls[1][0].error).toEqual('Invalid range');
+    expect(range.mock.calls[1][0].error).toEqual("Invalid range");
     expect(spy).toHaveBeenCalledTimes(2);
     // Bug: without the fix, errors becomes { range: { min: undefined, max: undefined } }
     // instead of { range: 'Invalid range' }
     expect(spy.mock.calls[1][0].errors).toEqual({
-      range: 'Invalid range'
+      range: "Invalid range",
     });
   });
 });
-  it("should allow for array fields to both have errors and for the array itself to have an error (ASYNC validation)", async () => {
-    const validate = jest.fn((values) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const errors = {};
-          errors.items = values.items.map((value) =>
-            value ? undefined : "Required",
-          );
-          errors.items[ARRAY_ERROR] = "Need more items";
-          resolve(errors);
-        }, 2);
-      });
+it("should allow for array fields to both have errors and for the array itself to have an error (ASYNC validation)", async () => {
+  const validate = jest.fn((values) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const errors = {};
+        errors.items = values.items.map((value) =>
+          value ? undefined : "Required",
+        );
+        errors.items[ARRAY_ERROR] = "Need more items";
+        resolve(errors);
+      }, 2);
     });
-
-    const form = createForm({
-      onSubmit: onSubmitMock,
-      validate,
-      initialValues: {
-        items: ["Dog", ""],
-      },
-    });
-    expect(validate).toHaveBeenCalledTimes(1);
-
-    const items = jest.fn();
-    const items0 = jest.fn();
-    const items1 = jest.fn();
-    form.registerField("items", items, { error: true });
-
-    form.registerField("items[0]", items0, { error: true });
-
-    form.registerField("items[1]", items1, { error: true });
-
-    // Wait for async validation to complete
-    await sleep(10);
-
-    expect(items).toHaveBeenCalled();
-    expect(items.mock.calls[items.mock.calls.length - 1][0].error).toBe("Need more items");
-
-    expect(items0).toHaveBeenCalled();
-    expect(items0.mock.calls[items0.mock.calls.length - 1][0].error).toBeUndefined();
-
-    expect(items1).toHaveBeenCalled();
-    expect(items1.mock.calls[items1.mock.calls.length - 1][0].error).toBe("Required");
   });
 
+  const form = createForm({
+    onSubmit: onSubmitMock,
+    validate,
+    initialValues: {
+      items: ["Dog", ""],
+    },
+  });
+  expect(validate).toHaveBeenCalledTimes(1);
+
+  const items = jest.fn();
+  const items0 = jest.fn();
+  const items1 = jest.fn();
+  form.registerField("items", items, { error: true });
+
+  form.registerField("items[0]", items0, { error: true });
+
+  form.registerField("items[1]", items1, { error: true });
+
+  // Wait for async validation to complete
+  await sleep(10);
+
+  expect(items).toHaveBeenCalled();
+  expect(items.mock.calls[items.mock.calls.length - 1][0].error).toBe(
+    "Need more items",
+  );
+
+  expect(items0).toHaveBeenCalled();
+  expect(
+    items0.mock.calls[items0.mock.calls.length - 1][0].error,
+  ).toBeUndefined();
+
+  expect(items1).toHaveBeenCalled();
+  expect(items1.mock.calls[items1.mock.calls.length - 1][0].error).toBe(
+    "Required",
+  );
+});

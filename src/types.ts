@@ -38,7 +38,7 @@ export interface FormSubscription extends Subscription {
 
 export interface FormState<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   active?: undefined | keyof FormValues;
   dirty?: boolean;
@@ -68,7 +68,7 @@ export interface FormState<
 
 export type FormSubscriber<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = Subscriber<FormState<FormValues, InitialFormValues>>;
 
 export interface FieldState<FieldValue = any> {
@@ -121,7 +121,9 @@ export interface FieldSubscription {
   visited?: boolean;
 }
 
-export type FieldSubscriber<FieldValue = any> = Subscriber<FieldState<FieldValue>>;
+export type FieldSubscriber<FieldValue = any> = Subscriber<
+  FieldState<FieldValue>
+>;
 
 export type Subscribers<T extends Object> = {
   index: number;
@@ -139,10 +141,12 @@ export type Unsubscribe = () => void;
 export type FieldValidator<FieldValue = any> = (
   value: FieldValue,
   allValues: object,
-  meta?: FieldState<FieldValue>
+  meta?: FieldState<FieldValue>,
 ) => any | Promise<any>;
 
-export type GetFieldValidator<FieldValue = any> = () => FieldValidator<FieldValue> | undefined;
+export type GetFieldValidator<FieldValue = any> = () =>
+  | FieldValidator<FieldValue>
+  | undefined;
 
 export interface FieldConfig<FieldValue = any> {
   afterSubmit?: () => void;
@@ -157,11 +161,13 @@ export interface FieldConfig<FieldValue = any> {
   async?: boolean;
 }
 
-export type RegisterField<FormValues = Record<string, any>> = <F extends keyof FormValues>(
+export type RegisterField<FormValues = Record<string, any>> = <
+  F extends keyof FormValues,
+>(
   name: F,
   subscriber: FieldSubscriber<FormValues[F]>,
   subscription: FieldSubscription,
-  config?: FieldConfig<FormValues[F]>
+  config?: FieldConfig<FormValues[F]>,
 ) => Unsubscribe;
 
 export interface InternalFieldState<FieldValue = any> {
@@ -226,7 +232,7 @@ export type ConfigKey =
 
 export interface FormApi<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   batch: (fn: () => void) => void;
   blur: (name: keyof FormValues) => void;
@@ -234,11 +240,11 @@ export interface FormApi<
   destroyOnUnregister: boolean;
   focus: (name: keyof FormValues) => void;
   initialize: (
-    data: InitialFormValues | ((values: FormValues) => InitialFormValues)
+    data: InitialFormValues | ((values: FormValues) => InitialFormValues),
   ) => void;
   isValidationPaused: () => boolean;
   getFieldState: <F extends keyof FormValues>(
-    field: F
+    field: F,
   ) => FieldState<FormValues[F]> | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
@@ -251,13 +257,13 @@ export interface FormApi<
   resumeValidation: () => void;
   setConfig: <K extends ConfigKey>(
     name: K,
-    value: Config<FormValues, InitialFormValues>[K]
+    value: Config<FormValues, InitialFormValues>[K],
   ) => void;
   setCallbackScheduler: (scheduler?: (callback: () => void) => void) => void;
   submit: () => Promise<FormValues | undefined> | undefined;
   subscribe: (
     subscriber: FormSubscriber<FormValues, InitialFormValues>,
-    subscription: FormSubscription
+    subscription: FormSubscription,
   ) => Unsubscribe;
   /**
    * Subscribes to the state of a specific field in the form.
@@ -269,7 +275,7 @@ export interface FormApi<
   subscribeFieldState: <F extends keyof FormValues>(
     name: F,
     onChange: () => void,
-    subscription: FieldSubscription
+    subscription: FieldSubscription,
   ) => Unsubscribe;
 
   /**
@@ -278,7 +284,7 @@ export interface FormApi<
    * @returns The current state of the field, or undefined if the field is not registered.
    */
   getFieldSnapshot: <F extends keyof FormValues>(
-    name: F
+    name: F,
   ) => FieldState<FormValues[F]> | undefined;
 
   /**
@@ -289,7 +295,7 @@ export interface FormApi<
    */
   subscribeFormState: (
     onChange: () => void,
-    subscription: FormSubscription
+    subscription: FormSubscription,
   ) => Unsubscribe;
   /**
    * Retrieves a snapshot of the current state of the form.
@@ -301,15 +307,15 @@ export interface FormApi<
 
 export type DebugFunction<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (
   state: FormState<FormValues, InitialFormValues>,
-  fieldStates: { [key: string]: FieldState<any> }
+  fieldStates: { [key: string]: FieldState<any> },
 ) => void;
 
 export interface MutableState<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   fieldSubscribers: { [key: string]: Subscribers<FieldState<any>> };
   fields: {
@@ -320,29 +326,34 @@ export interface MutableState<
 }
 
 export type GetIn = (state: object, complexKey: string) => any;
-export type SetIn = (state: object, key: string, value: any, destroyArrays?: boolean) => object;
+export type SetIn = (
+  state: object,
+  key: string,
+  value: any,
+  destroyArrays?: boolean,
+) => object;
 
 export type ChangeValue<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (
   state: MutableState<FormValues, InitialFormValues>,
   name: string,
-  mutate: (value: any) => any
+  mutate: (value: any) => any,
 ) => void;
 
 export type RenameField<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (
   state: MutableState<FormValues, InitialFormValues>,
   from: string,
-  to: string
+  to: string,
 ) => void;
 
 export interface Tools<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   changeValue: ChangeValue<FormValues, InitialFormValues>;
   getIn: GetIn;
@@ -354,16 +365,16 @@ export interface Tools<
 
 export type Mutator<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (
   args: any[],
   state: MutableState<FormValues, InitialFormValues>,
-  tools: Tools<FormValues, InitialFormValues>
+  tools: Tools<FormValues, InitialFormValues>,
 ) => any;
 
 export interface Config<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > {
   debug?: DebugFunction<FormValues, InitialFormValues>;
   destroyOnUnregister?: boolean;
@@ -373,10 +384,10 @@ export interface Config<
   onSubmit: (
     values: FormValues,
     form: FormApi<FormValues, InitialFormValues>,
-    callback?: (errors?: SubmissionErrors) => void
+    callback?: (errors?: SubmissionErrors) => void,
   ) => SubmissionErrors | Promise<SubmissionErrors> | void;
   validate?: (
-    values: FormValues
+    values: FormValues,
   ) => ValidationErrors | Promise<ValidationErrors>;
   validateOnBlur?: boolean;
   callbackScheduler?: (callback: () => void) => void;
@@ -385,12 +396,12 @@ export interface Config<
 
 export type Decorator<
   FormValues = Record<string, any>,
-  InitialFormValues extends Partial<FormValues> = Partial<FormValues>
+  InitialFormValues extends Partial<FormValues> = Partial<FormValues>,
 > = (form: FormApi<FormValues, InitialFormValues>) => Unsubscribe;
 
 export type StateFilter<T> = (
   state: T,
   previousState: T | undefined,
   subscription: Subscription,
-  force: boolean
-) => T | undefined; 
+  force: boolean,
+) => T | undefined;

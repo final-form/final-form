@@ -16,4 +16,4 @@ const memoize = <T extends (...args: any[]) => any>(fn: T): T => {
   }) as T;
 };
 
-export default memoize; 
+export default memoize;

@@ -1,6 +1,6 @@
 import createForm, { version } from "./FinalForm";
 
-const onSubmitMock = (values, callback) => { };
+const onSubmitMock = (values, callback) => {};
 
 describe("FinalForm.creation", () => {
   it("should export version", () => {
@@ -40,8 +40,8 @@ describe("FinalForm.creation", () => {
   });
 
   it("should allow a change to an not-yet-registered field when validation is present", () => {
-    const form = createForm({ onSubmit: onSubmitMock, validate: () => { } });
-    form.registerField("whatever", () => { }, { value: true });
+    const form = createForm({ onSubmit: onSubmitMock, validate: () => {} });
+    form.registerField("whatever", () => {}, { value: true });
     form.change("foo", "bar");
   });
 
@@ -263,7 +263,7 @@ describe("FinalForm.creation", () => {
       {
         initialValue: "yellow",
         silent: true,
-        getValidator: () => (value) => !value ? "Required" : undefined,
+        getValidator: () => (value) => (!value ? "Required" : undefined),
       },
     )();
     expect(banana).toHaveBeenCalled();

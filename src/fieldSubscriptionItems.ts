@@ -19,4 +19,4 @@ export default [
   "value",
   "visited",
   "validating",
-] as const; 
+] as const;

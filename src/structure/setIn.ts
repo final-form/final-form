@@ -14,7 +14,9 @@ const isValidArrayIndex = (key: string): boolean => {
   // 1. It's not NaN
   // 2. It's a non-negative integer
   // 3. The string representation matches (prevents "01" from being treated as 1)
-  return !isNaN(num) && Number.isInteger(num) && num >= 0 && String(num) === key;
+  return (
+    !isNaN(num) && Number.isInteger(num) && num >= 0 && String(num) === key
+  );
 };
 
 const setInRecursor = (
@@ -22,7 +24,7 @@ const setInRecursor = (
   index: number,
   path: string[],
   value: any,
-  destroyArrays: boolean
+  destroyArrays: boolean,
 ): State => {
   if (index >= path.length) {
     // end of recursion
@@ -40,7 +42,7 @@ const setInRecursor = (
         index + 1,
         path,
         value,
-        destroyArrays
+        destroyArrays,
       );
 
       // delete or create an object
@@ -55,7 +57,7 @@ const setInRecursor = (
       index + 1,
       path,
       value,
-      destroyArrays
+      destroyArrays,
     );
     if (result === undefined) {
       const numKeys = Object.keys(current).length;
@@ -74,7 +76,7 @@ const setInRecursor = (
       }
       // Strings cannot have custom properties, and destructuring converts them to objects
       // with numeric keys. Return the string as-is to preserve field-level error messages.
-      if (typeof current === 'string') {
+      if (typeof current === "string") {
         return current;
       }
       const { [key]: _removed, ...final } = current as any;
@@ -95,7 +97,7 @@ const setInRecursor = (
       index + 1,
       path,
       value,
-      destroyArrays
+      destroyArrays,
     );
 
     // if nothing returned, delete it
@@ -112,10 +114,10 @@ const setInRecursor = (
     // FIX #482: If we have an object but need to set a numeric property,
     // convert it to an array. This can happen when validating both the array
     // as a whole and individual array items (e.g., with ARRAY_ERROR).
-    if (typeof current === 'object' && current !== null) {
+    if (typeof current === "object" && current !== null) {
       // Convert object to array, preserving any existing properties like ARRAY_ERROR
       const array: any[] = [];
-      Object.keys(current).forEach(k => {
+      Object.keys(current).forEach((k) => {
         const idx = Number(k);
         if (!isNaN(idx)) {
           // Transfer numeric keys as array indices
@@ -126,7 +128,7 @@ const setInRecursor = (
         }
       });
       // Also preserve Symbol keys (like ARRAY_ERROR)
-      Object.getOwnPropertySymbols(current).forEach(sym => {
+      Object.getOwnPropertySymbols(current).forEach((sym) => {
         (array as any)[sym] = (current as any)[sym];
       });
       current = array;
@@ -141,19 +143,19 @@ const setInRecursor = (
     index + 1,
     path,
     value,
-    destroyArrays
+    destroyArrays,
   );
 
   // current exists, so make a copy of all its values, and add/update the new one
   const array = [...(current as any[])];
   // FIX #482: Preserve custom properties (like ARRAY_ERROR) from the original array
-  Object.keys(current).forEach(k => {
+  Object.keys(current).forEach((k) => {
     if (isNaN(Number(k))) {
       (array as any)[k] = (current as any)[k];
     }
   });
   // Also preserve Symbol keys (like ARRAY_ERROR)
-  Object.getOwnPropertySymbols(current).forEach(sym => {
+  Object.getOwnPropertySymbols(current).forEach((sym) => {
     (array as any)[sym] = (current as any)[sym];
   });
   if (destroyArrays && result === undefined) {
@@ -171,7 +173,7 @@ const setIn: SetIn = (
   state: object,
   key: string,
   value: any,
-  destroyArrays: boolean = false
+  destroyArrays: boolean = false,
 ): object => {
   if (state === undefined || state === null) {
     throw new Error(`Cannot call setIn() with ${String(state)} state`);
@@ -181,13 +183,7 @@ const setIn: SetIn = (
   }
   // Recursive function needs to accept and return State, but public API should
   // only deal with Objects
-  return setInRecursor(
-    state,
-    0,
-    toPath(key),
-    value,
-    destroyArrays
-  ) as object;
+  return setInRecursor(state, 0, toPath(key), value, destroyArrays) as object;
 };
 
-export default setIn; 
+export default setIn;

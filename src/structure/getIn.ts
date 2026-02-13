@@ -20,4 +20,4 @@ const getIn: GetIn = (state: object, complexKey: string): any => {
   return current;
 };
 
-export default getIn; 
+export default getIn;
