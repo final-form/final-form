@@ -149,4 +149,39 @@ describe("FinalForm.registerField", () => {
     expect(typeof spy.mock.calls[0][0].focus).toBe("function");
     expect(typeof spy.mock.calls[0][0].change).toBe("function");
   });
+
+  it("should not crash when unregistering renamed field (#191)", () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      mutators: {
+        renameField: ([oldName, newName], state) => {
+          // Simulate a field rename by moving the field state
+          if (state.fields[oldName]) {
+            state.fields[newName] = {
+              ...state.fields[oldName],
+              name: newName,
+            };
+            delete state.fields[oldName];
+          }
+          if (state.fieldSubscribers[oldName]) {
+            state.fieldSubscribers[newName] = state.fieldSubscribers[oldName];
+            delete state.fieldSubscribers[oldName];
+          }
+        },
+      },
+    });
+
+    // Register field with old name
+    const spy = jest.fn();
+    const unregister = form.registerField("oldName", spy, { value: true });
+
+    // Rename the field
+    form.mutators.renameField("oldName", "newName");
+
+    // Unregister should not crash even though field was renamed
+    // The old name no longer exists in state.fields
+    expect(() => {
+      unregister();
+    }).not.toThrow();
+  });
 });

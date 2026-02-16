@@ -1018,8 +1018,8 @@ function createForm<
       return () => {
         let validatorRemoved = false;
         // istanbul ignore next
-        if (state.fields[name as string]) {
-          // state.fields[name] may have been removed by a mutator
+        if (state.fields[name as string] && state.fields[name as string].validators) {
+          // state.fields[name] may have been removed by a mutator (e.g., renameField #191)
           validatorRemoved = !!(
             state.fields[name as string].validators[index] &&
             state.fields[name as string].validators[index]()
@@ -1027,12 +1027,14 @@ function createForm<
           delete state.fields[name as string].validators[index];
         }
         let hasFieldSubscribers = !!state.fieldSubscribers[name as string];
-        if (hasFieldSubscribers) {
-          // state.fieldSubscribers[name] may have been removed by a mutator
+        if (hasFieldSubscribers && state.fieldSubscribers[name as string].entries) {
+          // state.fieldSubscribers[name] may have been removed by a mutator (e.g., renameField #191)
           delete state.fieldSubscribers[name as string].entries[index];
         }
         let lastOne =
           hasFieldSubscribers &&
+          state.fieldSubscribers[name as string] &&
+          state.fieldSubscribers[name as string].entries &&
           !Object.keys(state.fieldSubscribers[name as string].entries).length;
         if (lastOne) {
           delete state.fieldSubscribers[name as string];
