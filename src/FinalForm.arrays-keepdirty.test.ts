@@ -1,5 +1,4 @@
 import createForm from './FinalForm'
-import getIn from './structure/getIn'
 
 describe('FinalForm.keepDirtyOnReinitialize - Issue #366', () => {
   it('should update pristine array child fields when keepDirtyOnReinitialize is true', () => {
@@ -41,7 +40,7 @@ describe('FinalForm.keepDirtyOnReinitialize - Issue #366', () => {
     })
 
     // The modified field should keep its dirty value
-    expect(getIn(form.getState().values, 'customers[0].firstName')).toBe('Modified')
+    expect(firstName0State.value).toBe('Modified')
 
     // But the pristine field should update to new initial value
     expect(lastName1State.value).toBe('NewSmith')
