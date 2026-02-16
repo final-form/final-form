@@ -567,8 +567,11 @@ function createForm<
       }
       if (afterAsync) {
         formState.asyncErrors = asyncRecordLevelErrors;
+        // Async form-level errors should override sync errors
+        formState.error = asyncRecordLevelErrors[FORM_ERROR] || recordLevelErrors[FORM_ERROR];
+      } else {
+        formState.error = recordLevelErrors[FORM_ERROR];
       }
-      formState.error = recordLevelErrors[FORM_ERROR];
     };
 
     if (hasAsyncValidations) {
