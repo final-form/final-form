@@ -1750,7 +1750,8 @@ describe("FinalForm.validation timing - Issue #186", () => {
     });
 
     let unregister: (() => void) | undefined;
-    const validatorSpy = jest.fn(async (value) => {
+    // Use 3-arg validator to trigger the code path where publishFieldState() is called
+    const validatorSpy = jest.fn(async (value, allValues, meta) => {
       // Simulate async validation
       await sleep(10);
       return value ? undefined : "Required";
@@ -1776,8 +1777,12 @@ describe("FinalForm.validation timing - Issue #186", () => {
     // Wait for async validation to complete
     await sleep(50);
     
-    // Verify validator was actually called with the changed value
-    expect(validatorSpy).toHaveBeenCalledWith("test", { conditional: "test" }, undefined);
+    // Verify validator was called (triggering the 3-arg code path with meta)
+    expect(validatorSpy).toHaveBeenCalled();
+    // Check that it was called with "test" value and meta parameter (3rd arg)
+    const testCall = validatorSpy.mock.calls.find(call => call[0] === "test");
+    expect(testCall).toBeDefined();
+    expect(testCall[2]).toMatchObject({ name: "conditional" }); // meta param present
     
     // Verify field was unregistered and no error thrown
     expect(form.getFieldState("conditional")).toBeUndefined();
