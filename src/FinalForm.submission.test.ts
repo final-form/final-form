@@ -1388,12 +1388,14 @@ describe("FinalForm.submission", () => {
       const field1 = jest.fn();
       form.registerField("field1", field1, { value: true });
 
-      // Change the value to make it dirty
+      // Change the value to make it dirty, then change it back
       const { change } = field1.mock.calls[0][0];
       change("modified");
+      change("value1"); // Back to original - no longer dirty
 
-      // Reinitialize with empty values - this can make formState.values undefined
-      // when keepDirtyOnReinitialize removes all keys
+      // Reinitialize with empty values - without the fix, this would make
+      // formState.values undefined because keepDirtyOnReinitialize has nothing
+      // dirty to preserve. The fix adds || {} fallback to prevent the crash.
       form.initialize({});
 
       // This should not crash with "Cannot call setIn() with undefined state"
@@ -1425,9 +1427,14 @@ describe("FinalForm.submission", () => {
       const field1 = jest.fn();
       form.registerField("field1", field1, { value: true });
 
-      // Change to make dirty, then reinitialize with empty
+      // Change the value to make it dirty, then change it back
       const { change } = field1.mock.calls[0][0];
       change("modified");
+      change("value1"); // Back to original - no longer dirty
+
+      // Reinitialize with empty values - without the fix, this would make
+      // formState.values undefined because keepDirtyOnReinitialize has nothing
+      // dirty to preserve. The fix adds || {} fallback to prevent the crash.
       form.initialize({});
 
       // This should not crash with "Cannot call setIn() with undefined state"
