@@ -330,14 +330,18 @@ function createForm<
     return promises;
   };
 
-  const getValidators = (field: InternalFieldState) =>
-    Object.keys(field.validators).reduce((result, index) => {
+  const getValidators = (field: InternalFieldState) => {
+    if (!field || !field.validators) {
+      return [];
+    }
+    return Object.keys(field.validators).reduce((result, index) => {
       const validator = field.validators[Number(index)]();
       if (validator) {
         result.push(validator);
       }
       return result;
     }, []);
+  };
 
   const runFieldLevelValidation = (
     field: InternalFieldState,
