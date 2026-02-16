@@ -330,7 +330,7 @@ function createForm<
     return promises;
   };
 
-  const getValidators = (field: InternalFieldState) => {
+  const getValidators = (field: InternalFieldState | undefined) => {
     if (!field || !field.validators) {
       return [];
     }
