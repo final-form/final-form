@@ -451,9 +451,13 @@ function createForm<
 
     const hasAsyncValidations = promises.length > 0;
     const asyncValidationPromiseKey = ++nextAsyncValidationKey;
-    const promise = Promise.all(promises).then(
-      clearAsyncValidationPromise(asyncValidationPromiseKey),
-    );
+    const promise = Promise.all(promises)
+      .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+      .catch((error) => {
+        // Clear the promise even on rejection to prevent infinite loop (#166)
+        clearAsyncValidationPromise(asyncValidationPromiseKey)(undefined);
+        throw error;
+      });
 
     // backwards-compat: add promise to submit-blocking promises iff there are any promises to await
     if (hasAsyncValidations) {

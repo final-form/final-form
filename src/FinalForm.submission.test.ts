@@ -1261,6 +1261,44 @@ describe("FinalForm.submission", () => {
       expect(errorSpy).toHaveBeenCalledWith(validationError);
       console.error.mockRestore();
     });
+
+    it("should not hang on infinite loop when async validator returns rejected promise (#166)", async () => {
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => { });
+      const onSubmit = jest.fn();
+      let validationCallCount = 0;
+      const validationError = new Error("validation failed");
+      const form = createForm({
+        onSubmit,
+        validate: async (values) => {
+          validationCallCount++;
+          // Return a rejected promise instead of throwing
+          return Promise.reject(validationError);
+        },
+      });
+      form.registerField("foo", () => { });
+      form.change("foo", "bar");
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      const callCountAfterChange = validationCallCount;
+      
+      // Submit - this should not hang in an infinite loop
+      form.submit();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(validationError);
+      
+      // Change a value - this should trigger validation again, not reuse rejected promise
+      const callCountBeforeChange = validationCallCount;
+      form.change("foo", "baz"); // Change triggers validation
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      // Validation should have been called again (not stuck on old rejected promise)
+      expect(validationCallCount).toBeGreaterThan(callCountBeforeChange);
+      console.error.mockRestore();
+    });
   });
 
   describe("formatOnBlur integration with submit", () => {
