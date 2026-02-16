@@ -1375,4 +1375,84 @@ describe("FinalForm.submission", () => {
       expect(onSubmit).not.toHaveBeenCalled();
     });
   });
+
+  describe("Issue #909 - setIn with undefined state", () => {
+    it("should not crash when registering field with initialValue after values becomes undefined", () => {
+      const onSubmit = jest.fn();
+      const form = createForm({
+        onSubmit,
+        keepDirtyOnReinitialize: true,
+        initialValues: { field1: "value1" },
+      });
+
+      const field1 = jest.fn();
+      form.registerField("field1", field1, { value: true });
+
+      // Change the value to make it dirty, then change it back
+      const { change } = field1.mock.calls[0][0];
+      change("modified");
+      change("value1"); // Back to original - no longer dirty
+
+      // Reinitialize with empty values - without the fix, this would make
+      // formState.values undefined because keepDirtyOnReinitialize has nothing
+      // dirty to preserve. The fix adds || {} fallback to prevent the crash.
+      form.initialize({});
+
+      // This should not crash with "Cannot call setIn() with undefined state"
+      const field2 = jest.fn();
+      expect(() => {
+        form.registerField(
+          "field2",
+          field2,
+          { value: true },
+          {
+            initialValue: "newValue",
+          },
+        );
+      }).not.toThrow();
+
+      // Verify the field was registered successfully
+      expect(field2).toHaveBeenCalled();
+      expect(field2.mock.calls[0][0].value).toBe("newValue");
+    });
+
+    it("should not crash when registering field with defaultValue after values becomes undefined", () => {
+      const onSubmit = jest.fn();
+      const form = createForm({
+        onSubmit,
+        keepDirtyOnReinitialize: true,
+        initialValues: { field1: "value1" },
+      });
+
+      const field1 = jest.fn();
+      form.registerField("field1", field1, { value: true });
+
+      // Change the value to make it dirty, then change it back
+      const { change } = field1.mock.calls[0][0];
+      change("modified");
+      change("value1"); // Back to original - no longer dirty
+
+      // Reinitialize with empty values - without the fix, this would make
+      // formState.values undefined because keepDirtyOnReinitialize has nothing
+      // dirty to preserve. The fix adds || {} fallback to prevent the crash.
+      form.initialize({});
+
+      // This should not crash with "Cannot call setIn() with undefined state"
+      const field2 = jest.fn();
+      expect(() => {
+        form.registerField(
+          "field2",
+          field2,
+          { value: true },
+          {
+            defaultValue: "defaultValue",
+          },
+        );
+      }).not.toThrow();
+
+      // Verify the field was registered successfully
+      expect(field2).toHaveBeenCalled();
+      expect(field2.mock.calls[0][0].value).toBe("defaultValue");
+    });
+  });
 });

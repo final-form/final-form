@@ -986,11 +986,11 @@ function createForm<
             name as string,
             fieldConfig.initialValue,
           ) as InitialFormValues;
-          state.formState.values = setIn(
-            state.formState.values as object,
+          state.formState.values = (setIn(
+            (state.formState.values as object) || {},
             name as string,
             fieldConfig.initialValue,
-          ) as FormValues;
+          ) || {}) as FormValues;
           runValidation(undefined, notify);
         }
 
@@ -1001,11 +1001,11 @@ function createForm<
           getIn(state.formState.initialValues as object, name as string) === undefined &&
           noValueInFormState
         ) {
-          state.formState.values = setIn(
-            state.formState.values as object,
+          state.formState.values = (setIn(
+            (state.formState.values as object) || {},
             name as string,
             fieldConfig.defaultValue,
-          ) as FormValues;
+          ) || {}) as FormValues;
         }
       }
 
