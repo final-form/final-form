@@ -881,6 +881,19 @@ function createForm<
         formState.values =
           ((setIn(formState.values as object, key, savedDirtyValues[key]) as unknown) as FormValues) || ({} as FormValues);
       });
+      // Clear modified flag for fields that are now pristine
+      Object.keys(safeFields).forEach((key) => {
+        const field = safeFields[key];
+        const currentValue = getIn(formState.values as object, key);
+        const initialValue = getIn(formState.initialValues as object || {}, key);
+        const isPristine = field.isEqual(currentValue, initialValue);
+        if (isPristine) {
+          fields[key] = {
+            ...field,
+            modified: false,
+          };
+        }
+      });
       runValidation(undefined, () => {
         notifyFieldListeners(undefined);
         notifyFormListeners();
