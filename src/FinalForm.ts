@@ -355,7 +355,7 @@ function createForm<
           getIn(state.formState.values as object, field.name),
           state.formState.values,
           validator.length === 0 || validator.length === 3
-            ? publishFieldState(state.formState, state.fields[field.name])
+            ? publishFieldState(state.formState, field)
             : undefined,
         );
 

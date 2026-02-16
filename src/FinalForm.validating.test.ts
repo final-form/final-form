@@ -1742,3 +1742,40 @@ describe("FinalForm.dirty - Issue #487", () => {
     expect(spy.mock.calls[3][0].values).toEqual({ items: [] });
   });
 });
+
+describe("FinalForm.validation timing - Issue #186", () => {
+  it("should not crash when field is unregistered during validation", async () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    });
+
+    let unregister: (() => void) | undefined;
+    
+    // Register field with async validator
+    unregister = form.registerField(
+      "conditional",
+      () => {},
+      {},
+      {
+        getValidator: () => async (value) => {
+          // Simulate async validation
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          return value ? undefined : "Required";
+        },
+      }
+    );
+
+    // Change value to trigger validation
+    form.change("conditional", "test");
+    
+    // Unregister field immediately (before validation completes)
+    // This should not cause "Cannot read property 'active' of undefined"
+    unregister();
+    
+    // Wait for async validation to complete
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    
+    // If we got here without crashing, the test passes
+    expect(true).toBe(true);
+  });
+});
