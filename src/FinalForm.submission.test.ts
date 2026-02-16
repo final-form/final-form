@@ -89,8 +89,8 @@ describe("FinalForm.submission", () => {
   it("should call onSubmit when form.submit() is called", () => {
     const onSubmit = jest.fn();
     const form = createForm({ onSubmit });
-    form.registerField("foo", () => { });
-    form.registerField("foo2", () => { });
+    form.registerField("foo", () => {});
+    form.registerField("foo2", () => {});
 
     form.change("foo", "bar");
     form.change("foo2", "baz");
@@ -116,8 +116,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => { });
-    form.registerField("foo2", () => { });
+    form.registerField("foo", () => {});
+    form.registerField("foo2", () => {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -175,8 +175,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => { });
-    form.registerField("foo2", () => { });
+    form.registerField("foo", () => {});
+    form.registerField("foo2", () => {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -238,7 +238,7 @@ describe("FinalForm.submission", () => {
     form.subscribe(spy, {
       modifiedSinceLastSubmit: true,
     });
-    form.registerField("foo", () => { });
+    form.registerField("foo", () => {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -286,8 +286,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => { });
-    form.registerField("foo2", () => { });
+    form.registerField("foo", () => {});
+    form.registerField("foo2", () => {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -355,8 +355,8 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => { });
-    form.registerField("foo2", () => { });
+    form.registerField("foo", () => {});
+    form.registerField("foo2", () => {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -647,7 +647,7 @@ describe("FinalForm.submission", () => {
         return errors;
       },
     });
-    form.registerField("foo", () => { });
+    form.registerField("foo", () => {});
 
     const spy = jest.fn();
     form.subscribe(spy, {
@@ -965,7 +965,7 @@ describe("FinalForm.submission", () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0]).toEqual({ submitting: false });
 
-    form.registerField("username", () => { }, {});
+    form.registerField("username", () => {}, {});
 
     form
       .submit()
@@ -1000,7 +1000,7 @@ describe("FinalForm.submission", () => {
 
     form.registerField(
       "name",
-      () => { },
+      () => {},
       {},
       {
         beforeSubmit: nameBeforeSubmit,
@@ -1009,7 +1009,7 @@ describe("FinalForm.submission", () => {
     );
     form.registerField(
       "password",
-      () => { },
+      () => {},
       {},
       {
         beforeSubmit: passwordBeforeSubmit,
@@ -1079,7 +1079,7 @@ describe("FinalForm.submission", () => {
 
     form.registerField(
       "name",
-      () => { },
+      () => {},
       {},
       {
         beforeSubmit: nameBeforeSubmit,
@@ -1087,7 +1087,7 @@ describe("FinalForm.submission", () => {
     );
     form.registerField(
       "password",
-      () => { },
+      () => {},
       {},
       {
         beforeSubmit: passwordBeforeSubmit,
@@ -1095,7 +1095,7 @@ describe("FinalForm.submission", () => {
     );
     form.registerField(
       "email",
-      () => { },
+      () => {},
       {},
       {
         beforeSubmit: emailBeforeSubmit,
@@ -1207,7 +1207,7 @@ describe("FinalForm.submission", () => {
       submitSucceeded: true,
       submitFailed: true,
     });
-    form.registerField("foo", () => { });
+    form.registerField("foo", () => {});
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -1239,7 +1239,7 @@ describe("FinalForm.submission", () => {
     it("should log an error if async validation throw an error and do not freeze", async () => {
       const errorSpy = jest
         .spyOn(console, "error")
-        .mockImplementation(() => { });
+        .mockImplementation(() => {});
       const onSubmit = jest.fn();
       const validationError = new Error("uh oh error during validation");
       const form = createForm({
@@ -1248,8 +1248,8 @@ describe("FinalForm.submission", () => {
           throw validationError;
         },
       });
-      form.registerField("foo", () => { });
-      form.registerField("foo2", () => { });
+      form.registerField("foo", () => {});
+      form.registerField("foo2", () => {});
 
       form.change("foo", "bar");
       form.change("foo2", "baz");
@@ -1268,7 +1268,7 @@ describe("FinalForm.submission", () => {
       // This test verifies the fix for react-final-form#1044
       // Before the fix, validation ran before beforeSubmit, so formatOnBlur
       // didn't apply when submitting via Enter key (form.submit())
-      
+
       const onSubmit = jest.fn();
       const validate = jest.fn((values) => {
         const errors: any = {};
@@ -1280,7 +1280,7 @@ describe("FinalForm.submission", () => {
       });
 
       const form = createForm({ onSubmit, validate });
-      
+
       const format = (value) => value?.trim() || "";
       let fieldChange;
       let fieldValue;
@@ -1301,7 +1301,7 @@ describe("FinalForm.submission", () => {
               form.change("username", formatted);
             }
           },
-        }
+        },
       );
 
       // Set a value with trailing spaces
@@ -1313,12 +1313,12 @@ describe("FinalForm.submission", () => {
 
       // Validation should have been called multiple times
       expect(validate).toHaveBeenCalled();
-      
+
       // The FINAL validation call (during submit) should have the trimmed value
       const lastCallIndex = validate.mock.calls.length - 1;
       const validatedValues = validate.mock.calls[lastCallIndex][0];
       expect(validatedValues.username).toBe("test");
-      
+
       // The form should have submitted successfully (no validation errors)
       expect(onSubmit).toHaveBeenCalled();
       expect(onSubmit.mock.calls[0][0]).toEqual({ username: "test" });
@@ -1326,7 +1326,7 @@ describe("FinalForm.submission", () => {
 
     it("should not submit if validation fails after formatOnBlur", () => {
       // This test ensures validation still works correctly after formatting
-      
+
       const onSubmit = jest.fn();
       const validate = jest.fn((values) => {
         const errors: any = {};
@@ -1337,7 +1337,7 @@ describe("FinalForm.submission", () => {
       });
 
       const form = createForm({ onSubmit, validate });
-      
+
       const format = (value) => value?.trim() || "";
       let fieldChange;
 
@@ -1355,7 +1355,7 @@ describe("FinalForm.submission", () => {
               form.change("username", formatted);
             }
           },
-        }
+        },
       );
 
       // Set a value that will be empty after trimming
@@ -1366,11 +1366,11 @@ describe("FinalForm.submission", () => {
 
       // Validation should have been called with the trimmed (empty) value
       expect(validate).toHaveBeenCalled();
-      
+
       // The FINAL validation call (during submit) should have the trimmed empty value
       const lastCallIndex = validate.mock.calls.length - 1;
       expect(validate.mock.calls[lastCallIndex][0].username).toBe("");
-      
+
       // The form should NOT have submitted (validation failed)
       expect(onSubmit).not.toHaveBeenCalled();
     });
@@ -1380,38 +1380,43 @@ describe("FinalForm.submission", () => {
 it("should handle rejected promises from async field validators without infinite loop (issue #166)", async () => {
   const onSubmit = jest.fn();
   const form = createForm({ onSubmit });
-  
+
   // Field validator that rejects
-  const rejectingValidator = jest.fn(() => 
-    Promise.reject(new Error("Validation failed"))
+  const rejectingValidator = jest.fn(() =>
+    Promise.reject(new Error("Validation failed")),
   );
-  
+
   const field = jest.fn();
   form.registerField("username", field, {
     error: true,
-    validating: true
+    validating: true,
   });
-  
+
   // Add validator that rejects
   const { change } = field.mock.calls[0][0];
-  form.registerField("username", field, {
-    error: true,
-    validating: true
-  }, rejectingValidator);
-  
+  form.registerField(
+    "username",
+    field,
+    {
+      error: true,
+      validating: true,
+    },
+    rejectingValidator,
+  );
+
   change("test");
-  
+
   // Wait for async validation to process
   await sleep(10);
-  
+
   // Form should not be stuck validating
   const state = form.getState();
   expect(state.validating).toBe(false);
-  
+
   // Submit should complete (not hang)
   const submitPromise = form.submit();
   expect(submitPromise).toBeInstanceOf(Promise);
-  
+
   await submitPromise;
   expect(onSubmit).toHaveBeenCalled();
 });
@@ -1420,29 +1425,29 @@ it("should handle rejected promises from form-level async validation without inf
   const onSubmit = jest.fn();
   const form = createForm({
     onSubmit,
-    validate: () => Promise.reject(new Error("Form validation failed"))
+    validate: () => Promise.reject(new Error("Form validation failed")),
   });
-  
+
   const field = jest.fn();
   form.registerField("username", field, {
     error: true,
-    validating: true
+    validating: true,
   });
-  
+
   const { change } = field.mock.calls[0][0];
   change("test");
-  
+
   // Wait for async validation to process
   await sleep(10);
-  
+
   // Form should not be stuck validating
   const state = form.getState();
   expect(state.validating).toBe(false);
-  
+
   // Submit should complete (not hang)
   const submitPromise = form.submit();
   expect(submitPromise).toBeInstanceOf(Promise);
-  
+
   await submitPromise;
   expect(onSubmit).toHaveBeenCalled();
 });
