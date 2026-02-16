@@ -1378,13 +1378,13 @@ describe("FinalForm.submission", () => {
 });
 
 it("should handle rejected promises from async field validators without infinite loop (issue #166)", async () => {
+  const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   const onSubmit = jest.fn();
   const form = createForm({ onSubmit });
 
   // Field validator that rejects
-  const rejectingValidator = jest.fn(() =>
-    Promise.reject(new Error("Validation failed")),
-  );
+  const validationError = new Error("Validation failed");
+  const rejectingValidator = jest.fn(() => Promise.reject(validationError));
 
   const field = jest.fn();
   form.registerField("username", field, {
@@ -1418,14 +1418,20 @@ it("should handle rejected promises from async field validators without infinite
   expect(submitPromise).toBeInstanceOf(Promise);
 
   await submitPromise;
-  expect(onSubmit).toHaveBeenCalled();
+
+  // Rejected promises should be treated as validation errors
+  expect(onSubmit).not.toHaveBeenCalled();
+  expect(errorSpy).toHaveBeenCalledWith(validationError);
+  console.error.mockRestore();
 });
 
 it("should handle rejected promises from form-level async validation without infinite loop (issue #166)", async () => {
+  const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   const onSubmit = jest.fn();
+  const validationError = new Error("Form validation failed");
   const form = createForm({
     onSubmit,
-    validate: () => Promise.reject(new Error("Form validation failed")),
+    validate: () => Promise.reject(validationError),
   });
 
   const field = jest.fn();
@@ -1449,5 +1455,9 @@ it("should handle rejected promises from form-level async validation without inf
   expect(submitPromise).toBeInstanceOf(Promise);
 
   await submitPromise;
-  expect(onSubmit).toHaveBeenCalled();
+
+  // Rejected promises should be treated as validation errors
+  expect(onSubmit).not.toHaveBeenCalled();
+  expect(errorSpy).toHaveBeenCalledWith(validationError);
+  console.error.mockRestore();
 });

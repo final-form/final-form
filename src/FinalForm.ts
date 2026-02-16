@@ -352,10 +352,11 @@ function createForm<
         promises.push(
           errorsOrPromise
             .then((errors: any) => setErrors(errors, true))
-            .catch(() => {
+            .catch((err: any) => {
               // Handle rejected promises to prevent infinite loop (issue #166)
-              // Treat rejection as no errors
-              setErrors({}, true);
+              // Log error and set as form-level validation error
+              console.error(err);
+              setErrors({ [FORM_ERROR]: err }, true);
             }),
         );
       } else {
@@ -418,9 +419,10 @@ function createForm<
                 }
               }
             })
-            .catch(() => {
+            .catch((err) => {
               // Handle rejected promises to prevent infinite loop (issue #166)
-              // Treat rejection as undefined error (no validation error)
+              // Log error and cleanup validation state
+              console.error(err);
               const currentField = state.fields[field.name];
               if (currentField && currentField.instanceId === fieldInstanceId) {
                 if (currentField.asyncValidationCount > 0) {
@@ -429,7 +431,10 @@ function createForm<
                 if (currentField.asyncValidationCount === 0) {
                   currentField.validating = false;
                 }
-                // Don't set error for rejected promises
+                // Set error message from rejection if validation key still matches
+                if (fieldValidationKey === currentField.asyncValidationKey) {
+                  setError(err);
+                }
               }
             }); // errors must be resolved, not rejected
           promises.push(promise);
