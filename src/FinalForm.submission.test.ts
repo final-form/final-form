@@ -1281,7 +1281,6 @@ describe("FinalForm.submission", () => {
       form.change("foo", "bar");
 
       expect(onSubmit).not.toHaveBeenCalled();
-      const callCountAfterChange = validationCallCount;
       
       // Submit - this should not hang in an infinite loop
       form.submit();
