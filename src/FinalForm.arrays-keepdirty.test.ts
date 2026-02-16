@@ -44,7 +44,6 @@ describe('FinalForm.keepDirtyOnReinitialize - Issue #366', () => {
     expect(getIn(form.getState().values, 'customers[0].firstName')).toBe('Modified')
 
     // But the pristine field should update to new initial value
-    // BUG: This fails - it keeps the old value 'Smith' instead of updating to 'NewSmith'
     expect(lastName1State.value).toBe('NewSmith')
   })
 })
