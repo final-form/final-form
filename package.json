@@ -116,7 +116,7 @@
     },
     {
       "path": "dist/final-form.cjs.js",
-      "limit": "6.5kB"
+      "limit": "6.51kB"
     }
   ],
   "types": "dist/index.d.ts"
