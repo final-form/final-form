@@ -1376,3 +1376,74 @@ describe("FinalForm.submission", () => {
     });
   });
 });
+
+it("should not crash when registering field with initialValue after values becomes undefined (issue #909)", () => {
+  const onSubmit = jest.fn();
+  const form = createForm({
+    onSubmit,
+    keepDirtyOnReinitialize: true,
+    initialValues: { field1: "value1" },
+  });
+
+  const field1 = jest.fn();
+  form.registerField("field1", field1, { value: true });
+
+  // Change the value to make it dirty
+  const { change } = field1.mock.calls[0][0];
+  change("modified");
+
+  // Reinitialize with empty values - this can make formState.values undefined
+  // when keepDirtyOnReinitialize removes all keys
+  form.initialize({});
+
+  // This should not crash with "Cannot call setIn() with undefined state"
+  const field2 = jest.fn();
+  expect(() => {
+    form.registerField(
+      "field2",
+      field2,
+      { value: true },
+      {
+        initialValue: "newValue",
+      },
+    );
+  }).not.toThrow();
+
+  // Verify the field was registered successfully
+  expect(field2).toHaveBeenCalled();
+  expect(field2.mock.calls[0][0].value).toBe("newValue");
+});
+
+it("should not crash when registering field with defaultValue after values becomes undefined (issue #909)", () => {
+  const onSubmit = jest.fn();
+  const form = createForm({
+    onSubmit,
+    keepDirtyOnReinitialize: true,
+    initialValues: { field1: "value1" },
+  });
+
+  const field1 = jest.fn();
+  form.registerField("field1", field1, { value: true });
+
+  // Change to make dirty, then reinitialize with empty
+  const { change } = field1.mock.calls[0][0];
+  change("modified");
+  form.initialize({});
+
+  // This should not crash with "Cannot call setIn() with undefined state"
+  const field2 = jest.fn();
+  expect(() => {
+    form.registerField(
+      "field2",
+      field2,
+      { value: true },
+      {
+        defaultValue: "defaultValue",
+      },
+    );
+  }).not.toThrow();
+
+  // Verify the field was registered successfully
+  expect(field2).toHaveBeenCalled();
+  expect(field2.mock.calls[0][0].value).toBe("defaultValue");
+});
