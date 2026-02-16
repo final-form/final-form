@@ -1759,7 +1759,7 @@ describe("FinalForm.validation timing - Issue #186", () => {
       {
         getValidator: () => async (value) => {
           // Simulate async validation
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await sleep(10);
           return value ? undefined : "Required";
         },
       }
@@ -1773,9 +1773,9 @@ describe("FinalForm.validation timing - Issue #186", () => {
     unregister();
     
     // Wait for async validation to complete
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await sleep(50);
     
-    // If we got here without crashing, the test passes
-    expect(true).toBe(true);
+    // Verify field was unregistered and no error thrown
+    expect(form.getFieldState("conditional")).toBeUndefined();
   });
 });

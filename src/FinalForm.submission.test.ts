@@ -1255,8 +1255,7 @@ describe("FinalForm.submission", () => {
       form.change("foo2", "baz");
 
       expect(onSubmit).not.toHaveBeenCalled();
-      form.submit();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await form.submit();
       expect(onSubmit).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(validationError);
       console.error.mockRestore();
