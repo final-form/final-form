@@ -889,6 +889,14 @@ function createForm<
         formState.values =
           ((setIn(formState.values as object, key, savedDirtyValues[key]) as unknown) as FormValues) || ({} as FormValues);
       });
+      // Recalculate modified flag for all fields based on new initialValues
+      Object.keys(safeFields).forEach((key) => {
+        const field = safeFields[key];
+        const currentValue = getIn(formState.values as object, key);
+        const initialValue = getIn(formState.initialValues as object || {}, key);
+        const pristine = field.isEqual(currentValue, initialValue);
+        field.modified = !pristine;
+      });
       runValidation(undefined, () => {
         notifyFieldListeners(undefined);
         notifyFormListeners();
