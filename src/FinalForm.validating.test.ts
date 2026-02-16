@@ -1750,6 +1750,11 @@ describe("FinalForm.validation timing - Issue #186", () => {
     });
 
     let unregister: (() => void) | undefined;
+    const validatorSpy = jest.fn(async (value) => {
+      // Simulate async validation
+      await sleep(10);
+      return value ? undefined : "Required";
+    });
     
     // Register field with async validator
     unregister = form.registerField(
@@ -1757,11 +1762,7 @@ describe("FinalForm.validation timing - Issue #186", () => {
       () => {},
       {},
       {
-        getValidator: () => async (value) => {
-          // Simulate async validation
-          await sleep(10);
-          return value ? undefined : "Required";
-        },
+        getValidator: () => validatorSpy,
       }
     );
 
@@ -1774,6 +1775,9 @@ describe("FinalForm.validation timing - Issue #186", () => {
     
     // Wait for async validation to complete
     await sleep(50);
+    
+    // Verify validator was actually called with the changed value
+    expect(validatorSpy).toHaveBeenCalledWith("test", { conditional: "test" }, undefined);
     
     // Verify field was unregistered and no error thrown
     expect(form.getFieldState("conditional")).toBeUndefined();
