@@ -321,7 +321,13 @@ function createForm<
       const errorsOrPromise = validate({ ...state.formState.values }); // clone to avoid writing
       if (isPromise(errorsOrPromise)) {
         promises.push(
-          errorsOrPromise.then((errors: any) => setErrors(errors, true)),
+          errorsOrPromise
+            .then((errors: any) => setErrors(errors, true))
+            .catch(() => {
+              // Handle rejected promises to prevent infinite loop (issue #166)
+              // Treat rejection as no errors
+              setErrors({}, true);
+            }),
         );
       } else {
         setErrors(errorsOrPromise, false);
@@ -364,24 +370,39 @@ function createForm<
           field.asyncValidationCount++;
           field.validating = true;
           const fieldInstanceId = field.instanceId; // Capture stable instance ID
-          const promise = errorOrPromise.then((error) => {
-            const currentField = state.fields[field.name];
-            // Only mutate if the field instance is still the same (check stable instanceId)
-            if (currentField && currentField.instanceId === fieldInstanceId) {
-              // Decrement async validation counter (guard against underflow)
-              if (currentField.asyncValidationCount > 0) {
-                currentField.asyncValidationCount--;
+          const promise = errorOrPromise
+            .then((error) => {
+              const currentField = state.fields[field.name];
+              // Only mutate if the field instance is still the same (check stable instanceId)
+              if (currentField && currentField.instanceId === fieldInstanceId) {
+                // Decrement async validation counter (guard against underflow)
+                if (currentField.asyncValidationCount > 0) {
+                  currentField.asyncValidationCount--;
+                }
+                // Only set validating=false if all async validations for this field are complete
+                if (currentField.asyncValidationCount === 0) {
+                  currentField.validating = false;
+                }
+                // Only apply error if this validation hasn't been superseded by a newer one
+                if (fieldValidationKey === currentField.asyncValidationKey) {
+                  setError(error);
+                }
               }
-              // Only set validating=false if all async validations for this field are complete
-              if (currentField.asyncValidationCount === 0) {
-                currentField.validating = false;
+            })
+            .catch(() => {
+              // Handle rejected promises to prevent infinite loop (issue #166)
+              // Treat rejection as undefined error (no validation error)
+              const currentField = state.fields[field.name];
+              if (currentField && currentField.instanceId === fieldInstanceId) {
+                if (currentField.asyncValidationCount > 0) {
+                  currentField.asyncValidationCount--;
+                }
+                if (currentField.asyncValidationCount === 0) {
+                  currentField.validating = false;
+                }
+                // Don't set error for rejected promises
               }
-              // Only apply error if this validation hasn't been superseded by a newer one
-              if (fieldValidationKey === currentField.asyncValidationKey) {
-                setError(error);
-              }
-            }
-          }); // errors must be resolved, not rejected
+            }); // errors must be resolved, not rejected
           promises.push(promise);
         } else if (!error) {
           // first registered validator wins

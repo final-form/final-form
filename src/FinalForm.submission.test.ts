@@ -1376,3 +1376,73 @@ describe("FinalForm.submission", () => {
     });
   });
 });
+
+it("should handle rejected promises from async field validators without infinite loop (issue #166)", async () => {
+  const onSubmit = jest.fn();
+  const form = createForm({ onSubmit });
+  
+  // Field validator that rejects
+  const rejectingValidator = jest.fn(() => 
+    Promise.reject(new Error("Validation failed"))
+  );
+  
+  const field = jest.fn();
+  form.registerField("username", field, {
+    error: true,
+    validating: true
+  });
+  
+  // Add validator that rejects
+  const { change } = field.mock.calls[0][0];
+  form.registerField("username", field, {
+    error: true,
+    validating: true
+  }, rejectingValidator);
+  
+  change("test");
+  
+  // Wait for async validation to process
+  await sleep(10);
+  
+  // Form should not be stuck validating
+  const state = form.getState();
+  expect(state.validating).toBe(false);
+  
+  // Submit should complete (not hang)
+  const submitPromise = form.submit();
+  expect(submitPromise).toBeInstanceOf(Promise);
+  
+  await submitPromise;
+  expect(onSubmit).toHaveBeenCalled();
+});
+
+it("should handle rejected promises from form-level async validation without infinite loop (issue #166)", async () => {
+  const onSubmit = jest.fn();
+  const form = createForm({
+    onSubmit,
+    validate: () => Promise.reject(new Error("Form validation failed"))
+  });
+  
+  const field = jest.fn();
+  form.registerField("username", field, {
+    error: true,
+    validating: true
+  });
+  
+  const { change } = field.mock.calls[0][0];
+  change("test");
+  
+  // Wait for async validation to process
+  await sleep(10);
+  
+  // Form should not be stuck validating
+  const state = form.getState();
+  expect(state.validating).toBe(false);
+  
+  // Submit should complete (not hang)
+  const submitPromise = form.submit();
+  expect(submitPromise).toBeInstanceOf(Promise);
+  
+  await submitPromise;
+  expect(onSubmit).toHaveBeenCalled();
+});
