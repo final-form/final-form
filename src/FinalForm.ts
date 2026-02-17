@@ -877,7 +877,14 @@ function createForm<
             getIn(formState.initialValues as object || {}, key),
           );
           if (!pristine) {
-            result[key] = getIn(formState.values as object, key);
+            // Check if any other registered field is a child of this field
+            // e.g., if key is "customers" and "customers[0].firstName" exists, skip "customers"
+            const hasChildFields = Object.keys(safeFields).some((otherKey) =>
+              otherKey !== key && (otherKey.startsWith(key + '[') || otherKey.startsWith(key + '.'))
+            );
+            if (!hasChildFields) {
+              result[key] = getIn(formState.values as object, key);
+            }
           }
           return result;
         }, {} as Record<string, any>)
