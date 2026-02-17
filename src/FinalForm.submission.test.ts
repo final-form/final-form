@@ -1491,4 +1491,46 @@ describe("FinalForm.submission", () => {
       expect(field2.mock.calls[0][0].value).toBe("defaultValue");
     });
   });
+
+  describe("Issue #903 – submitting stuck when onSubmit returns Promise<void>", () => {
+    it("should not get stuck in submitting state when onSubmit returns a Promise that resolves to undefined (void)", async () => {
+      // https://github.com/final-form/react-final-form/issues/903
+      // When onSubmit is an async function with no return value (Promise<void>),
+      // submitting should reset to false after the promise resolves.
+      const form = createForm({
+        onSubmit: async () => {
+          // no await, no return — resolves immediately with undefined
+        },
+      });
+
+      const formSubscriber = jest.fn();
+      form.subscribe(formSubscriber, { submitting: true });
+
+      // initial call
+      expect(formSubscriber).toHaveBeenCalledTimes(1);
+      expect(formSubscriber.mock.calls[0][0].submitting).toBe(false);
+
+      await form.submit();
+
+      // After submit resolves, submitting should be false
+      const calls = formSubscriber.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      expect(lastCall[0].submitting).toBe(false);
+    });
+
+    it("should not get stuck in submitting state when onSubmit returns Promise.resolve()", async () => {
+      const form = createForm({
+        onSubmit: () => Promise.resolve(),
+      });
+
+      const formSubscriber = jest.fn();
+      form.subscribe(formSubscriber, { submitting: true });
+
+      await form.submit();
+
+      const calls = formSubscriber.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      expect(lastCall[0].submitting).toBe(false);
+    });
+  });
 });
