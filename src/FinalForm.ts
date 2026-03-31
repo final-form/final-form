@@ -997,11 +997,13 @@ function createForm<
 
         const noValueInFormState =
           getIn(state.formState.values as object, name as string) === undefined;
+        const currentValue = getIn(state.formState.values as object, name as string);
+        const currentInitialValue = getIn(state.formState.initialValues as object, name as string);
+        
         if (
           fieldConfig.initialValue !== undefined &&
           (noValueInFormState ||
-            getIn(state.formState.values as object, name as string) ===
-            getIn(state.formState.initialValues as object, name as string))
+            currentValue === currentInitialValue)
           // only initialize if we don't yet have any value for this field
         ) {
           state.formState.initialValues = setIn(
@@ -1014,6 +1016,21 @@ function createForm<
             name as string,
             fieldConfig.initialValue,
           ) || {}) as FormValues;
+          runValidation(undefined, notify);
+        } else if (
+          // Fix #988: Update initialValue when field's initialValue prop changes
+          // (e.g., after submit when the "saved" value changes)
+          // but don't overwrite user's current value
+          fieldConfig.initialValue !== undefined &&
+          fieldConfig.initialValue !== currentInitialValue &&
+          currentValue !== undefined
+        ) {
+          state.formState.initialValues = setIn(
+            state.formState.initialValues || {},
+            name as string,
+            fieldConfig.initialValue,
+          ) as InitialFormValues;
+          // Re-run validation since dirty state may have changed
           runValidation(undefined, notify);
         }
 
