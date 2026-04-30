@@ -4,6 +4,7 @@ describe('FinalForm.field-initialValue (issue #988)', () => {
   it('should update form initialValues when field initialValue prop changes', () => {
     const form = createForm({ onSubmit: () => {} })
     const spy = jest.fn()
+    const last = () => spy.mock.calls.at(-1)[0]
     form.subscribe(spy, { initialValues: true, values: true, dirty: true })
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0][0].initialValues).toBeUndefined()
@@ -42,15 +43,15 @@ describe('FinalForm.field-initialValue (issue #988)', () => {
 
     // BUG FIX: initialValues should now be updated to "B"
     // and dirty should be false since value matches new initialValue
-    const lastCall = spy.mock.calls[spy.mock.calls.length - 1][0]
-    expect(lastCall.initialValues).toEqual({ myField: 'B' })
-    expect(lastCall.values).toEqual({ myField: 'B' })
-    expect(lastCall.dirty).toBe(false)
+    expect(last().initialValues).toEqual({ myField: 'B' })
+    expect(last().values).toEqual({ myField: 'B' })
+    expect(last().dirty).toBe(false)
   })
 
   it('should not overwrite user value when field initialValue prop changes', () => {
     const form = createForm({ onSubmit: () => {} })
     const spy = jest.fn()
+    const last = () => spy.mock.calls.at(-1)[0]
     form.subscribe(spy, { initialValues: true, values: true, dirty: true })
 
     // Register field with initialValue="A"
@@ -61,13 +62,13 @@ describe('FinalForm.field-initialValue (issue #988)', () => {
       { initialValue: 'A' }
     )
 
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].values).toEqual({ myField: 'A' })
+    expect(last().values).toEqual({ myField: 'A' })
 
     // User changes value to "C" (different from both old and new initialValue)
     form.change('myField', 'C')
 
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].values).toEqual({ myField: 'C' })
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].dirty).toBe(true)
+    expect(last().values).toEqual({ myField: 'C' })
+    expect(last().dirty).toBe(true)
 
     // Field re-registers with new initialValue="B"
     unsubscribe()
@@ -79,15 +80,15 @@ describe('FinalForm.field-initialValue (issue #988)', () => {
     )
 
     // Should update initialValues to "B" but NOT overwrite user's value "C"
-    const lastCall = spy.mock.calls[spy.mock.calls.length - 1][0]
-    expect(lastCall.initialValues).toEqual({ myField: 'B' })
-    expect(lastCall.values).toEqual({ myField: 'C' }) // User value preserved!
-    expect(lastCall.dirty).toBe(true) // Still dirty since C !== B
+    expect(last().initialValues).toEqual({ myField: 'B' })
+    expect(last().values).toEqual({ myField: 'C' }) // User value preserved!
+    expect(last().dirty).toBe(true) // Still dirty since C !== B
   })
 
   it('should handle radio button scenario from issue #988', () => {
     const form = createForm({ onSubmit: () => {} })
     const spy = jest.fn()
+    const last = () => spy.mock.calls.at(-1)[0]
     form.subscribe(spy, { initialValues: true, values: true, dirty: true })
 
     // Register radio button field with initialValue="A"
@@ -98,18 +99,18 @@ describe('FinalForm.field-initialValue (issue #988)', () => {
       { initialValue: 'A' }
     )
 
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].values).toEqual({
+    expect(last().values).toEqual({
       'section-one': { 'radio-button': 'A' }
     })
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].dirty).toBe(false)
+    expect(last().dirty).toBe(false)
 
     // User selects "B"
     form.change('section-one.radio-button', 'B')
 
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].values).toEqual({
+    expect(last().values).toEqual({
       'section-one': { 'radio-button': 'B' }
     })
-    expect(spy.mock.calls[spy.mock.calls.length - 1][0].dirty).toBe(true)
+    expect(last().dirty).toBe(true)
 
     // After successful submit, field re-registers with initialValue="B"
     unsubscribe()
@@ -121,13 +122,12 @@ describe('FinalForm.field-initialValue (issue #988)', () => {
     )
 
     // Form should no longer be dirty
-    const lastCall = spy.mock.calls[spy.mock.calls.length - 1][0]
-    expect(lastCall.initialValues).toEqual({
+    expect(last().initialValues).toEqual({
       'section-one': { 'radio-button': 'B' }
     })
-    expect(lastCall.values).toEqual({
+    expect(last().values).toEqual({
       'section-one': { 'radio-button': 'B' }
     })
-    expect(lastCall.dirty).toBe(false) // ← THE FIX!
+    expect(last().dirty).toBe(false) // ← THE FIX!
   })
 })
