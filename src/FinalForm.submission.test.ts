@@ -1255,10 +1255,46 @@ describe("FinalForm.submission", () => {
       form.change("foo2", "baz");
 
       expect(onSubmit).not.toHaveBeenCalled();
-      form.submit();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await form.submit();
       expect(onSubmit).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(validationError);
+      console.error.mockRestore();
+    });
+
+    it("should not hang on infinite loop when async validator returns rejected promise (#166)", async () => {
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => { });
+      const onSubmit = jest.fn();
+      let validationCallCount = 0;
+      const validationError = new Error("validation failed");
+      const form = createForm({
+        onSubmit,
+        validate: async (values) => {
+          validationCallCount++;
+          // Return a rejected promise instead of throwing
+          return Promise.reject(validationError);
+        },
+      });
+      form.registerField("foo", () => { });
+      form.change("foo", "bar");
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      
+      // Submit - this should not hang in an infinite loop
+      form.submit();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(validationError);
+      
+      // Change a value - this should trigger validation again, not reuse rejected promise
+      const callCountBeforeChange = validationCallCount;
+      form.change("foo", "baz"); // Change triggers validation
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      // Validation should have been called again (not stuck on old rejected promise)
+      expect(validationCallCount).toBeGreaterThan(callCountBeforeChange);
       console.error.mockRestore();
     });
   });
@@ -1453,6 +1489,48 @@ describe("FinalForm.submission", () => {
       // Verify the field was registered successfully
       expect(field2).toHaveBeenCalled();
       expect(field2.mock.calls[0][0].value).toBe("defaultValue");
+    });
+  });
+
+  describe("Issue #903 – submitting stuck when onSubmit returns Promise<void>", () => {
+    it("should not get stuck in submitting state when onSubmit returns a Promise that resolves to undefined (void)", async () => {
+      // https://github.com/final-form/react-final-form/issues/903
+      // When onSubmit is an async function with no return value (Promise<void>),
+      // submitting should reset to false after the promise resolves.
+      const form = createForm({
+        onSubmit: async () => {
+          // no await, no return — resolves immediately with undefined
+        },
+      });
+
+      const formSubscriber = jest.fn();
+      form.subscribe(formSubscriber, { submitting: true });
+
+      // initial call
+      expect(formSubscriber).toHaveBeenCalledTimes(1);
+      expect(formSubscriber.mock.calls[0][0].submitting).toBe(false);
+
+      await form.submit();
+
+      // After submit resolves, submitting should be false
+      const calls = formSubscriber.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      expect(lastCall[0].submitting).toBe(false);
+    });
+
+    it("should not get stuck in submitting state when onSubmit returns Promise.resolve()", async () => {
+      const form = createForm({
+        onSubmit: () => Promise.resolve(),
+      });
+
+      const formSubscriber = jest.fn();
+      form.subscribe(formSubscriber, { submitting: true });
+
+      await form.submit();
+
+      const calls = formSubscriber.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      expect(lastCall[0].submitting).toBe(false);
     });
   });
 });

@@ -913,6 +913,40 @@ describe("Field.subscribing", () => {
     expect(name2).toHaveBeenCalledTimes(1);
   });
 
+  it("should not be dirty when field is re-registered after destroyOnUnregister (#161)", () => {
+    // https://github.com/final-form/final-form/issues/161
+    // When a field is unregistered with destroyOnUnregister, its value is cleared.
+    // When the field is re-registered, it should NOT be dirty.
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      destroyOnUnregister: true,
+    });
+
+    const field1 = jest.fn();
+    const unregister = form.registerField("message", field1, {
+      value: true,
+      dirty: true,
+    });
+
+    // Initially not dirty
+    expect(field1.mock.calls[0][0].dirty).toBe(false);
+
+    // Type a value — now dirty
+    form.change("message", "hello");
+    expect(field1.mock.calls[1][0].dirty).toBe(true);
+
+    // Unregister (simulate conditional unmount)
+    unregister();
+
+    // Re-register the same field
+    const field2 = jest.fn();
+    form.registerField("message", field2, { value: true, dirty: true });
+
+    // Should NOT be dirty on re-registration — value was destroyed
+    expect(field2.mock.calls[0][0].value).toBeUndefined();
+    expect(field2.mock.calls[0][0].dirty).toBe(false);
+  });
+
   it("should not destroy field value on unregister when ignoreUnregister is true", () => {
     const form = createForm({
       onSubmit: onSubmitMock,

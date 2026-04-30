@@ -330,14 +330,18 @@ function createForm<
     return promises;
   };
 
-  const getValidators = (field: InternalFieldState) =>
-    Object.keys(field.validators).reduce((result, index) => {
+  const getValidators = (field: InternalFieldState) => {
+    if (!field || !field.validators) {
+      return [];
+    }
+    return Object.keys(field.validators).reduce((result, index) => {
       const validator = field.validators[Number(index)]();
       if (validator) {
         result.push(validator);
       }
       return result;
     }, []);
+  };
 
   const runFieldLevelValidation = (
     field: InternalFieldState,
@@ -355,7 +359,7 @@ function createForm<
           getIn(state.formState.values as object, field.name),
           state.formState.values,
           validator.length === 0 || validator.length === 3
-            ? publishFieldState(state.formState, state.fields[field.name])
+            ? publishFieldState(state.formState, field)
             : undefined,
         );
 
@@ -451,9 +455,13 @@ function createForm<
 
     const hasAsyncValidations = promises.length > 0;
     const asyncValidationPromiseKey = ++nextAsyncValidationKey;
-    const promise = Promise.all(promises).then(
-      clearAsyncValidationPromise(asyncValidationPromiseKey),
-    );
+    const promise = Promise.all(promises)
+      .then(clearAsyncValidationPromise(asyncValidationPromiseKey))
+      .catch((error) => {
+        // Clear the promise even on rejection to prevent infinite loop (#166)
+        clearAsyncValidationPromise(asyncValidationPromiseKey)(undefined);
+        throw error;
+      });
 
     // backwards-compat: add promise to submit-blocking promises iff there are any promises to await
     if (hasAsyncValidations) {
@@ -869,7 +877,14 @@ function createForm<
             getIn(formState.initialValues as object || {}, key),
           );
           if (!pristine) {
-            result[key] = getIn(formState.values as object, key);
+            // Check if any other registered field is a child of this field
+            // e.g., if key is "customers" and "customers[0].firstName" exists, skip "customers"
+            const hasChildFields = Object.keys(safeFields).some((otherKey) =>
+              otherKey !== key && (otherKey.startsWith(key + '[') || otherKey.startsWith(key + '.'))
+            );
+            if (!hasChildFields) {
+              result[key] = getIn(formState.values as object, key);
+            }
           }
           return result;
         }, {} as Record<string, any>)
@@ -881,18 +896,13 @@ function createForm<
         formState.values =
           ((setIn(formState.values as object, key, savedDirtyValues[key]) as unknown) as FormValues) || ({} as FormValues);
       });
-      // Clear modified flag for fields that are now pristine
+      // Recalculate modified flag for all fields based on new initialValues
       Object.keys(safeFields).forEach((key) => {
         const field = safeFields[key];
         const currentValue = getIn(formState.values as object, key);
         const initialValue = getIn(formState.initialValues as object || {}, key);
-        const isPristine = field.isEqual(currentValue, initialValue);
-        if (isPristine) {
-          fields[key] = {
-            ...field,
-            modified: false,
-          };
-        }
+        const pristine = field.isEqual(currentValue, initialValue);
+        field.modified = !pristine;
       });
       runValidation(undefined, () => {
         notifyFieldListeners(undefined);
@@ -1031,8 +1041,8 @@ function createForm<
       return () => {
         let validatorRemoved = false;
         // istanbul ignore next
-        if (state.fields[name as string]) {
-          // state.fields[name] may have been removed by a mutator
+        if (state.fields[name as string] && state.fields[name as string].validators) {
+          // state.fields[name] may have been removed by a mutator (e.g., renameField #191)
           validatorRemoved = !!(
             state.fields[name as string].validators[index] &&
             state.fields[name as string].validators[index]()
@@ -1040,12 +1050,14 @@ function createForm<
           delete state.fields[name as string].validators[index];
         }
         let hasFieldSubscribers = !!state.fieldSubscribers[name as string];
-        if (hasFieldSubscribers) {
-          // state.fieldSubscribers[name] may have been removed by a mutator
+        if (hasFieldSubscribers && state.fieldSubscribers[name as string].entries) {
+          // state.fieldSubscribers[name] may have been removed by a mutator (e.g., renameField #191)
           delete state.fieldSubscribers[name as string].entries[index];
         }
         let lastOne =
           hasFieldSubscribers &&
+          state.fieldSubscribers[name as string] &&
+          state.fieldSubscribers[name as string].entries &&
           !Object.keys(state.fieldSubscribers[name as string].entries).length;
         if (lastOne) {
           delete state.fieldSubscribers[name as string];

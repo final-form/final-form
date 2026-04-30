@@ -159,4 +159,34 @@ describe("FinalForm.mutators", () => {
     form.mutators.rename("foo", "renamedFoo");
     expect(() => unregisterFoo()).not.toThrowError();
   });
+
+  it("should return computed field state from getFieldState when lastFieldState is undefined after mutator", () => {
+    // Reproduces the root cause of: https://github.com/final-form/react-final-form-arrays/issues/165
+    // When a mutator (like arrays.remove) shifts field state and sets lastFieldState=undefined
+    // to force re-notification, form.getFieldState() should NOT return undefined.
+    // It should compute and return the current state on-demand.
+
+    const setFieldData = jest.fn(([name, data], state) => {
+      if (state.fields[name]) {
+        state.fields[name].data = data;
+        state.fields[name].lastFieldState = undefined; // force re-notification
+      }
+    });
+
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      mutators: { setFieldData },
+    });
+
+    // Register a field
+    form.registerField("foo", () => {}, {});
+
+    // Set data via mutator (simulating setFieldData pattern)
+    form.mutators.setFieldData("foo", { disabled: true });
+
+    // getFieldState should return the current computed state, not undefined
+    const fieldState = form.getFieldState("foo");
+    expect(fieldState).toBeDefined();
+    expect(fieldState!.data).toEqual({ disabled: true });
+  });
 });

@@ -1742,3 +1742,85 @@ describe("FinalForm.dirty - Issue #487", () => {
     expect(spy.mock.calls[3][0].values).toEqual({ items: [] });
   });
 });
+
+describe("FinalForm.validation timing - Issue #186", () => {
+  it("should not crash when field is unregistered during validation", async () => {
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    });
+
+    let unregister: (() => void) | undefined;
+    // Use 3-arg validator to trigger the code path where publishFieldState() is called
+    const validatorSpy = jest.fn(async (value, allValues, meta) => {
+      // Simulate async validation
+      await sleep(10);
+      return value ? undefined : "Required";
+    });
+    
+    // Register field with async validator
+    unregister = form.registerField(
+      "conditional",
+      () => {},
+      {},
+      {
+        getValidator: () => validatorSpy,
+      }
+    );
+
+    // Change value to trigger validation
+    form.change("conditional", "test");
+    
+    // Unregister field immediately (before validation completes)
+    // This should not cause "Cannot read property 'active' of undefined"
+    unregister();
+    
+    // Wait for async validation to complete
+    await sleep(50);
+    
+    // Verify validator was called (triggering the 3-arg code path with meta)
+    expect(validatorSpy).toHaveBeenCalled();
+    // Check that it was called with "test" value and meta parameter (3rd arg)
+    const testCall = validatorSpy.mock.calls.find(call => call[0] === "test");
+    expect(testCall).toBeDefined();
+    expect(testCall[2]).toMatchObject({ name: "conditional" }); // meta param present
+    
+    // Verify field was unregistered and no error thrown
+    expect(form.getFieldState("conditional")).toBeUndefined();
+  });
+});
+
+describe("FinalForm.validation - Issue #158", () => {
+  it("should not crash when validating after field with validator is unregistered", () => {
+    // This test reproduces the crash from react-final-form-arrays #158
+    // where removing an array item causes validation to try accessing
+    // validators on an undefined field
+    const form = createForm({
+      onSubmit: onSubmitMock,
+    });
+
+    const fieldValidator = jest.fn(() => undefined);
+    const spy = jest.fn();
+
+    // Register a field with field-level validation
+    const unregister = form.registerField("items[0]", spy, {
+      error: true,
+    }, {
+      getValidator: () => fieldValidator,
+    });
+
+    expect(spy).toHaveBeenCalled();
+
+    // Trigger a change to force validation
+    form.change("items[0]", "value");
+    expect(fieldValidator).toHaveBeenCalled();
+
+    // Unregister the field (simulating array item removal)
+    unregister();
+
+    // This should not crash even though the field is now undefined
+    // In the original bug, this would throw "Cannot read property 'validators' of undefined"
+    expect(() => {
+      form.change("items[1]", "another value");
+    }).not.toThrow();
+  });
+});
