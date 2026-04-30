@@ -39,14 +39,14 @@ describe('FinalForm.submit-promise', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1)
   })
 
-  it('should return a Promise from submit() when async validations have not started', async () => {
+  it('should return a Promise from submit() when async validations have completed', async () => {
     const onSubmit = jest.fn(async () => {
       await sleep(10)
     })
     
     const form = createForm({ onSubmit })
 
-    // Register field with async validator but DON'T trigger it yet
+    // Register field with async validator
     form.registerField(
       'testField',
       jest.fn(),
@@ -59,13 +59,13 @@ describe('FinalForm.submit-promise', () => {
       }
     )
 
-    // Set initial value (no change yet, so no async validation triggered)
+    // Change field to trigger async validation
     form.change('testField', 'test')
     
-    // Wait for async validation to complete
+    // Wait for async validation to complete before submitting
     await sleep(60)
 
-    // Now submit - async validations are NOT pending
+    // Now submit - async validations have completed
     const submitResult = form.submit()
 
     expect(submitResult).toBeInstanceOf(Promise)
