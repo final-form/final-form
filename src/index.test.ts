@@ -210,4 +210,77 @@ describe("TypeScript types", () => {
     // Call the mutator
     mutators.setValue("firstName", "Kevin");
   });
+
+  test("triggerValidation", () => {
+    interface FormValues {
+      username: string;
+    };
+
+    const form = createForm<FormValues>({ 
+      onSubmit: jest.fn(),
+      validate(values) {
+        return values.username ? {} : { username: 'Required' }
+      },
+      initialValues: { username: '' }
+    });
+
+    form.triggerValidation();
+    expect(form.getState().errors?.username).toBe('Required');
+
+    form.change('username', 'test');
+    form.triggerValidation();
+    expect(form.getState().errors?.username).toBeUndefined();
+
+    interface FormValues2 extends FormValues {
+      phoneNumber: string;
+      email: string;
+    };
+
+    const setValue: Mutator<FormValues2> = (
+      [name, newValue],
+      state,
+      { changeValue },
+    ) => {
+      changeValue(state, name, () => newValue);
+    };
+
+    type Mutators = {
+      setValue: (name: string, value: string) => void;
+    };
+
+    const form2 = createForm<FormValues2>({
+      onSubmit: jest.fn(),
+      validate: () => {
+        return {
+          username: 'Required',
+          email: 'Required',
+          phoneNumber: 'Required'
+        }
+      },
+      initialValues: {
+        username: '',
+        email: '',
+        phoneNumber: ''
+      },
+      mutators: {
+       setValue
+      }
+    });
+
+    const mutators: Mutators = form2.mutators as Mutators;
+
+    form2.triggerValidation();
+
+    expect(form2.getState().errors?.username).toBe('Required');
+    expect(form2.getState().errors?.email).toBe('Required');
+    expect(form2.getState().errors?.phoneNumber).toBe('Required');
+
+    mutators.setValue('email', 'test@test.com');
+    mutators.setValue('phoneNumber', '1234567890');
+
+    form2.triggerValidation(["email", "phoneNumber"]);
+
+    expect(form2.getState().values?.email).toBe('test@test.com');
+    expect(form2.getState().values?.phoneNumber).toBe('1234567890');
+  })
 });
