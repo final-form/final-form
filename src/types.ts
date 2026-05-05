@@ -229,24 +229,22 @@ export interface FormApi<
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > {
   batch: (fn: () => void) => void;
-  blur: (name: keyof FormValues) => void;
-  change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void;
+  blur: (name: string) => void;
+  change: (name: string, value?: any) => void;
   destroyOnUnregister: boolean;
-  focus: (name: keyof FormValues) => void;
+  focus: (name: string) => void;
   initialize: (
     data: InitialFormValues | ((values: FormValues) => InitialFormValues)
   ) => void;
   isValidationPaused: () => boolean;
-  getFieldState: <F extends keyof FormValues>(
-    field: F
-  ) => FieldState<FormValues[F]> | undefined;
+  getFieldState: (field: string) => FieldState<any> | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
   pauseValidation: () => void;
   registerField: RegisterField<FormValues>;
   reset: (initialValues?: InitialFormValues) => void;
-  resetFieldState: (name: keyof FormValues) => void;
+  resetFieldState: (name: string) => void;
   restart: (initialValues?: InitialFormValues) => void;
   resumeValidation: () => void;
   setConfig: <K extends ConfigKey>(

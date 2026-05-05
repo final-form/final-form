@@ -256,9 +256,9 @@ function createForm<
           ...state.fields[from],
           name: to,
           // rebind event handlers
-          blur: () => api.blur(to as keyof FormValues),
-          change: (value) => api.change(to as keyof FormValues, value),
-          focus: () => api.focus(to as keyof FormValues),
+          blur: () => api.blur(to),
+          change: (value) => api.change(to, value),
+          focus: () => api.focus(to),
           lastFieldState: undefined,
         },
       });
@@ -775,7 +775,7 @@ function createForm<
       notifyFormListeners();
     },
 
-    blur: (name: keyof FormValues) => {
+    blur: (name: string) => {
       const { fields, formState } = state;
       const previous = fields[name as string];
       if (previous) {
@@ -798,11 +798,11 @@ function createForm<
       }
     },
 
-    change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => {
+    change: (name: string, value?: any) => {
       const { fields, formState } = state;
-      if (getIn(formState.values as object, name as string) !== value) {
-        changeValue(state, name as string, () => value);
-        const previous = fields[name as string];
+      if (getIn(formState.values as object, name) !== value) {
+        changeValue(state, name, () => value);
+        const previous = fields[name];
         if (previous) {
           // only track modified for registered fields
           fields[name as string] = {
@@ -839,8 +839,8 @@ function createForm<
       ignoreUnregister = value;
     },
 
-    focus: (name: keyof FormValues) => {
-      const field = state.fields[name as string];
+    focus: (name: string) => {
+      const field = state.fields[name];
       if (field && !field.active) {
         state.formState.active = name as string;
         field.active = true;
@@ -852,8 +852,8 @@ function createForm<
 
     mutators: mutatorsApi,
 
-    getFieldState: <F extends keyof FormValues>(name: F) => {
-      const field = state.fields[name as string];
+    getFieldState: (name: string) => {
+      const field = state.fields[name];
       return field && field.lastFieldState;
     },
 
@@ -955,15 +955,15 @@ function createForm<
         asyncValidationKey: 0,
         instanceId: undefined,
         visited: false,
-        blur: () => api.blur(name),
-        change: (value) => api.change(name, value),
-        focus: () => api.focus(name),
+        blur: () => api.blur(name as string),
+        change: (value) => api.change(name as string, value),
+        focus: () => api.focus(name as string),
       };
       // Mutators can create a field in order to keep the field states
       // We must update this field when registerField is called afterwards
-      if (typeof field.blur !== 'function') field.blur = () => api.blur(name);
-      if (typeof field.change !== 'function') field.change = (value) => api.change(name, value);
-      if (typeof field.focus !== 'function') field.focus = () => api.focus(name);
+      if (typeof field.blur !== 'function') field.blur = () => api.blur(name as string);
+      if (typeof field.change !== 'function') field.change = (value) => api.change(name as string, value);
+      if (typeof field.focus !== 'function') field.focus = () => api.focus(name as string);
       field.isEqual =
         (fieldConfig && fieldConfig.isEqual) ||
         (state.fields[name as string] && state.fields[name as string].isEqual) ||
@@ -1117,9 +1117,9 @@ function createForm<
     /**
      * Resets all field flags (e.g. touched, visited, etc.) to their initial state
      */
-    resetFieldState: (name: keyof FormValues) => {
-      const field = state.fields[name as string];
-      state.fields[name as string] = {
+    resetFieldState: (name: string) => {
+      const field = state.fields[name];
+      state.fields[name] = {
         ...field,
         ...{
           active: false,
