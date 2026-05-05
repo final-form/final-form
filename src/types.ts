@@ -237,7 +237,7 @@ export interface FormApi<
     data: InitialFormValues | ((values: FormValues) => InitialFormValues)
   ) => void;
   isValidationPaused: () => boolean;
-  getFieldState: (field: string) => FieldState<any> | undefined;
+  getFieldState: (field: string) => FieldState | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
@@ -264,8 +264,8 @@ export interface FormApi<
    * @param subscription - An object specifying which parts of the field state to subscribe to.
    * @returns A function to unsubscribe from the field state updates.
    */
-  subscribeFieldState: <F extends keyof FormValues>(
-    name: F,
+  subscribeFieldState: (
+    name: string,
     onChange: () => void,
     subscription: FieldSubscription
   ) => Unsubscribe;
@@ -275,9 +275,9 @@ export interface FormApi<
    * @param name - The name of the field to retrieve the state for.
    * @returns The current state of the field, or undefined if the field is not registered.
    */
-  getFieldSnapshot: <F extends keyof FormValues>(
-    name: F
-  ) => FieldState<FormValues[F]> | undefined;
+  getFieldSnapshot: (
+    name: string
+  ) => FieldState | undefined;
 
   /**
    * Subscribes to the state of the entire form.
