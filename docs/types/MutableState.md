@@ -17,7 +17,7 @@ An object very similar to [`FormState`](FormState).
 ## `fields`
 
 ```ts
-{ [string]: InternalFieldState }`
+{ [string]: InternalFieldState }
 ```
 
 An object of values very similar to [`FieldState`](FieldState). Note that the fields are kept in a flat structure, so a "deep" field like `"shipping.address.street"` will be at the key `"shipping.address.street"`, with the dots included.
