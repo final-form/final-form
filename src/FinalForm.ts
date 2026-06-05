@@ -1433,6 +1433,22 @@ function createForm<
     getFormSnapshot: (): FormState<FormValues, InitialFormValues> => {
       return calculateNextFormState();
     },
+
+    triggerValidation: (fields?: Array<keyof FormValues>) => {
+      if(!fields || fields === undefined || !Array.isArray(fields)) {
+        return runValidation(undefined, () => {
+          notifyFieldListeners(undefined);
+          notifyFormListeners();
+        });
+      };
+
+      fields.forEach((field) => {
+        runValidation(field as string, () => {
+          notifyFieldListeners(state.fields[field as string] ? field as string : undefined);
+          notifyFormListeners();
+        });
+      });
+    },
   };
   return api;
 }

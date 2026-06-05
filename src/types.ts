@@ -297,6 +297,12 @@ export interface FormApi<
    */
   getFormSnapshot: () => FormState<FormValues, InitialFormValues>;
   ignoreUnregister: boolean;
+  /** 
+   * Run validation for all form fields or a specific field
+   * @param fields - array of field names to run validation for, if undefined it will run validation for all fields
+   * @returns void
+  */
+  triggerValidation: (fields?: Array<keyof FormValues>) => void
 }
 
 export type DebugFunction<
