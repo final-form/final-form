@@ -73,7 +73,7 @@ export default {
     babel({
       exclude: "node_modules/**",
       babelrc: false,
-      babelHelpers: "runtime",
+      babelHelpers: "bundled",
       extensions: [".ts", ".js"],
       presets: [
         [
@@ -85,7 +85,6 @@ export default {
         ],
       ],
       plugins: [
-        ["@babel/plugin-transform-runtime", { useESModules: !cjs }],
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-syntax-import-meta",
       ],
