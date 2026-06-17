@@ -26,6 +26,7 @@ import {
   Subscriber,
   Subscribers,
   Subscription,
+  SubmissionErrors,
   Unsubscribe,
   StateFilter,
   AnyObject,
@@ -1247,7 +1248,7 @@ function createForm<
       callbackScheduler = scheduler;
     },
 
-    submit: (): Promise<FormValues | undefined> => {
+    submit: (): Promise<SubmissionErrors> => {
       const { formState } = state;
 
       if (formState.submitting) {
@@ -1289,7 +1290,7 @@ function createForm<
             console.error(err);
             return undefined;
           }
-        ) as Promise<FormValues | undefined>;
+        ) as Promise<SubmissionErrors>;
       }
 
       let resolvePromise: any
@@ -1336,7 +1337,7 @@ function createForm<
           // onSubmit is async with a Promise
           notifyFormListeners(); // let everyone know we are submitting
           notifyFieldListeners(undefined); // notify fields also
-          return (result as Promise<FormValues | undefined>).then(
+          return (result as Promise<SubmissionErrors>).then(
             (value) => {
               complete(value as AnyObject);
               return value;
@@ -1350,15 +1351,15 @@ function createForm<
           // must be async, so we should return a Promise
           notifyFormListeners(); // let everyone know we are submitting
           notifyFieldListeners(undefined); // notify fields also
-          return new Promise<FormValues | undefined>((resolve) => {
+          return new Promise<SubmissionErrors>((resolve) => {
             resolvePromise = resolve;
           });
         } else {
           // onSubmit is sync
-          complete(result as FormValues);
+          complete(result as SubmissionErrors);
         }
       }
-      return Promise.resolve(undefined as FormValues | undefined);
+      return Promise.resolve(undefined as SubmissionErrors);
     },
 
     subscribe: (
