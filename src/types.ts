@@ -229,24 +229,22 @@ export interface FormApi<
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>
 > {
   batch: (fn: () => void) => void;
-  blur: (name: keyof FormValues) => void;
-  change: <F extends keyof FormValues>(name: F, value?: FormValues[F]) => void;
+  blur: (name: string) => void;
+  change: (name: string, value?: any) => void;
   destroyOnUnregister: boolean;
-  focus: (name: keyof FormValues) => void;
+  focus: (name: string) => void;
   initialize: (
     data: InitialFormValues | ((values: FormValues) => InitialFormValues)
   ) => void;
   isValidationPaused: () => boolean;
-  getFieldState: <F extends keyof FormValues>(
-    field: F
-  ) => FieldState<FormValues[F]> | undefined;
+  getFieldState: (field: string) => FieldState | undefined;
   getRegisteredFields: () => string[];
   getState: () => FormState<FormValues, InitialFormValues>;
   mutators: Record<string, (...args: any[]) => any>;
   pauseValidation: () => void;
   registerField: RegisterField<FormValues>;
   reset: (initialValues?: InitialFormValues) => void;
-  resetFieldState: (name: keyof FormValues) => void;
+  resetFieldState: (name: string) => void;
   restart: (initialValues?: InitialFormValues) => void;
   resumeValidation: () => void;
   setConfig: <K extends ConfigKey>(
@@ -266,8 +264,8 @@ export interface FormApi<
    * @param subscription - An object specifying which parts of the field state to subscribe to.
    * @returns A function to unsubscribe from the field state updates.
    */
-  subscribeFieldState: <F extends keyof FormValues>(
-    name: F,
+  subscribeFieldState: (
+    name: string,
     onChange: () => void,
     subscription: FieldSubscription
   ) => Unsubscribe;
@@ -277,9 +275,9 @@ export interface FormApi<
    * @param name - The name of the field to retrieve the state for.
    * @returns The current state of the field, or undefined if the field is not registered.
    */
-  getFieldSnapshot: <F extends keyof FormValues>(
-    name: F
-  ) => FieldState<FormValues[F]> | undefined;
+  getFieldSnapshot: (
+    name: string
+  ) => FieldState | undefined;
 
   /**
    * Subscribes to the state of the entire form.
