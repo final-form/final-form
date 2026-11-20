@@ -5,6 +5,39 @@ const last = (arr) => (arr.length ? arr[arr.length - 1] : null);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("FinalForm.submission", () => {
+  it("clears a previous successful submit when validation blocks the next submit", () => {
+    const onSubmit = jest.fn();
+    const form = createForm({
+      onSubmit,
+      initialValues: { username: "Ann" },
+      validate: (values) => (values.username ? {} : { username: "Required" }),
+    });
+    const formListener = jest.fn();
+    const fieldListener = jest.fn();
+    const subscription = { submitFailed: true, submitSucceeded: true };
+    form.subscribe(formListener, subscription);
+    form.registerField("username", fieldListener, subscription);
+
+    form.submit();
+    expect(form.getState().submitSucceeded).toBe(true);
+
+    form.change("username", "");
+    form.submit();
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(form.getState()).toMatchObject({
+      submitFailed: true,
+      submitSucceeded: false,
+    });
+    expect(formListener).toHaveBeenLastCalledWith({
+      submitFailed: true,
+      submitSucceeded: false,
+    });
+    expect(fieldListener).toHaveBeenLastCalledWith(
+      expect.objectContaining({ submitFailed: true, submitSucceeded: false }),
+    );
+  });
+
   it("should not submit if form has validation errors", () => {
     const onSubmit = jest.fn();
     const form = createForm({

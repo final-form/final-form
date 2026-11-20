@@ -1268,6 +1268,7 @@ function createForm<
         markAllFieldsTouched();
         resetModifiedAfterSubmit();
         state.formState.submitFailed = true;
+        state.formState.submitSucceeded = false;
         notifyFormListeners();
         notifyFieldListeners(undefined);
         return Promise.resolve(undefined);
