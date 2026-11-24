@@ -769,10 +769,13 @@ function createForm<
   const api: FormApi<FormValues, InitialFormValues> = {
     batch: (fn: () => void) => {
       inBatch++;
-      fn();
-      inBatch--;
-      notifyFieldListeners(undefined);
-      notifyFormListeners();
+      try {
+        fn();
+      } finally {
+        inBatch--;
+        notifyFieldListeners(undefined);
+        notifyFormListeners();
+      }
     },
 
     blur: (name: keyof FormValues) => {
