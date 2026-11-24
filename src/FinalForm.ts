@@ -48,6 +48,11 @@ export const configOptions: ConfigKey[] = [
 
 const tripleEquals: IsEqual = (a: any, b: any): boolean => a === b;
 
+const isDate = (value: any): boolean =>
+  value !== null &&
+  typeof value === "object" &&
+  Object.prototype.toString.call(value) === "[object Date]";
+
 type InternalState<
   FormValues extends Record<string, any> = Record<string, any>,
   InitialFormValues extends Partial<FormValues> = Partial<FormValues>
@@ -623,7 +628,11 @@ function createForm<
         if (!safeFields[key]) {
           const currentValue = (formState.values as any)?.[key];
           const initialValue = (formState.initialValues as any)?.[key];
-          if (!shallowEqual(currentValue, initialValue)) {
+          const pristine =
+            isDate(currentValue) || isDate(initialValue)
+              ? currentValue === initialValue
+              : shallowEqual(currentValue, initialValue);
+          if (!pristine) {
             foundDirty = true;
             break;
           }
