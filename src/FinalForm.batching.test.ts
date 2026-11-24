@@ -3,6 +3,68 @@ import createForm from "./FinalForm";
 const onSubmitMock = (values, callback) => { };
 
 describe("FinalForm.batching", () => {
+  [new Error("callback failed"), undefined].forEach((callbackError) => {
+    it(`should preserve ${String(callbackError)} when debug cleanup throws`, () => {
+      const cleanupError = new Error("cleanup failed");
+      let shouldThrow = false;
+      let cleanupFailed = false;
+      const form = createForm({
+        onSubmit: onSubmitMock,
+        debug: () => {
+          if (shouldThrow) {
+            cleanupFailed = true;
+            throw cleanupError;
+          }
+        },
+      });
+      let didThrow = false;
+      let caught: unknown;
+
+      try {
+        form.batch(() => {
+          form.change("firstField", "before error");
+          shouldThrow = true;
+          throw callbackError;
+        });
+      } catch (error) {
+        didThrow = true;
+        caught = error;
+      }
+
+      expect(cleanupFailed).toBe(true);
+      expect(didThrow).toBe(true);
+      expect(caught).toBe(callbackError);
+    });
+  });
+
+  it("should propagate debug cleanup errors when the batch callback succeeds", () => {
+    const cleanupError = new Error("cleanup failed");
+    let shouldThrow = false;
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      debug: () => {
+        if (shouldThrow) {
+          throw cleanupError;
+        }
+      },
+    });
+    let didThrow = false;
+    let caught: unknown;
+
+    try {
+      form.batch(() => {
+        form.change("firstField", "before error");
+        shouldThrow = true;
+      });
+    } catch (error) {
+      didThrow = true;
+      caught = error;
+    }
+
+    expect(didThrow).toBe(true);
+    expect(caught).toBe(cleanupError);
+  });
+
   it("should resume notifications after a batch callback throws", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const formListener = jest.fn();

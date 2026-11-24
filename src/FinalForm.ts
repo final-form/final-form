@@ -769,12 +769,26 @@ function createForm<
   const api: FormApi<FormValues, InitialFormValues> = {
     batch: (fn: () => void) => {
       inBatch++;
+      let callbackFailed = false;
+      let callbackError: unknown;
       try {
         fn();
+      } catch (error) {
+        callbackFailed = true;
+        callbackError = error;
       } finally {
         inBatch--;
+      }
+      try {
         notifyFieldListeners(undefined);
         notifyFormListeners();
+      } catch (error) {
+        if (!callbackFailed) {
+          throw error;
+        }
+      }
+      if (callbackFailed) {
+        throw callbackError;
       }
     },
 
