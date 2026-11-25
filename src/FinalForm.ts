@@ -718,24 +718,27 @@ function createForm<
       scheduleNotification = true;
     } else {
       notifying = true;
-      callDebug();
-      if (
-        !inBatch &&
-        !(validationPaused && preventNotificationWhileValidationPaused)
-      ) {
-        const { lastFormState } = state;
-        const nextFormState = calculateNextFormState();
-        if (nextFormState !== lastFormState) {
-          state.lastFormState = nextFormState;
-          notify(
-            state.subscribers,
-            nextFormState,
-            lastFormState,
-            filterFormState,
-          );
+      try {
+        callDebug();
+        if (
+          !inBatch &&
+          !(validationPaused && preventNotificationWhileValidationPaused)
+        ) {
+          const { lastFormState } = state;
+          const nextFormState = calculateNextFormState();
+          if (nextFormState !== lastFormState) {
+            state.lastFormState = nextFormState;
+            notify(
+              state.subscribers,
+              nextFormState,
+              lastFormState,
+              filterFormState,
+            );
+          }
         }
+      } finally {
+        notifying = false;
       }
-      notifying = false;
       if (scheduleNotification) {
         scheduleNotification = false;
         notifyFormListeners();
