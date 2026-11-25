@@ -718,24 +718,27 @@ function createForm<
       scheduleNotification = true;
     } else {
       notifying = true;
-      callDebug();
-      if (
-        !inBatch &&
-        !(validationPaused && preventNotificationWhileValidationPaused)
-      ) {
-        const { lastFormState } = state;
-        const nextFormState = calculateNextFormState();
-        if (nextFormState !== lastFormState) {
-          state.lastFormState = nextFormState;
-          notify(
-            state.subscribers,
-            nextFormState,
-            lastFormState,
-            filterFormState,
-          );
+      try {
+        callDebug();
+        if (
+          !inBatch &&
+          !(validationPaused && preventNotificationWhileValidationPaused)
+        ) {
+          const { lastFormState } = state;
+          const nextFormState = calculateNextFormState();
+          if (nextFormState !== lastFormState) {
+            state.lastFormState = nextFormState;
+            notify(
+              state.subscribers,
+              nextFormState,
+              lastFormState,
+              filterFormState,
+            );
+          }
         }
+      } finally {
+        notifying = false;
       }
-      notifying = false;
       if (scheduleNotification) {
         scheduleNotification = false;
         notifyFormListeners();
@@ -769,10 +772,27 @@ function createForm<
   const api: FormApi<FormValues, InitialFormValues> = {
     batch: (fn: () => void) => {
       inBatch++;
-      fn();
-      inBatch--;
-      notifyFieldListeners(undefined);
-      notifyFormListeners();
+      let callbackFailed = false;
+      let callbackError: unknown;
+      try {
+        fn();
+      } catch (error) {
+        callbackFailed = true;
+        callbackError = error;
+      } finally {
+        inBatch--;
+      }
+      try {
+        notifyFieldListeners(undefined);
+        notifyFormListeners();
+      } catch (error) {
+        if (!callbackFailed) {
+          throw error;
+        }
+      }
+      if (callbackFailed) {
+        throw callbackError;
+      }
     },
 
     blur: (name: keyof FormValues) => {

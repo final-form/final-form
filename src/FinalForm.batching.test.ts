@@ -3,6 +3,156 @@ import createForm from "./FinalForm";
 const onSubmitMock = (values, callback) => { };
 
 describe("FinalForm.batching", () => {
+  [false, true].forEach((callbackFails) => {
+    it(`should resume notifications after debug cleanup throws with callback failure ${callbackFails}`, () => {
+      const cleanupError = new Error("cleanup failed");
+      const callbackError = new Error("callback failed");
+      let shouldThrow = false;
+      const form = createForm({
+        onSubmit: onSubmitMock,
+        debug: () => {
+          if (shouldThrow) {
+            throw cleanupError;
+          }
+        },
+      });
+      const listener = jest.fn();
+      const fieldListener = jest.fn();
+      form.subscribe(listener, { values: true });
+      form.registerField("firstField", fieldListener, { value: true });
+
+      expect(() =>
+        form.batch(() => {
+          form.change("firstField", "before error");
+          shouldThrow = true;
+          if (callbackFails) {
+            throw callbackError;
+          }
+        }),
+      ).toThrow(callbackFails ? callbackError : cleanupError);
+
+      shouldThrow = false;
+      form.change("firstField", "after error");
+      expect(listener).toHaveBeenCalledTimes(2);
+      expect(listener.mock.calls[1][0].values).toEqual({
+        firstField: "after error",
+      });
+      expect(fieldListener).toHaveBeenCalledTimes(3);
+      expect(fieldListener.mock.calls[2][0].value).toBe("after error");
+
+      form.change("firstField", "later");
+      expect(listener).toHaveBeenCalledTimes(3);
+      expect(listener.mock.calls[2][0].values).toEqual({ firstField: "later" });
+    });
+  });
+
+  [new Error("callback failed"), undefined].forEach((callbackError) => {
+    it(`should preserve ${String(callbackError)} when debug cleanup throws`, () => {
+      const cleanupError = new Error("cleanup failed");
+      let shouldThrow = false;
+      let cleanupFailed = false;
+      const form = createForm({
+        onSubmit: onSubmitMock,
+        debug: () => {
+          if (shouldThrow) {
+            cleanupFailed = true;
+            throw cleanupError;
+          }
+        },
+      });
+      let didThrow = false;
+      let caught: unknown;
+
+      try {
+        form.batch(() => {
+          form.change("firstField", "before error");
+          shouldThrow = true;
+          throw callbackError;
+        });
+      } catch (error) {
+        didThrow = true;
+        caught = error;
+      }
+
+      expect(cleanupFailed).toBe(true);
+      expect(didThrow).toBe(true);
+      expect(caught).toBe(callbackError);
+    });
+  });
+
+  it("should propagate debug cleanup errors when the batch callback succeeds", () => {
+    const cleanupError = new Error("cleanup failed");
+    let shouldThrow = false;
+    const form = createForm({
+      onSubmit: onSubmitMock,
+      debug: () => {
+        if (shouldThrow) {
+          throw cleanupError;
+        }
+      },
+    });
+    let didThrow = false;
+    let caught: unknown;
+
+    try {
+      form.batch(() => {
+        form.change("firstField", "before error");
+        shouldThrow = true;
+      });
+    } catch (error) {
+      didThrow = true;
+      caught = error;
+    }
+
+    expect(didThrow).toBe(true);
+    expect(caught).toBe(cleanupError);
+  });
+
+  it("should resume notifications after a batch callback throws", () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const formListener = jest.fn();
+    const fieldListener = jest.fn();
+    form.subscribe(formListener, { values: true });
+    form.registerField("firstField", fieldListener, { value: true });
+    const error = new Error("update failed");
+
+    expect(() =>
+      form.batch(() => {
+        form.change("firstField", "before error");
+        throw error;
+      }),
+    ).toThrow(error);
+
+    expect(formListener).toHaveBeenCalledTimes(2);
+    expect(fieldListener).toHaveBeenCalledTimes(2);
+    expect(fieldListener.mock.calls[1][0].value).toBe("before error");
+
+    form.change("firstField", "after error");
+    expect(formListener).toHaveBeenCalledTimes(3);
+    expect(fieldListener).toHaveBeenCalledTimes(3);
+    expect(fieldListener.mock.calls[2][0].value).toBe("after error");
+  });
+
+  it("should keep an outer batch active after a nested batch throws", () => {
+    const form = createForm({ onSubmit: onSubmitMock });
+    const listener = jest.fn();
+    form.subscribe(listener, { values: true });
+
+    form.batch(() => {
+      expect(() =>
+        form.batch(() => {
+          form.change("firstField", "inner");
+          throw new Error("inner failed");
+        }),
+      ).toThrow("inner failed");
+      form.change("firstField", "outer");
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    expect(listener).toHaveBeenCalledTimes(2);
+    expect(listener.mock.calls[1][0].values).toEqual({ firstField: "outer" });
+  });
+
   it("should not call form or field listeners during batch update", () => {
     const form = createForm({ onSubmit: onSubmitMock });
     const formListener = jest.fn();
